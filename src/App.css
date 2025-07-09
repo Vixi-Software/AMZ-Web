@@ -1,0 +1,48 @@
+:root {
+    --checkbox-border: #ccc;
+    --checkbox-checked-bg: #f97316;
+    --checkbox-checked-border: #f97316;
+    --checkbox-hover-border: #f97316;
+    --checkbox-checkmark: "✓";
+    --checkbox-checkmark-color: white;
+}
+
+input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--checkbox-border);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--checkbox-checked-bg);
+    border-color: var(--checkbox-checked-border);
+    background-image: url('data:image/svg+xml;utf8,<svg fill="white" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l4 4 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 14px 14px;
+}
+
+input[type="checkbox"]:checked::after {
+    content: "";
+}
+
+input[type="checkbox"]:hover {
+    border-color: var(--checkbox-hover-border);
+}
+
+.main-carousel .slick-prev,
+.main-carousel .slick-next {
+  display: none !important;
+}
+
+.main-carousel .custom-arrow {
+  display: flex !important;
+}
