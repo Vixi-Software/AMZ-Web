@@ -96,8 +96,8 @@ function ProductDetail() {
 
   // --- SỬA ĐỔI DỮ LIỆU ĐẦU VÀO CHO PHÙ HỢP ---
   const productName = product.name;
-  const rawImages = product.images 
-  const imageArray = rawImages.split(";;")
+  const rawImages = product?.images || product?.image || []
+  const imageArray = rawImages.split
   const images = Array.isArray(rawImages)
     ? rawImages.map(img => getGoogleDriveThumbnail(img))
     : [getGoogleDriveThumbnail(rawImages)]
@@ -106,9 +106,7 @@ function ProductDetail() {
   const priceForSale = Number(product.priceForSale).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   const priceDefault = Number(product.priceDefault).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   const condition = product.condition;
-  
-  
-  
+    
   if (!product) {
     return (
       <div>
