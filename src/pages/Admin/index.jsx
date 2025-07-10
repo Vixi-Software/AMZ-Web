@@ -13,18 +13,18 @@ import getGoogleDriveThumbnail from '../../utils/googleDriveImage'
 
 function getCollectionNameByCode(code) {
   switch (code) {
-    case '003-di-dong-cu':
-      return '003-di-dong-cu';
-    case '005-loa-karaoke':
-      return '005-loa-karaoke';
-    case '004-de-ban-cu':
-      return '004-de-ban-cu';
-    case '002-chup-tai-cu':
-      return '002-chup-tai-cu';
-    case '001-nhet-tai-cu':
-      return '001-nhet-tai-cu';
-    case '006-hang-newseal':
-      return '006-hang-newseal';
+    case '03-di-dong-cu':
+      return '03-di-dong-cu';
+    case '05-loa-karaoke':
+      return '05-loa-karaoke';
+    case '04-de-ban-cu':
+      return '04-de-ban-cu';
+    case '02-chup-tai-cu':
+      return '02-chup-tai-cu';
+    case '01-nhet-tai-cu':
+      return '01-nhet-tai-cu';
+    case '06-hang-newseal':
+      return '06-hang-newseal';
     default:
       return 'test';
   }
@@ -32,17 +32,17 @@ function getCollectionNameByCode(code) {
 
 function getCategoryByCode(code) {
   switch (code) {
-    case '003-di-dong-cu':
+    case '03-di-dong-cu':
       return 'Loa di động cũ';
-    case '005-loa-karaoke':
+    case '05-loa-karaoke':
       return 'Loa karaoke cũ';
-    case '004-de-ban-cu':
+    case '04-de-ban-cu':
       return 'Loa để bàn cũ';
-    case '002-chup-tai-cu':
+    case '02-chup-tai-cu':
       return 'Tai nghe chụp tai cũ';
-    case '001-nhet-tai-cu':
+    case '01-nhet-tai-cu':
       return 'Tai nghe nhét tai cũ';
-    case '006-hang-newseal':
+    case '06-hang-newseal':
       return 'Hàng new seal';
     default:
       return '';
@@ -52,29 +52,29 @@ function getCategoryByCode(code) {
 function Admin() {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
-  const [category, setCategory] = useState("001-nhet-tai-cu");
+  const [category, setCategory] = useState("01-nhet-tai-cu");
   const [editModal, setEditModal] = useState({ visible: false, key: '', value: '', page: '', code: '' });
   const [searchText, setSearchText] = useState(""); // Thêm state tìm kiếm
 
   useEffect(() => {
     let unsubscribe;
     switch (category) {
-      case "006-hang-newseal":
+      case "06-hang-newseal":
         unsubscribe = getAllNewSealTaiNghe(setItems);
         break;
-      case "001-nhet-tai-cu":
+      case "01-nhet-tai-cu":
         unsubscribe = getAllTaiNgheNhetTai(setItems);
         break;
-      case "002-chup-tai-cu":
+      case "02-chup-tai-cu":
         unsubscribe = getAllTaiNgheChupTai(setItems);
         break;
-      case "003-di-dong-cu":
+      case "03-di-dong-cu":
         unsubscribe = getAllLoaDiDong(setItems);
         break;
-      case "004-de-ban-cu":
+      case "04-de-ban-cu":
         unsubscribe = getAllLoaDeBan(setItems);
         break;
-      case "005-loa-karaoke":
+      case "05-loa-karaoke":
         unsubscribe = getAllLoaKaraoke(setItems);
         break;
       default:
@@ -245,12 +245,12 @@ function Admin() {
             cursor: "pointer",
           }}
         >
-          <option value={"001-nhet-tai-cu"}>Tai nghe nhét tai cũ</option>
-          <option value={"002-chup-tai-cu"}>Tai nghe chụp tai cũ</option>
-          <option value={"003-di-dong-cu"}>Loa di động cũ</option>
-          <option value={"004-de-ban-cu"}>Loa để bàn cũ</option>
-          <option value={"005-loa-karaoke"}>Loa karaoke cũ</option>
-          <option value={"006-hang-newseal"}>Hàng new seal</option>
+          <option value={"01-nhet-tai-cu"}>Tai nghe nhét tai cũ</option>
+          <option value={"02-chup-tai-cu"}>Tai nghe chụp tai cũ</option>
+          <option value={"03-di-dong-cu"}>Loa di động cũ</option>
+          <option value={"04-de-ban-cu"}>Loa để bàn cũ</option>
+          <option value={"05-loa-karaoke"}>Loa karaoke cũ</option>
+          <option value={"06-hang-newseal"}>Hàng new seal</option>
         </select>
       </div>
       {items.length > 0 ? (

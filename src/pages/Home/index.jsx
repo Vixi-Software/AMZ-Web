@@ -136,22 +136,22 @@ function Home() {
             // Xác định category dựa vào code
             let category = "";
             switch (code) {
-              case "001-nhet-tai-cu":
+              case "01-nhet-tai-cu":
                 category = "Tai nghe nhét tai cũ";
                 break;
-              case "005-loa-karaoke":
+              case "05-loa-karaoke":
                 category = "Loa karaoke cũ";
                 break;
-              case "004-de-ban-cu":
+              case "04-de-ban-cu":
                 category = "Loa để bàn cũ";
                 break;
-              case "006-hang-newseal":
+              case "06-hang-newseal":
                 category = "Hàng newseal";
                 break;
-              case "002-chup-tai-cu":
+              case "02-chup-tai-cu":
                 category = "Tai nghe chụp tai cũ";
                 break;
-              case "003-di-dong-cu":
+              case "03-di-dong-cu":
                 category = "Loa di động cũ";
                 break;
               default:

@@ -76,17 +76,17 @@ const colorOptions = [
 function getCollectionNameByCategory(category) {
   switch (category) {
     case 'Loa di động cũ':
-      return '003-di-dong-cu';
+      return '03-di-dong-cu';
     case 'Loa karaoke cũ':
-      return '005-loa-karaoke';
+      return '05-loa-karaoke';
     case 'Loa để bàn cũ':
-      return '004-de-ban-cu';
+      return '04-de-ban-cu';
     case 'Tai nghe chụp tai cũ':
-      return '002-chup-tai-cu';
+      return '02-chup-tai-cu';
     case 'Tai nghe nhét tai cũ':
-      return '001-nhet-tai-cu';
+      return '01-nhet-tai-cu';
     case 'Hàng new seal':
-      return '006-hang-newseal';
+      return '06-hang-newseal';
     default:
       return 'test';
   }

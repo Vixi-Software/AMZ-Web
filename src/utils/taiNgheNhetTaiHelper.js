@@ -7,7 +7,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase.js";
 
-const COLLECTION_NAME = "001-nhet-tai-cu";
+const COLLECTION_NAME = "01-nhet-tai-cu";
 
 // Cache object để lưu trữ dữ liệu
 const cache = {

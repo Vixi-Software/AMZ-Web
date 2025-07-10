@@ -25,13 +25,7 @@ function AppContent() {
     "06-hang-newseal"
   ];
 
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [location.pathname, isLoading]);
+
   useEffect(() => {
     console.log("fetching")
     const fetchData = async () => {
@@ -43,7 +37,6 @@ function AppContent() {
       });
 
     };
-
     fetchData();
     
   }, []);
