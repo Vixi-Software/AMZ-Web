@@ -182,7 +182,7 @@ function Sale() {
 
             <div className="mt-8">
                 <h2 className="!text-base font-bold mb-[20px] mt-[34px] flex items-center gap-2">
-                    Sắp diễn ra <img src={clockGif} width={36} alt="" />
+                    
                 </h2>
                 <Row gutter={[16, 16]}>
                     {events
