@@ -48,7 +48,7 @@ function Home() {
       const bestSellerProducts = allProductsArray.filter(
         (product) => product.isBestSeller === "1"
       );
-      console.log("best seller:", bestSellerProducts)
+      
       setAllBestSellerProducts(allProductsArray);
       setProductsBestSeller(bestSellerProducts);
       // Lọc sản phẩm đang sale

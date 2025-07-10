@@ -161,10 +161,10 @@ function ProductCard({ product }) {
             </div>
           </div>
           {/* Image */}
-          {product.image ? (
+          {product.images ? (
             <img
               alt={productName}
-              // src={getGoogleDriveThumbnail(product.image[0])}
+              // src={getGoogleDriveThumbnail(product.images[0])}
               src={images[0]}
               className="w-full h-full object-cover rounded"
               style={{ width: '100%', height: isSmall ? 200 : 350, minHeight: isSmall ? 200 : 350, maxHeight: isSmall ? 200 : 350, borderRadius: '10px', objectFit: 'cover' }}

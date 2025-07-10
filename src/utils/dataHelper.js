@@ -88,7 +88,7 @@ export async function addProductsToFirebase() {
         HaNoi: product.HaNoi,
         Ban_Le: product.Ban_Le,
         Ban_Le_Value: product.Ban_Le_Value,
-        image: product.image
+        image: product.images
       });
     });
 

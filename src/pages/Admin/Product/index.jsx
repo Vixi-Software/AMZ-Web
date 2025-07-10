@@ -206,7 +206,7 @@ function ProductManagement() {
         { name: ['category'], value: editProduct.category || '' },
         { name: ['tags'], value: Array.isArray(editProduct.tags) ? editProduct.tags.join(',') : (editProduct.tags || '') },
         { name: ['description'], value: editProduct.description || '' },
-        { name: ['images'], value: editProduct.images || [] },
+        { name: ['images'], value: editproduct.images || [] },
         { name: ['isbestSeller'], value: !!editProduct.isbestSeller },
         { name: ['highlights'], value: Array.isArray(editProduct.highlights) ? editProduct.highlights.join('\n') : (editProduct.highlights || '') },
         // ...thêm các field khác nếu cần...
@@ -726,7 +726,7 @@ function ProductManagement() {
               <Col span={24}>
                 <b>Hình ảnh:</b>
                 <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: 8 }}>
-                  {viewProduct.images?.map((img, idx) => (
+                  {viewproduct.images?.map((img, idx) => (
                     <div key={idx} style={{ marginRight: 8, marginBottom: 8 }}>
                       <img src={img} alt={`Hình ảnh sản phẩm ${idx + 1}`} style={{ maxWidth: 100, maxHeight: 100, objectFit: 'cover', borderRadius: 8, border: '1px solid #eee' }} />
                     </div>
