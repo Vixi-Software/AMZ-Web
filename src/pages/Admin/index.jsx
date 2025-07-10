@@ -99,7 +99,7 @@ function Admin() {
     "TT",
     "Ảnh",
     "Mô tả",
-    "Sửa/Xóa", 
+    "Sửa/Xóa",
   ];
 
   // fields là mảng sau khi split từ value (bỏ code, page)
@@ -322,7 +322,7 @@ function Admin() {
                                   maxWidth: 90,
                                   justifyContent: 'center',
                                 }}>
-                                  {field.split(";;").map((img, i) =>
+                                  {/* {field.split(";;").map((img, i) =>
                                     img ? (
                                       <img
                                         key={i}
@@ -332,7 +332,55 @@ function Admin() {
                                         onError={e => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/40x40?text=No+Image'; }}
                                       />
                                     ) : null
-                                  )}
+                                  )} */}
+                                  {field.split(";;").filter(Boolean).slice(0, 2).map((img, i, arr) => {
+                                    const totalImages = field.split(";;").filter(Boolean).length;
+                                    const isLastVisible = i === 1 && totalImages > 2;
+
+                                    return (
+                                      <div
+                                        key={i}
+                                        style={{
+                                          position: 'relative',
+                                          width: 40,
+                                          height: 40,
+                                          margin: 1,
+                                          borderRadius: 4,
+                                          overflow: 'hidden',
+                                          border: '1px solid #eee'
+                                        }}
+                                      >
+                                        <img
+                                          src={img}
+                                          alt="Ảnh sản phẩm"
+                                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                          onError={e => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/40x40?text=No+Image'; }}
+                                        />
+                                        {isLastVisible && (
+                                          <div
+                                            style={{
+                                              position: 'absolute',
+                                              top: 0,
+                                              left: 0,
+                                              width: '100%',
+                                              height: '100%',
+                                              backgroundColor: 'rgba(0,0,0,0.5)',
+                                              color: 'white',
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'center',
+                                              fontSize: 12,
+                                              fontWeight: 'bold'
+                                            }}
+                                          >
+                                            +{totalImages - 1}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+
+
                                 </div>
                               ) : (
                                 <span>Chưa cập nhật</span>

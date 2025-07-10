@@ -13,6 +13,11 @@ function ProductCard({ product }) {
   const [isSmall, setIsSmall] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  const rawImages = product?.images || product?.image || []
+  const images = Array.isArray(rawImages)
+    ? rawImages.map(img => getGoogleDriveThumbnail(img))
+    : [getGoogleDriveThumbnail(rawImages)]
+
   const productName = product.name;
   const productColor = product.colors;
   const salePercent = product.salePercent;
@@ -156,10 +161,11 @@ function ProductCard({ product }) {
             </div>
           </div>
           {/* Image */}
-          {product.images && product.images.length > 0 && !imageError ? (
+          {product.image ? (
             <img
               alt={productName}
-              src={getGoogleDriveThumbnail(product.images[0])}
+              // src={getGoogleDriveThumbnail(product.image[0])}
+              src={images[0]}
               className="w-full h-full object-cover rounded"
               style={{ width: '100%', height: isSmall ? 200 : 350, minHeight: isSmall ? 200 : 350, maxHeight: isSmall ? 200 : 350, borderRadius: '10px', objectFit: 'cover' }}
               onError={() => setImageError(true)}
