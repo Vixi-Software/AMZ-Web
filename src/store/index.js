@@ -4,10 +4,11 @@ import loadingMiddleware from './features/loading/loadingMiddleware';
 
 const store = configureStore({
   reducer: {
-    // ...add your reducers here...
+    rootReducer
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(loadingMiddleware),
+  
+  // middleware: (getDefaultMiddleware) =>
+  //   getDefaultMiddleware().concat(loadingMiddleware),
 });
 
 export default store;

@@ -15,7 +15,8 @@ export const handleProduct = (data) => {
         'picture',
         'description',
         'features',
-        'youtubeUrl'
+        'youtubeUrl',
+        'category',
       ];
   
     const product = {};
@@ -23,6 +24,20 @@ export const handleProduct = (data) => {
     fields.forEach((key, index) => {
       product[key] = data[index] !== undefined ? data[index] : '';
     });
+
+    switch (product.collection) {
+      case "01-nhet-tai-cu":
+      case "02-chup-tai-cu":
+        product.category = "Tai nghe"
+        break;
+      case "03-di-dong-cu":
+      case "04-de-ban-cu":
+        product.category = "Loa"
+        break;
+      default:
+        product.category = ""
+        break;
+    }
   
     return product;
   };

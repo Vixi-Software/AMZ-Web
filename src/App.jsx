@@ -47,9 +47,7 @@ function AppContent() {
     fetchData();
     
   }, []);
-  // useEffect(() => {
-  //   console.log('📦 All products state from Redux:', allProductsState);
-  // }, [allProductsState]);
+ 
 
 
   return (
@@ -64,7 +62,7 @@ function AppContent() {
               path={route.path}
               element={
                 <Layout>
-                  {loading ? <Loading /> : null}
+                  {/* {loading ? <Loading /> : null} */}
 
                   <Page />
                 </Layout>

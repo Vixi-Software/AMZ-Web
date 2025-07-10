@@ -27,59 +27,66 @@ import { getAllTaiNgheChupTai } from '../../utils/taiNgheChuptai';
 import { getAllLoaDiDong } from '../../utils/diDong';
 
 function Home() {
-  const { getProductsWithStore } = useProductService();
   const { getHomeSettingsWithStore } = useHomeSettingService();
   const dispatch = useDispatch();
-  const [products1, setProducts1] = React.useState([]);
-  const [products2, setProducts2] = React.useState([]);
-  const [activeCategory1, setActiveCategory1] = React.useState("");
-  const [activeCategory2, setActiveCategory2] = React.useState("");
+  const [productsBestSeller, setProductsBestSeller] = React.useState([]);
+  const [productsOnSale, setProductsOnSale] = React.useState([]);
+  const [activeBestSeller, setActiveBestSeller] = React.useState("");
+  const [activeOnSale, setActiveOnSale] = React.useState("");
   const [allBestSellerProducts, setAllBestSellerProducts] = React.useState([]);
   const [allSaleProducts, setAllSaleProducts] = React.useState([]);
   const [allData, setAllData] = React.useState([]);
   const home = useSelector(state => state.homeSetting.homeSettings);
   const hasLoaded = React.useRef(false);
+  const allProductsState = useSelector((state) => state.allProducts);
+  const allProductsArray = Object.values(allProductsState).flat();
 
   React.useEffect(() => {
     const fetchProducts = async () => {
-      const all = await getProductsWithStore();
+
       // Lọc sản phẩm bán chạy
-      const bestSellers = (all || []).filter(product => product.isbestSeller);
-      setAllBestSellerProducts(bestSellers);
-      setProducts1(bestSellers);
+      const bestSellerProducts = allProductsArray.filter(
+        (product) => product.isBestSeller === "1"
+      );
+      console.log("best seller:", bestSellerProducts)
+      setAllBestSellerProducts(allProductsArray);
+      setProductsBestSeller(bestSellerProducts);
       // Lọc sản phẩm đang sale
-      const priceSaleProducts = (all || []).filter(product => product.salePrice !== undefined && product.salePrice !== null);
-      setAllSaleProducts(priceSaleProducts);
-      setProducts2(priceSaleProducts);
+      const priceSaleProducts = allProductsArray.filter((product) => {
+        const percent = parseFloat(product.salePercent);
+        return !isNaN(percent) && percent > 0
+      });
+      setAllSaleProducts(priceSaleProducts)
+      setProductsOnSale(priceSaleProducts)
     };
 
     fetchProducts();
   }, []);
 
   // Hàm lọc cho từng ProductGrid
-  const handleFilterCategory1 = async (category) => {
-    if (activeCategory1 === category) {
-      setActiveCategory1(""); // Bỏ chọn
-      setProducts1(allBestSellerProducts); // Hiện tất cả
+  const handleFilterBestSeller = async (category) => {
+    if (activeBestSeller === category) {
+      setActiveBestSeller(""); // Bỏ chọn
+      setProductsBestSeller(allBestSellerProducts); // Hiện tất cả
     } else {
-      setActiveCategory1(category); // Đánh dấu nút đang active
+      setActiveBestSeller(category); // Đánh dấu nút đang active
       const filtered = allBestSellerProducts.filter(
         (product) => product.category && product.category.toLowerCase().includes(category.toLowerCase())
       );
-      setProducts1(filtered);
+      setProductsBestSeller(filtered);
     }
   };
 
-  const handleFilterCategory2 = async (category) => {
-    if (activeCategory2 === category) {
-      setActiveCategory2(""); // Bỏ chọn
-      setProducts2(allSaleProducts); // Hiện tất cả
+  const handleFilterOnSale = async (category) => {
+    if (activeOnSale === category) {
+      setActiveOnSale(""); // Bỏ chọn
+      setProductsOnSale(allSaleProducts); // Hiện tất cả
     } else {
-      setActiveCategory2(category); // Đánh dấu nút đang active
+      setActiveOnSale(category); // Đánh dấu nút đang active
       const filtered = allSaleProducts.filter(
         (product) => product.category && product.category.toLowerCase().includes(category.toLowerCase())
       );
-      setProducts2(filtered);
+      setProductsOnSale(filtered);
     }
   };
   React.useEffect(() => {
@@ -226,36 +233,36 @@ function Home() {
   }, []);
 
   return (
-    <div className='flex flex-col gap-6'>asdasd
+    <div className='flex flex-col gap-6'>
       <MainCarousel />
       <CountSale endDate={home?.endDate} content={home?.content} />
       <BannerCustom />
       <ProductGrid
         title={<span className='flex gap-2'><b>Top bán chạy</b><img width={34} height={24} src={iconPopular} alt="" /></span>}
         buttons={[
-          { label: "Top tai nghe", type: "primary", className: "!font-semibold !bg-[#D65312]", onClick: () => handleFilterCategory1("Tai nghe"), category: "Tai nghe" },
-          { label: "Top loa", className: "!font-semibold", onClick: () => handleFilterCategory1("Loa"), category: "Loa" }
+          { label: "Top tai nghe", type: "primary", className: "!font-semibold !bg-[#D65312]", onClick: () => handleFilterBestSeller("Tai nghe"), category: "Tai nghe" },
+          { label: "Top loa", className: "!font-semibold", onClick: () => handleFilterBestSeller("Loa"), category: "Loa" }
         ]}
-        products={products1}
+        products={productsBestSeller}
         banners={[
           { index: 0, image: home?.[0]?.topSellingImage1 || "" },
           { index: 6, image: home?.[0]?.topSellingImage2 || "" }
         ]}
-        activeCategory={activeCategory1}
+        activeCategory={activeBestSeller}
       />
       <BannerCustom2 />
       <ProductGrid
         title={<span className='flex gap-2'><b>Deal cực cháy - Mua ngay kẻo lỡ</b><img width={34} height={24} src={fireIcon} alt="" /></span>}
         buttons={[
-          { label: "Tai nghe đang sale", type: "primary", className: "!font-semibold !bg-[#D65312]", onClick: () => handleFilterCategory2("Tai nghe"), category: "Tai nghe" },
-          { label: "Loa đang sale", className: "!font-semibold", onClick: () => handleFilterCategory2("Loa"), category: "Loa" }
+          { label: "Tai nghe đang sale", type: "primary", className: "!font-semibold !bg-[#D65312]", onClick: () => handleFilterOnSale("Tai nghe"), category: "Tai nghe" },
+          { label: "Loa đang sale", className: "!font-semibold", onClick: () => handleFilterOnSale("Loa"), category: "Loa" }
         ]}
-        products={products2}
+        products={productsOnSale}
         banners={[
           { index: 0, image: home?.[0]?.hotDealImage1 || "" },
           { index: 6, image: home?.[0]?.hotDealImage1 || "" }
         ]}
-        activeCategory={activeCategory2}
+        activeCategory={activeOnSale}
       />
       <Feeback />
     </div>

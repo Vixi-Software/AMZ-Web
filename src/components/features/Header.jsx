@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Input, Button, Typography, Space, Drawer, AutoComplete, Dropdown, Menu, Grid } from 'antd'
 import { MenuOutlined, SearchOutlined, EnvironmentOutlined, PhoneOutlined, ThunderboltOutlined, DollarCircleOutlined, HeartOutlined, ClockCircleOutlined, TruckOutlined } from '@ant-design/icons'
@@ -10,6 +10,7 @@ import images from '../../utils/images'
 import { setCategory } from '../../store/features/filterProduct/filterProductSlice'
 import SideBarProduct from './SideBarProduct'
 import { useProductService } from '../../services/productService'
+import Fuse from 'fuse.js'
 const { Text, Link } = Typography
 
 function Header() {
@@ -39,93 +40,113 @@ function Header() {
   const navigate = useNavigate()
   const location = useLocation()
   const home = useSelector(state => state.homeSetting.homeSettings);
-
+  const allProductsState = useSelector((state) => state.allProducts);
+  const allProductsArray = Object.values(allProductsState).flat();
+  const productSearchMapRef = useRef(new Map())
   // Hàm xử lý khi người dùng nhập vào ô tìm kiếm
- const handleSearch = async (value) => {
-  setSearchValue(value)
-  if (!value) {
-    setOptions([])
-    return
-  }
-  const results = await getProductsByName(value)
-  const mappedOptions = results.map((item, index) => ({
-    key: `${item.name}__${index}`, // Now guaranteed unique
-    value: item.name,
-    label: (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 4 }}>
-        <>
-          <div>
-            {item.images[0] ? (
-              <img
-                src={item.images[0]}
-                alt={item.name}
-                style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }}
-              />
-            ) : (
-              <div style={{ width: 40, height: 40, borderRadius: 6, backgroundColor: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #eee' }}>
-                <ThunderboltOutlined style={{ color: '#F37021', fontSize: 24 }} />
-              </div>
-            )}
-          </div>
-          <div>
-            <div style={{ fontWeight: 500, color: '#333', fontSize: 15, display: 'flex', alignItems: 'center', gap: 8 }}>
-              {item.name}
-              {item.colors && item.colors.length > 0 && (
-                <span style={{ fontSize: 12, color: '#888', }}>
-                  {item.colors.join(', ')}
-                </span>
-              )}
-              {item.status && (
-                <span
-                  style={{
-                    fontSize: 12,
-                    color: item.status === 'Còn hàng' ? '#52c41a' : '#ff4d4f',
-                    background: item.status === 'Còn hàng' ? '#f6ffed' : '#fff1f0',
-                    borderRadius: 4,
-                    padding: '2px 6px',
-                    marginLeft: 4,
-                    fontWeight: 400,
-                  }}
-                >
-                  {item.statusSell}
-                </span>
+  const handleSearch = async (value) => {
+    setSearchValue(value)
+    if (!value) {
+      setOptions([])
+      return
+    }
+
+    const fuse = new Fuse(allProductsArray, {
+      keys: ['name'],
+      threshold: 0.5,
+      ignoreLocation: true,
+    })
+    const results = fuse.search(value).map(result => result.item)
+    
+    const productMap = new Map()
+    results.forEach(item => {
+      productMap.set(item.id, item)
+    })
+    productSearchMapRef.current = productMap
+
+    const mappedOptions = results.map((item, index) => ({
+      key: item.id, // Now guaranteed unique
+      value: item.id,
+      label: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 4 }}>
+          <>
+            <div>
+              {item.picture[0] ? (
+                <img
+                  src={item.images[0]}
+                  alt={item.name}
+                  style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }}
+                />
+              ) : (
+                <div style={{ width: 40, height: 40, borderRadius: 6, backgroundColor: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #eee' }}>
+                  <ThunderboltOutlined style={{ color: '#F37021', fontSize: 24 }} />
+                </div>
               )}
             </div>
             <div>
-              <span style={{ color: '#F37021', fontWeight: 600 }}>
-                {item.salePrice
-                  ? (item.pricesBanLe - item.salePrice).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
-                  : item.pricesBanLe.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-              </span>
-              {item.salePrice && (
+              <div style={{ fontWeight: 500, color: '#333', fontSize: 15, display: 'flex', alignItems: 'center', gap: 8 }}>
+                {item.name}
+                {item.color && item.color.length > 0
+                  // && (
+                  //   <span style={{ fontSize: 12, color: '#888', }}>
+                  //     {item.color.join(', ')}
+                  //   </span>
+                  // )
+                }
+                {item.status && (
+                  <span
+                    style={{
+                      fontSize: 12,
+                      // color: item.status === 'Còn hàng' ? '#52c41a' : '#ff4d4f',
+                      // background: item.status === 'Còn hàng' ? '#f6ffed' : '#fff1f0',
+                      borderRadius: 4,
+                      padding: '2px 6px',
+                      marginLeft: 4,
+                      fontWeight: 400,
+                    }}
+                  >
+                    {item.condition}
+                  </span>
+                )}
+              </div>
+              <div>
+                <span style={{ color: '#F37021', fontWeight: 600 }}>
+                  {Number(item.priceForSale).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                </span>
+
                 <>
                   <span style={{ textDecoration: 'line-through', color: '#aaa', marginLeft: 8, fontSize: 13 }}>
-                    {item.pricesBanLe.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                    {item.priceDefault.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                   </span>
                   <span style={{ color: '#ff4d4f', marginLeft: 8, fontSize: 13 }}>
-                    -{item.salePrice}%
+                    -{item.salePercent}%
                   </span>
                 </>
-              )}
+
+              </div>
             </div>
-          </div>
-        </>
-      </div>
-    ),
-    id: item.id,
-    item,
-    name: item.name,
-  }))
-  setOptions(mappedOptions)
-}
+          </>
+        </div>
+      ),
+      id: item.id,
+      item,
+      name: item.name,
+    }))
+    setOptions(mappedOptions)
+  }
 
   const handleSelect = (value, option) => {
-  setOptions([]) // Reset lại options sau khi chọn
-  setSearchValue('') // Xóa text sau khi search
-  const product = option.item
-  dispatch(setProduct(product))
-  navigate(routePath.productDetail)
-}
+    setOptions([]) // Reset lại options sau khi chọn
+    setSearchValue('') // Xóa text sau khi search
+
+    const product = productSearchMapRef.current.get(value)
+    if (product) {
+      dispatch(setProduct(product))
+      navigate(routePath.productDetail)
+    } else {
+      console.warn('Product not found for ID:', value)
+    }
+  }
 
   const storeMenu = (
     <Menu>

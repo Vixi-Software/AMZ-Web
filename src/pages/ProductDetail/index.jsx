@@ -95,15 +95,18 @@ function ProductDetail() {
   }
 
   // --- SỬA ĐỔI DỮ LIỆU ĐẦU VÀO CHO PHÙ HỢP ---
+  const productName = product.name;
   const rawImages = product?.images || product?.image || []
   const images = Array.isArray(rawImages)
     ? rawImages.map(img => getGoogleDriveThumbnail(img))
     : [getGoogleDriveThumbnail(rawImages)]
-  const colors = product?.colors || product?.color || []
-  const price = (product?.pricesBanLe * (100 - product?.salePrice)) / 100 || product?.Ban_Le_Value
-  const priceOld = product?.pricesBanLe || product?.Ban_Le
-  const productCondition = product?.statusSell?.[0]
-
+  const productColor = product?.colors || product?.color || []
+  const priceForSale = Number(product.priceForSale).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  const priceDefault = Number(product.priceDefault).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  const condition = product.condition;
+  
+  
+  
   if (!product) {
     return (
       <div>
@@ -156,7 +159,7 @@ function ProductDetail() {
             }
           },
           {
-            label: getThirdPart(product.name),
+            label: getThirdPart(productName),
             onClick: () => { },
             active: true
           }
@@ -166,7 +169,7 @@ function ProductDetail() {
         {loading ? (
           <Skeleton.Input active size="default" style={{ width: 200 }} />
         ) : (
-          getThirdPart(product.name)
+          getThirdPart(productName)
         )}
       </h2>
       <Row gutter={24}>
@@ -184,7 +187,7 @@ function ProductDetail() {
               ) : Array.isArray(images) && images.length > 0 ? (
                 <img
                   src={images[selectedImage]}
-                  alt={product.name}
+                  alt={productName}
                   className="rounded-lg object-cover w-full h-full transition-all duration-300 hover:scale-110 hover:brightness-110 cursor-pointer"
                 />
               ) : (
@@ -261,7 +264,7 @@ function ProductDetail() {
               {loading ? (
                 <Skeleton.Input active size="large" style={{ width: 120 }} />
               ) : (
-                `${price?.toLocaleString('vi-VN')} ₫`
+                priceForSale
               )}
             </span>
             <span
@@ -274,8 +277,8 @@ function ProductDetail() {
                   size="default"
                   style={{ width: 80 }}
                 />
-              ) : priceOld ? (
-                priceOld.toLocaleString('vi-VN')
+              ) : priceDefault ? (
+                priceDefault
               ) : (
                 ''
               )}
@@ -297,7 +300,7 @@ function ProductDetail() {
                       style={{ width: 60 }}
                     />
                   ))
-                : (Array.isArray(colors) ? colors : [colors]).map(
+                : (Array.isArray(productColor) ? productColor : [productColor]).map(
                   (color, idx) => (
                     <span
                       key={idx}
@@ -327,14 +330,14 @@ function ProductDetail() {
                 />
               ) : (
                 <span
-                  className={`rounded-md px-4 py-1 font-medium cursor-pointer border transition-colors duration-150 ${selectedOptions.condition === productCondition
+                  className={`rounded-md px-4 py-1 font-medium cursor-pointer border transition-colors duration-150 ${selectedOptions.condition === condition
                     ? 'bg-orange-500 text-white border-orange-500'
                     : 'bg-white text-gray-700 border-[#999999]'
                     }`}
                   style={{ minWidth: 80, display: 'inline-block', textAlign: 'center' }}
-                  onClick={() => handleSelectOption('condition', productCondition)}
+                  onClick={() => handleSelectOption('condition', condition)}
                 >
-                  {productCondition}
+                  {condition}
                 </span>
               )}
             </div>

@@ -13,12 +13,12 @@ function ProductCard({ product }) {
   const [isSmall, setIsSmall] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const salePrice = product.salePrice;
-  const price = product.pricesBanLe;
-  const oldPrice = product.oldPrice || '';
-  const status = Array.isArray(product.statusSell) && product.statusSell.length > 0
-  ? product.statusSell[0]
-  : 'Newseal';
+  const productName = product.name;
+  const productColor = product.colors;
+  const salePercent = product.salePercent;
+  const priceForSale = Number(product.priceForSale).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  const priceDefault = Number(product.priceDefault).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  const condition = product.condition;
 
   useEffect(() => {
     const checkScreen = () => setIsSmall(window.innerWidth < 640);
@@ -29,7 +29,6 @@ function ProductCard({ product }) {
 
   const handleCardClick = () => {
     dispatch(setProduct({ ...product }));
-    dispatch(setLoading(true));
     navigate(routePath.productDetail);
   };
 
@@ -125,7 +124,7 @@ function ProductCard({ product }) {
             }}
           >
             <div>
-              {salePrice > 0 && (
+              {salePercent > 0 && (
                 <Tag
                   color="#FFE8D3"
                   className="font-bold rounded-lg"
@@ -136,7 +135,7 @@ function ProductCard({ product }) {
                     fontSize: isSmall ? 10 : 14
                   }}
                 >
-                  Giảm {salePrice}%
+                  Giảm {salePercent}%
                 </Tag>
               )}
             </div>
@@ -152,14 +151,14 @@ function ProductCard({ product }) {
                   fontSize: isSmall ? 10 : 14
                 }}
               >
-                {status}
+                {condition}
               </Tag>
             </div>
           </div>
           {/* Image */}
           {product.images && product.images.length > 0 && !imageError ? (
             <img
-              alt={product.name}
+              alt={productName}
               src={getGoogleDriveThumbnail(product.images[0])}
               className="w-full h-full object-cover rounded"
               style={{ width: '100%', height: isSmall ? 200 : 350, minHeight: isSmall ? 200 : 350, maxHeight: isSmall ? 200 : 350, borderRadius: '10px', objectFit: 'cover' }}
@@ -178,26 +177,26 @@ function ProductCard({ product }) {
           {/* phần trái */}
           <div>
             <div className="be-vietnam-pro-medium text-sm sm:text-[16px] mb-1 flex items-center gap-2">
-              {product.name}
+              {productName}
             </div>
             <div className="font-bold text-base sm:text-[21px] text-[#D65312] leading-none">
-              {salePrice > 0 ? (
+              {salePercent > 0 ? (
                 <>
                   {/* Giá đã giảm */}
-                  {(price - (price * salePrice) / 100).toLocaleString('vi-VN')}
+                  {priceForSale}
                   {/* Giá gốc bị gạch ngang */}
                   <span className="be-vietnam-pro-light text-xs sm:text-base text-[#aaa] ml-1 line-through">
-                    {price.toLocaleString('vi-VN')}
+                    {priceForSale}
                   </span>
                 </>
               ) : (
                 <>
                   {/* Giá bình thường */}
-                  {price && price.toLocaleString('vi-VN')}
-                  {/* Nếu có oldPrice thì hiển thị gạch ngang */}
-                  {oldPrice && (
+                  {priceForSale && priceForSale}
+                  {/* Nếu có priceDefault thì hiển thị gạch ngang */}
+                  {priceDefault && (
                     <span className="be-vietnam-pro-extrabold text-xs sm:text-[11px] text-[#aaa] ml-2 line-through">
-                      {oldPrice.toLocaleString('vi-VN')}
+                      {priceDefault}
                     </span>
                   )}
                 </>
@@ -214,7 +213,7 @@ function ProductCard({ product }) {
           <div className="flex flex-col gap-1 items-center relative group">
             {/* Hiển thị tối đa 3 dot màu */}
             <div className="flex flex-col gap-1 items-center">
-              {(Array.isArray(product.colors) ? product.colors : [product.colors])
+              {(Array.isArray(productColor) ? productColor : [productColor])
                 .filter(Boolean)
                 .slice(0, 3)
                 .map((color) => (
@@ -229,21 +228,21 @@ function ProductCard({ product }) {
                 ))}
               
               {/* Hiển thị indicator nếu có nhiều hơn 3 màu */}
-              {(Array.isArray(product.colors) ? product.colors : [product.colors]).filter(Boolean).length > 3 && (
+              {(Array.isArray(productColor) ? productColor : [productColor]).filter(Boolean).length > 3 && (
                 <span className="text-xs text-[#888] group-hover:hidden">
-                  +{(Array.isArray(product.colors) ? product.colors : [product.colors]).filter(Boolean).length - 3}
+                  +{(Array.isArray(productColor) ? productColor : [productColor]).filter(Boolean).length - 3}
                 </span>
               )}
             </div>
 
             {/* Hiển thị tất cả dots khi hover */}
-            {(Array.isArray(product.colors) ? product.colors : [product.colors]).filter(Boolean).length > 3 && (
+            {(Array.isArray(productColor) ? productColor : [productColor]).filter(Boolean).length > 3 && (
               <div className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-xl p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col gap-1 items-center border border-gray-200 min-w-[60px]" 
                 style={{ 
                   zIndex: 9999,
                   boxShadow: '0 10px 25px rgba(0,0,0,0.15)'
                 }}>
-                {(Array.isArray(product.colors) ? product.colors : [product.colors]).filter(Boolean).map((color) => (
+                {(Array.isArray(productColor) ? productColor : [productColor]).filter(Boolean).map((color) => (
                   <span
                     key={color}
                     title={color}
