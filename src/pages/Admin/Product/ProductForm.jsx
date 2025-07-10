@@ -124,6 +124,10 @@ function ProductForm({ initialValues = {}, onFinish }) {
   }, [category]);
 
   const handleAddRow = () => {
+    if (tableRows.length >= 10) {
+      message.warning('Không thể thêm quá 10 dòng.');
+      return;
+    }
     setTableRows([...tableRows, { key: '', value: '' }])
   }
 
@@ -132,6 +136,15 @@ function ProductForm({ initialValues = {}, onFinish }) {
     newRows[index][field] = val
     setTableRows(newRows)
   }
+
+  const handleRemoveRow = (index) => {
+    if (tableRows.length <= 1) {
+    message.warning('Phải có ít nhất 1 dòng.');
+    return;
+  }
+  const newRows = tableRows.filter((_, i) => i !== index);
+  setTableRows(newRows);
+  };
 
   const renderTableRows = () => (
     tableRows.map((row, idx) => (
@@ -149,6 +162,9 @@ function ProductForm({ initialValues = {}, onFinish }) {
             value={row.value}
             onChange={e => handleRowChange(idx, 'value', e.target.value)}
           />
+        </Col>
+        <Col span={2}>
+          <Button danger onClick={() => handleRemoveRow(idx)}>Xóa</Button>
         </Col>
       </Row>
     ))
@@ -272,38 +288,108 @@ function ProductForm({ initialValues = {}, onFinish }) {
       await handleFinish(values);
     }
   }
+  //Vĩ: 11/07/2022 00:59 - Tự động correct giá bán & giá gốc & sale
+  const [form] = Form.useForm();
+  const handleAutoCalculate = (changedValues, allValues) => {
+    const { pricesBanBuon, pricesBanLe, salePrice } = allValues;
+    const changedField = Object.keys(changedValues)[0];
+
+    // Nếu có giá gốc + phần trăm => tính lại giá bán
+    if (
+      pricesBanBuon &&
+      salePrice &&
+      changedField === 'pricesBanBuon'
+    ) {
+      const newBanLe = Math.round(pricesBanBuon * (1 - salePrice / 100));
+      form.setFieldsValue({ pricesBanLe: newBanLe });
+    }
+
+    // Nếu có giá gốc + giá bán => tính lại phần trăm
+    if (
+      pricesBanBuon &&
+      pricesBanLe &&
+      changedField === 'pricesBanBuon'
+    ) {
+      const newPercent = Math.round((1 - pricesBanLe / pricesBanBuon) * 100);
+      form.setFieldsValue({ salePrice: newPercent });
+    }
+
+    // Nếu đủ cả 3 trường mà sửa giá bán => tính lại phần trăm
+    if (
+      pricesBanBuon &&
+      pricesBanLe &&
+      salePrice &&
+      changedField === 'pricesBanLe'
+    ) {
+      const newPercent = Math.round((1 - pricesBanLe / pricesBanBuon) * 100);
+      form.setFieldsValue({ salePrice: newPercent });
+    }
+
+    // Nếu đủ 3 trường mà sửa phần trăm => tính lại giá bán
+    if (
+      pricesBanBuon &&
+      pricesBanLe &&
+      salePrice &&
+      changedField === 'salePrice'
+    ) {
+      const newBanLe = Math.round(pricesBanBuon * (1 - salePrice / 100));
+      form.setFieldsValue({ pricesBanLe: newBanLe });
+    }
+
+    // Nếu có giá gốc + giá bán (sale chưa có) => tính sale
+    if (
+      pricesBanBuon &&
+      pricesBanLe &&
+      !salePrice &&
+      changedField === 'pricesBanLe'
+    ) {
+      const percent = Math.round((1 - pricesBanLe / pricesBanBuon) * 100);
+      form.setFieldsValue({ salePrice: percent });
+    }
+
+    // Nếu có giá gốc + phần trăm (giá bán chưa có) => tính giá bán
+    if (
+      pricesBanBuon &&
+      salePrice &&
+      !pricesBanLe &&
+      changedField === 'salePrice'
+    ) {
+      const price = Math.round(pricesBanBuon * (1 - salePrice / 100));
+      form.setFieldsValue({ pricesBanLe: price });
+    }
+  };
+
 
   return (
+    //Vĩ: 11/07/2022 00:13 - Form được sử dụng khi chỉnh sửa sản phẩm
     <Form
       layout="vertical"
       initialValues={initialValues}
-      style={{ maxWidth: 800 }}
+      style={{ maxWidth: '100%', width: '100%' }}
       onFinish={handleFormFinish}
+      form={form}
+      onValuesChange={handleAutoCalculate}
     >
       <Row gutter={16}>
-        <Col span={12}>
+        <Col span={8}>
+          <Form.Item label="Danh mục" name="category" rules={[{ required: true, message: 'Vui lòng chọn loại sản phẩm' }]}>
+            <Select options={productTypeOptions} value={category} onChange={val => setCategory(val)} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="Thương hiệu" name="brand" rules={[{ required: true, message: 'Vui lòng chọn thương hiệu' }]}>
+            <Select options={brandOptions} showSearch placeholder="Chọn thương hiệu" />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
           <Form.Item label="Tên sản phẩm" name="name" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm' }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={12}>
-          <Form.Item label="Trạng thái" name="status" rules={[{ required: true, message: 'Vui lòng chọn trạng thái' }]}>
-            <Select options={statusOptions} />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      {/* Thêm trường bán chạy */}
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label="Bán chạy" name="isbestSeller" valuePropName="checked">
-            <Switch checkedChildren="Có" unCheckedChildren="Không" />
-          </Form.Item>
-        </Col>
       </Row>
 
       <Row gutter={16}>
-        <Col span={12}>
+        <Col span={8}>
           <Form.Item label="Màu sắc" name="colors" rules={[{ required: true, message: 'Vui lòng nhập màu sắc' }]}>
             <Select
               mode="multiple"
@@ -330,7 +416,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
             />
           </Form.Item>
         </Col>
-        <Col span={12}>
+        <Col span={8}>
           <Form.Item label="Tình trạng bán" name="statusSell" rules={[{ required: true, message: 'Vui lòng nhập tình trạng bán' }]}>
             <Select
               mode="multiple"
@@ -339,12 +425,17 @@ function ProductForm({ initialValues = {}, onFinish }) {
             />
           </Form.Item>
         </Col>
+        <Col span={8}>
+          <Form.Item label="Bán chạy" name="isbestSeller" valuePropName="checked">
+            <Switch checkedChildren="Có" unCheckedChildren="Không" />
+          </Form.Item>
+        </Col>
       </Row>
 
       <Row gutter={16}>
-        <Col span={12}>
+        <Col span={8}>
           <Form.Item
-            label="Giá bán buôn"
+            label="Giá gốc (VNĐ)"
             name="pricesBanBuon"
             rules={[
               { required: true, message: 'Vui lòng nhập giá bán buôn' },
@@ -354,14 +445,14 @@ function ProductForm({ initialValues = {}, onFinish }) {
             <InputNumber
               min={0}
               style={{ width: '100%' }}
-              formatter={value => `${value}`.replace(/[^0-9]/g, '')}
-              parser={value => value.replace(/[^0-9]/g, '')}
+              formatter={value => value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' vnđ' : ''}
+              parser={value => value.replace(/[vnđ,]/g, '').trim()}
             />
           </Form.Item>
         </Col>
-        <Col span={12}>
+        <Col span={8}>
           <Form.Item
-            label="Giá bán lẻ"
+            label="Giá bán (VNĐ)"
             name="pricesBanLe"
             rules={[
               { required: true, message: 'Vui lòng nhập giá bán lẻ' },
@@ -371,29 +462,25 @@ function ProductForm({ initialValues = {}, onFinish }) {
             <InputNumber
               min={0}
               style={{ width: '100%' }}
-              formatter={value => `${value}`.replace(/[^0-9]/g, '')}
-              parser={value => value.replace(/[^0-9]/g, '')}
+              formatter={value => value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' vnđ' : ''}
+              parser={value => value.replace(/[vnđ,]/g, '').trim()}
             />
           </Form.Item>
         </Col>
-      </Row>
-
-      {/* Thêm trường giá sale */}
-      <Row gutter={16}>
-        <Col span={12}>
+        <Col span={8}>
           <Form.Item
-            label="Giá sale"
+            label="Phần trăm giảm (%)"
             name="salePrice"
             rules={[
-              { required: false, message: 'Vui lòng nhập giá sale (nếu có)' },
+              { required: false, message: 'Vui lòng nhập phần trăm giảm giá (nếu có)' },
               { type: 'number', min: 0, message: 'Chỉ nhập số lớn hơn hoặc bằng 0' }
             ]}
           >
             <InputNumber
               min={0}
               style={{ width: '100%' }}
-              formatter={value => `${value}`.replace(/[^0-9]/g, '')}
-              parser={value => value.replace(/[^0-9]/g, '')}
+              formatter={value => value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' %' : ''}
+              parser={value => value.replace(/[\s,%]/g, '')}
               placeholder="Nhập giá sale (nếu có)"
             />
           </Form.Item>
@@ -402,82 +489,60 @@ function ProductForm({ initialValues = {}, onFinish }) {
 
       <Row gutter={16}>
         <Col span={12}>
-          <Form.Item label="Tồn kho" name="inventories" rules={[{ required: true, message: 'Vui lòng nhập tồn kho' }]}>
-            <InputNumber min={0} style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item label="Thương hiệu" name="brand" rules={[{ required: true, message: 'Vui lòng chọn thương hiệu' }]}>
-            <Select options={brandOptions} showSearch placeholder="Chọn thương hiệu" />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label="Danh mục" name="category" rules={[{ required: true, message: 'Vui lòng chọn loại sản phẩm' }]}>
-            <Select options={productTypeOptions} value={category} onChange={val => setCategory(val)} />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label="Tags" name="tags">
-            <Input placeholder="Nhập tags, cách nhau bởi dấu phẩy" />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item label="Mô tả" name="description">
-            <TextArea rows={3} />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={24}>
-          <Form.Item label="Tính năng nổi bật" name="highlights">
-            <TextArea rows={3} placeholder="Mỗi dòng là một tính năng nổi bật" />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      {/* Thêm trường video YouTube */}
-      <Row gutter={16}>
-        <Col span={24}>
           <Form.Item label="Video sản phẩm (YouTube)" name="videoUrl">
             <Input placeholder="Dán link video YouTube sản phẩm (nếu có)" />
           </Form.Item>
         </Col>
+        <Col span={12}>
+          <Form.Item label="Hình ảnh" name="images">
+            <Select
+              mode="tags"
+              style={{ width: '100%' }}
+              placeholder="Nhập link hình ảnh, Enter để thêm"
+              tokenSeparators={[',', ' ']}
+            />
+          </Form.Item>
+        </Col>
       </Row>
 
-      <Form.Item label="Hình ảnh" name="images">
-        <Select
-          mode="tags"
-          style={{ width: '100%' }}
-          placeholder="Nhập link hình ảnh, Enter để thêm"
-          tokenSeparators={[',', ' ']}
-        />
-      </Form.Item>
+      <Row gutter={16}>
+        
+        <Col span={12}>
+          <Form.Item label="Mô tả ngắn" name="description">
+            <TextArea autoSize={{ minRows: 5, maxRows: 20 }} />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="Tính năng nổi bật" name="highlights">
+            <TextArea autoSize={{ minRows: 5, maxRows: 20 }} placeholder="Mỗi dòng là một tính năng nổi bật" />
+          </Form.Item>
+        </Col>
+      </Row>
 
       {/* Thông số kỹ thuật dạng bảng 2 cột */}
-      <Form.Item label="Thông tin thêm">
-        {/* Hiển thị bảng info nếu có trong initialValues */}
-        {initialValues.tableInfo && (
-          <div style={{ marginBottom: 12 }}>
-            <div dangerouslySetInnerHTML={{ __html: initialValues.tableInfo }} />
-          </div>
+      <Form.Item label="Thông số kỹ thuật">
+        {typeof initialValues.tableInfo === 'string'
+          && initialValues.tableInfo.trim().toLowerCase() !== 'null'
+          && initialValues.tableInfo.trim() !== '' && (
+            <div style={{ marginBottom: 12 }}>
+              <div dangerouslySetInnerHTML={{ __html: initialValues.tableInfo }} />
+            </div>
         )}
         {renderTableRows()}
-        <Button type="dashed" onClick={handleAddRow} style={{ marginTop: 8 }}>
+        <Button type="primary" onClick={handleAddRow} style={{ marginTop: 8, color: '#1890ff', border: '1px solid #1890ff', backgroundColor: 'white', borderRadius: '8px', fontWeight: '500'}}>
           Thêm hàng
         </Button>
       </Form.Item>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Lưu sản phẩm
-        </Button>
+        <div style={{ textAlign: 'right', marginRight: 20}}>
+          {/* <Button type="default" style={{ marginRight: 16 }} onClick={() => {setEditModal(prev => ({ ...prev, visible: false }))}}>
+            Huỷ
+          </Button> */}
+          <Button type="primary" htmlType="submit">
+            Lưu
+          </Button>
+        </div>
       </Form.Item>
     </Form>
   )
