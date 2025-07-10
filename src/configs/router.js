@@ -15,7 +15,6 @@ const Product = lazy(() => import("@/pages/Product"));
 const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
 const Exchange = lazy(() => import("@/pages/Exchange"));
 const Sale = lazy(() => import("@/pages/Sale"));
-const ProductManagement = lazy(() => import("@/pages/Admin/Product"));
 const PostForm = lazy(() => import("@/pages/Admin/Post/PostForm"));
 const PostManagement = lazy(() => import("@/pages/Admin/Post"));
 const ProductForm = lazy(() => import("@/pages/Admin/Product/ProductForm"));
