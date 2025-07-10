@@ -100,7 +100,7 @@ export const useFirestore = (db, collectionName) => {
         }
       }
 
-      console.log("🔥 All Products:", allProducts);
+      // console.log("🔥 All Products:", allProducts);
       return allProducts;
     },
     [db]
