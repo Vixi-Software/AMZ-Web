@@ -57,7 +57,7 @@ function Header() {
       ignoreLocation: true,
     })
     const results = fuse.search(value).map(result => result.item)
-    
+
     const productMap = new Map()
     results.forEach(item => {
       productMap.set(item.id, item)
@@ -71,7 +71,7 @@ function Header() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 4 }}>
           <>
             <div>
-              {item.picture[0] ? (
+              {item.image[0] ? (
                 <img
                   src={item.images[0]}
                   alt={item.name}
@@ -87,18 +87,20 @@ function Header() {
               <div style={{ fontWeight: 500, color: '#333', fontSize: 15, display: 'flex', alignItems: 'center', gap: 8 }}>
                 {item.name}
                 {item.color && item.color.length > 0
-                  // && (
-                  //   <span style={{ fontSize: 12, color: '#888', }}>
-                  //     {item.color.join(', ')}
-                  //   </span>
-                  // )
+                  && (
+                    <span style={{ fontSize: 12, color: '#888', }}>
+                      {item.color}
+                    </span>
+                  )
                 }
-                {item.status && (
+                {item.condition && (
                   <span
                     style={{
                       fontSize: 12,
                       // color: item.status === 'Còn hàng' ? '#52c41a' : '#ff4d4f',
                       // background: item.status === 'Còn hàng' ? '#f6ffed' : '#fff1f0',
+                      color:'#ff4d4f',
+                      background: '#fff1f0',
                       borderRadius: 4,
                       padding: '2px 6px',
                       marginLeft: 4,

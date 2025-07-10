@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setBrands, setPriceRanges, resetFilter } from '../../store/features/filterProduct/filterProductSlice';
+import { setBrands, setPriceRanges, resetFilter, selectCategory } from '../../store/features/filterProduct/filterProductSlice';
 import { Grid } from 'antd';
 function SideBarProduct({
   brands = [],
@@ -14,7 +14,18 @@ function SideBarProduct({
     (state) => state.filterProduct
   );
 
-  const memoBrands = useMemo(() => brands, [brands]);
+  const allProductsState = useSelector((state) => state.allProducts);
+  const allProductsArray = Object.values(allProductsState).flat();
+  const category = useSelector(selectCategory);
+  const filteredProduct = allProductsArray.filter(
+    (product) => product.collection === category
+  );
+  const allBrands = [
+    ...new Set(filteredProduct.map((product) => product.brand).filter(Boolean))
+  ];
+ 
+
+  const memoBrands = useMemo(() => allBrands, [allBrands]);
 
   const handleBrandClick = (brand) => {
     if (selectedBrands.includes(brand)) {

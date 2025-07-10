@@ -32,5 +32,9 @@ const filterProductSlice = createSlice({
   },
 });
 
+export const selectCategory = (state) => state.filterProduct.category;
+export const selectBrands = (state) => state.filterProduct.brands;
+export const selectPriceRanges = (state) => state.filterProduct.priceRanges;
+
 export const { setCategory, setBrands, setPriceRanges, setNeeds, resetFilter } = filterProductSlice.actions;
 export default filterProductSlice.reducer;

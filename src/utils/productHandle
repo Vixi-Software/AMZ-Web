@@ -12,7 +12,7 @@ export const handleProduct = (data) => {
         'salePercent',
         'isBestSeller',
         'condition',
-        'picture',
+        'image',
         'description',
         'features',
         'youtubeUrl',

@@ -16,7 +16,8 @@ export const useProductService = () => {
   const products = useSelector((state) => state.productService.products);
   const selectorFull = useSelector((state) => state.allData.data);
   const productSelected = useSelector((state) => state.productService.productSelected);
-
+  const allProductsState = useSelector((state) => state.allProducts);
+  const allProductsArray = Object.values(allProductsState).flat();
   const {
     getAllDocs,
     getDocById,
@@ -90,7 +91,9 @@ export const useProductService = () => {
   };
 
   const filterProduct = async (filter = {}, sort = '') => {
-    const allProducts = await getProductsWithStore();
+    const allProductsState = useSelector((state) => state.allProducts);
+    const allProductsArray = Object.values(allProductsState).flat();
+    // const allProductsArray = await getProductsWithStore();
 
     // const countByCategory = allProducts.reduce((acc, product) => {
     //   const category = product.category?.toLowerCase() || 'unknown';
@@ -99,9 +102,9 @@ export const useProductService = () => {
     // }, {});
     // console.log('Số lượng sản phẩm theo category:', countByCategory);
 
-    if (!allProducts || allProducts.length === 0) return [];
+    if (!allProductsArray || allProductsArray.length === 0) return [];
 
-    let filteredProducts = allProducts.filter((product) => {
+    let filteredProducts = allProductsArray.filter((product) => {
       // Lọc theo category
       if (
         filter.category &&

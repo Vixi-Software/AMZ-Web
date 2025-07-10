@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import ProductGrid from '../../components/features/ProductGrid'
+import Loading from '../../components/features/Loading'
 import { Grid } from 'antd'
 import { useProductService } from '../../services/productService'
 import { usePostService } from '../../services/postService'
+
+import { selectBrands, selectCategory, selectPriceRanges } from '../../store/features/filterProduct/filterProductSlice'
 
 const { useBreakpoint } = Grid
 
@@ -15,7 +18,7 @@ const sortOptions = [
 ]
 
 function Product() {
-  const { filterProduct } = useProductService() 
+  // const { filterProduct } = useProductService() 
   const { getPostsWithStore } = usePostService();
   const [products, setProducts] = useState([])
   const [selectedSort, setSelectedSort] = useState('bestseller')
@@ -24,17 +27,74 @@ function Product() {
   const screens = useBreakpoint()
   const isSmall = !screens.md
   const isMedium = screens.md && !screens.lg
+  const allProductsState = useSelector((state) => state.allProducts);
+  const allProductsArray = Object.values(allProductsState).flat();
+  const category = useSelector(selectCategory);
+  const filteredProduct = allProductsArray.filter(
+    (product) => product.collection === category
+  );
+  const brands = useSelector(selectBrands);
+  const priceRanges = useSelector(selectPriceRanges);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Lấy bài viết
     getPostsWithStore().then(posts => {
       setPosts(posts)
     })
-    filterProduct(filteredProducts, selectedSort).then(products => {
-      setProducts(products)
-    })
-    // eslint-disable-next-line
-  }, [selectedSort, filteredProducts])
+    setProducts(filteredProduct)
+  }, [])
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      // console.log(brands, priceRanges)
+      const filtered = filteredProduct
+        // Filter by brand
+        .filter(product => {
+          if (brands.length === 0) return true;
+          return brands.includes(product.brand);
+        })
+        // Filter by price range
+        .filter(product => {
+          if (priceRanges.length === 0) return true;
+          const price = Number(product.priceForSale);
+          return priceRanges.some(([min, max]) => price >= min && price <= max);
+        });
+      let sorted = [...filtered];
+      switch (selectedSort) {
+        case 'bestseller':
+          sorted.sort((a, b) => {
+            const aBest = a.isBestSeller === "1" ? 1 : 0;
+            const bBest = b.isBestSeller === "1" ? 1 : 0;
+            return bBest - aBest;
+          });
+          break;
+
+        case 'hotdeal':
+          sorted.sort((a, b) => {
+            const aSale = Number(a.salePercent) || 0;
+            const bSale = Number(b.salePercent) || 0;
+            return bSale - aSale;
+          });
+          break;
+
+        case 'asc':
+          sorted.sort((a, b) => Number(a.priceForSale) - Number(b.priceForSale));
+          break;
+
+        case 'desc':
+          sorted.sort((a, b) => Number(b.priceForSale) - Number(a.priceForSale));
+          break;
+
+        default:
+          break;
+      }
+
+      setProducts(sorted);
+      setLoading(false);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [brands, priceRanges, selectedSort])
 
   const handleSortClick = (option) => {
     setSelectedSort(option.value)
@@ -85,7 +145,14 @@ function Product() {
       {products.length === 0 ? (
         <div>Không có sản phẩm phù hợp</div>
       ) : (
-        <ProductGrid products={products} />
+        loading ? (
+          <div className="flex items-center justify-center w-full min-h-screen">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+          </div>
+
+        ) : (
+          <ProductGrid products={products} />
+        )
       )}
       <div className='mt-[30px]'>
         {/* HIển thị bài viết */}

@@ -8,6 +8,7 @@ import Footer from "../../components/features/Footer";
 import { useNavigate } from "react-router-dom";
 import routePath from "../../constants/routePath";
 import { usePostService } from "../../services/postService";
+import { useSelector } from "react-redux";
 
 const CustomArrow = ({ className, style, onClick, direction }) => (
   <div
@@ -49,7 +50,8 @@ const NewSeal = () => {
   const [selectedSort, setSelectedSort] = useState('bestseller')
   const { useBreakpoint } = Grid
   const screens = useBreakpoint()
-
+  const allProductsState = useSelector((state) => state.allProducts);
+  const allProductsArray = Object.values(allProductsState).flat();
   const isSmall = !screens.md
   const isMedium = screens.md && !screens.lg
 
@@ -85,10 +87,10 @@ const NewSeal = () => {
 
     const fetchProducts = async () => {
       try {
-        const allProducts = await getProductsWithStore();
+        
         setProducts(
-          allProducts.filter(
-            (item) => item.statusSell?.[0] === "New Seal"
+          allProductsArray.filter(
+            (item) => item.condition === "New Seal"
           )
         );
       // eslint-disable-next-line no-unused-vars
@@ -123,7 +125,7 @@ const NewSeal = () => {
       const matchPrice =
         filters.priceRanges.length === 0 ||
         filters.priceRanges.some(([min, max]) => {
-          const productPrice = product.pricesBanLe || 0;
+          const productPrice = product.priceForSale || 0;
           if (max === Infinity) {
             return productPrice >= min;
           }
@@ -145,11 +147,11 @@ const NewSeal = () => {
         break;
       case 'asc':
         // Giá tăng dần
-        result = result.slice().sort((a, b) => (a.pricesBanLe || 0) - (b.pricesBanLe || 0));
+        result = result.slice().sort((a, b) => (a.priceForSale || 0) - (b.priceForSale || 0));
         break;
       case 'desc':
         // Giá giảm dần
-        result = result.slice().sort((a, b) => (b.pricesBanLe || 0) - (a.pricesBanLe || 0));
+        result = result.slice().sort((a, b) => (b.priceForSale || 0) - (a.priceForSale || 0));
         break;
       default:
         break;
