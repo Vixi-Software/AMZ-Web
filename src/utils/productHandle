@@ -1,0 +1,28 @@
+export const handleProduct = (data) => {
+   
+    const fields = [
+        'id',
+        'collection',
+        'document',
+        'brand',
+        'name',
+        'color',
+        'priceForSale',
+        'priceDefault',
+        'salePercent',
+        'isBestSeller',
+        'condition',
+        'picture',
+        'description',
+        'features',
+        'youtubeUrl'
+      ];
+  
+    const product = {};
+
+    fields.forEach((key, index) => {
+      product[key] = data[index] !== undefined ? data[index] : '';
+    });
+  
+    return product;
+  };

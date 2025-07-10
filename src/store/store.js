@@ -13,6 +13,7 @@ import homeSettingReducer from '../store/features/homeSettingSlice/homeSettingSl
 import postServiceReducer from '../store/features/postServices/postServiceSlice'
 import newSealReducer from '../store/features/newSeal/newSealSlice'
 import allDataReducer from '../store/features/allData/allDataSlice'
+import allProductsReducer from '../store/features/allProducts/allProductsSlice'
 import {
   persistStore,
   persistReducer,
@@ -44,13 +45,15 @@ const rootReducer = combineReducers({
   homeSetting: homeSettingReducer,
   postService: postServiceReducer,
   newSeal: newSealReducer,
-  allData: allDataReducer 
+  allData: allDataReducer,
+  allProducts: allProductsReducer,
 })
 
 const persistConfig = {
   key: 'root',
   storage,
   whitelist: [
+    'allProducts',
     'counter',
     'filterProduct',
     'post',

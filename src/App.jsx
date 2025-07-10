@@ -3,41 +3,78 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import AppRoute from './configs/router';
 import React, { useEffect, useState } from 'react';
 import Loading from './components/features/Loading';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { db } from "./utils/firebase";
+import { useFirestore } from "./hooks/useFirestore";
+import { deleteAllProducts, importProductByType } from './store/features/allProducts/allProductsSlice';
 
 function AppContent() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const isLoading = useSelector((state) => state.loading.isLoading);
+  const { getAllDocsWithSubcollections } = useFirestore(db, 'home');
+  const dispatch = useDispatch();
+  const allProductsState = useSelector((state) => state.allProducts);
+
+  const collections = [
+    "01-nhet-tai-cu",
+    "02-chup-tai-cu",
+    "03-di-dong-cu",
+    "04-de-ban-cu",
+    "05-loa-karaoke",
+    "06-hang-newseal"
+  ];
 
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 300);
+    }, 1000);
     return () => clearTimeout(timer);
   }, [location.pathname, isLoading]);
+  useEffect(() => {
+    console.log("fetching")
+    const fetchData = async () => {
+      const allProducts = await getAllDocsWithSubcollections(collections);
+      // console.log('🔥 All Products:', allProducts);
+      dispatch(deleteAllProducts());
+      allProducts.forEach((product) => {
+        dispatch(importProductByType(product.collection, {...product}));
+      });
+
+    };
+
+    fetchData();
+    
+  }, []);
+  // useEffect(() => {
+  //   console.log('📦 All products state from Redux:', allProductsState);
+  // }, [allProductsState]);
 
 
   return (
-    <Routes>
-      {AppRoute.map((route, index) => {
-        const Layout = route.layout || React.Fragment;
-        const Page = route.page;
-        return (
-          <Route
-            key={index}
-            path={route.path}
-            element={
-              <Layout>
-                {loading ? <Loading /> : null}
-                <Page />
-              </Layout>
-            }
-          />
-        );
-      })}
-    </Routes>
+    <>
+      <Routes>
+        {AppRoute.map((route, index) => {
+          const Layout = route.layout || React.Fragment;
+          const Page = route.page;
+          return (
+            <Route
+              key={index}
+              path={route.path}
+              element={
+                <Layout>
+                  {loading ? <Loading /> : null}
+
+                  <Page />
+                </Layout>
+              }
+            />
+          );
+        })}
+      </Routes>
+    </>
+
   );
 }
 

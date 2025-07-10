@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 
 import { useCallback } from "react";
+import { handleProduct } from "../utils/productHandle";
 
 export const useFirestore = (db, collectionName) => {
   const colRef = collection(db, collectionName);
@@ -64,7 +65,50 @@ export const useFirestore = (db, collectionName) => {
     [colRef]
   );
 
+  const getAllDocsWithSubcollections = useCallback(
+    async (collectionNames = []) => {
+      const allProducts = [];
+
+      for (const collectionName of collectionNames) {
+        const colRef = collection(db, collectionName);
+        const snapshot = await getDocs(colRef);
+
+        for (const docSnap of snapshot.docs) {
+          const rawDoc = docSnap.data();
+
+          for (const [key, value] of Object.entries(rawDoc)) {
+            if (key === "id") continue;
+
+            if (typeof value === "string") {
+              // console.log(`📄 Raw string [${collectionName}/${key}]:`, value);
+
+              const rawArray = value
+                .split("|")
+                .map((item) => (item === "null" ? "" : item.trim()));
+
+              // Insert key as id at the beginning
+              rawArray.unshift(key);
+
+              // console.log("🔍 Parsed Array with ID:", rawArray);
+
+              const product = handleProduct(rawArray);
+              // console.log("✅ Handled Product:", product);
+
+              allProducts.push(product);
+            }
+          }
+        }
+      }
+
+      console.log("🔥 All Products:", allProducts);
+      return allProducts;
+    },
+    [db]
+  );
+  
+
   return {
+    getAllDocsWithSubcollections,
     getAllDocs,
     getDocById,
     addDocData,

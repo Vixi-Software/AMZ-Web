@@ -58,7 +58,6 @@ export const getAllTaiNgheChupTai = (callback, useCache = true) => {
       cache.data.set(cacheKey, items);
       saveCacheToLocalStorage();
       cache.lastFetch = new Date();
-
       callback(items);
     },
     (error) => {
