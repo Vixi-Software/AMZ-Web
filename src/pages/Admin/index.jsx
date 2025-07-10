@@ -138,21 +138,19 @@ function Admin() {
 
   // Convert product object to pipe string (reuse from ProductForm)
   function productToPipeString(product, code, page) {
-    const brand = product.brand || '';
-    const name = product.name || '';
-    const color = Array.isArray(product.colors) ? product.colors[0] : (product.colors || '');
-    const priceBanLe = product.pricesBanLe || '';
-    const priceBanBuon = product.pricesBanBuon || '';
-    const salePrice = product.salePrice || '';
-    const status = product.status ? '0' : '1';
-    const statusSell = Array.isArray(product.statusSell) ? product.statusSell[0] : (product.statusSell || '');
+    const brand = product.brand || 'null';
+    const name = product.name || 'null';
+    const color = Array.isArray(product.colors) ? product.colors[0] : (product.colors || 'null');
+    const priceBanLe = product.pricesBanLe || 'null';
+    const priceBanBuon = product.pricesBanBuon || 'null';
+    const salePrice = product.salePrice || 'null';
+    const statusSell = Array.isArray(product.statusSell) ? product.statusSell[0] : (product.statusSell || 'null');
     const isbestSeller = product.isbestSeller ? '0' : '1';
-    const tableInfo = product.tableInfo || '';
-    const decription = product.description || '';
-    const highlights = product.highlights || '';
-    const videoUrl = product.videoUrl || '';
-    const images = Array.isArray(product.images) ? product.images.join(';;') : (product.images || '');
-    const inventories = product.inventories || '';
+    const tableInfo = product.tableInfo || 'null';
+    const decription = product.description || 'null';
+    const highlights = product.highlights || 'null';
+    const videoUrl = product.videoUrl || 'null';
+    const images = Array.isArray(product.images) ? product.images.join(';;') : (product.images || 'null');
     return [
       code,
       page,
@@ -162,15 +160,13 @@ function Admin() {
       priceBanLe,
       priceBanBuon,
       salePrice,
-      status,
+      isbestSeller,
       statusSell,
       images,
       decription,
-      tableInfo,
-      isbestSeller,
       highlights,
-      videoUrl,
-      inventories
+      tableInfo,
+      videoUrl
     ].join('|');
   }
 
@@ -438,6 +434,7 @@ function Admin() {
           <Modal
             open={editModal.visible}
             title="Cập nhật sản phẩm"
+            width="60vw"
             footer={null}
             onCancel={() => setEditModal({ visible: false, key: '', value: '', page: '', code: '' })}
             destroyOnClose
