@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCategory } from "../../store/features/filterProduct/filterProductSlice";
 import { useNavigate } from "react-router-dom";
 import routePath from "../../constants/routePath";
-import getGoogleDriveThumbnail from '../../utils/googleDriveImage' // Thêm dòng này
 
 function BannerCustom2() {
   const dispatch = useDispatch();
@@ -13,9 +12,7 @@ function BannerCustom2() {
   const home = useSelector(state => state.homeSetting.homeSettings);
 
   // Lấy link banner, ưu tiên link từ home, nếu không có thì dùng ảnh mặc định
-  const bannerSrc = getGoogleDriveThumbnail(
-    (home && home[0] && home[0].bannerNowLink) ? home[0].bannerNowLink : bannerCustom2
-  );
+  const bannerSrc = (home && home[0] && home[0].bannerNowLink) ? home[0].bannerNowLink : bannerCustom2;
 
   return (
     <div className="relative rounded-xl overflow-hidden bg-white shadow-md p-0 min-h-[260px] md:min-h-[350px] lg:min-h-[550px] group flex items-center">

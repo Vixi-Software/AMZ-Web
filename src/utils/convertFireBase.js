@@ -14,7 +14,7 @@ import {getCategoryByCode} from '../utils/getKeyFirebase.js'
     const decription = product.description || 'null';
     const highlights = product.highlights || 'null';
     const videoUrl = product.videoUrl || 'null';
-    const images = Array.isArray(product.images) ? getGoogleDriveThumbnail(product.images).join(';;') : (getGoogleDriveThumbnail(product.images) || 'null');
+    const images = Array.isArray(product.images) ? product.images.join(';;') : (product.images || 'null');
     return [
       code,
       page,
@@ -52,23 +52,6 @@ import {getCategoryByCode} from '../utils/getKeyFirebase.js'
       category: getCategoryByCode(code), // lấy category từ code
       // Bổ sung các trường khác nếu cần
     };
-  }
-
-  function getGoogleDriveThumbnail(urlOrArray) {
-    const extractId = (url) => {
-      if (!url || typeof url !== 'string' || !url.includes('drive.google.com')) return url;
-      const match = url.match(/(?:\/d\/|id=|\/file\/d\/|open\?id=)([a-zA-Z0-9_-]{10,})/);
-      const id = match ? match[1] : null;
-      return id ? `https://drive.google.com/thumbnail?id=${id}` : url;
-    };
-
-    if (Array.isArray(urlOrArray)) {
-      return urlOrArray.map(extractId);
-    } else if (typeof urlOrArray === 'string') {
-      return extractId(urlOrArray);
-    } else {
-      return urlOrArray;
-    }
   }
 
 

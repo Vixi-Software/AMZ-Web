@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { setProduct } from '../../store/features/product/productSlice'
 import { setLoading } from '../../store/features/loading/loadingSlice'
 import routePath from '../../constants/routePath'
-import getGoogleDriveThumbnail from '../../utils/googleDriveImage'
 
 function ProductCard({ product }) {
   const dispatch = useDispatch();
@@ -15,7 +14,7 @@ function ProductCard({ product }) {
 
   const rawImages = product.images
   const imageArray = rawImages.split(";;")
-  const cardImage = getGoogleDriveThumbnail(imageArray[0])
+  const cardImage = imageArray[0]
 
   const productName = product.name;
   const productColor = product.colors;
@@ -163,7 +162,6 @@ function ProductCard({ product }) {
           {product.images ? (
             <img
               alt={productName}
-              // src={getGoogleDriveThumbnail(product.images[0])}
               src={cardImage}
               className="w-full h-full object-cover rounded"
               style={{ width: '100%', height: isSmall ? 200 : 350, minHeight: isSmall ? 200 : 350, maxHeight: isSmall ? 200 : 350, borderRadius: '10px', objectFit: 'cover' }}

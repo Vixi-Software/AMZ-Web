@@ -6,7 +6,6 @@ import routePath from '../../constants/routePath'
 import Breadcum from '../../components/features/Breadcum'
 import { setCategory, resetFilter } from '../../store/features/filterProduct/filterProductSlice'
 import ProductCard from '../../components/features/ProductCard'
-import getGoogleDriveThumbnail from '../../utils/googleDriveImage'
 import { useProductService } from '../../services/productService'
 import { usePostService } from '../../services/postService'
 
@@ -98,7 +97,7 @@ function ProductDetail() {
   const productName = product.name;
   const rawImages = product.images
   const imageArray = rawImages.split(";;")
-  const images = imageArray.map(img => getGoogleDriveThumbnail(img))
+  const images = imageArray
   const productColor = product?.colors || product?.color || []
   const priceForSale = Number(product.priceForSale).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   const priceDefault = Number(product.priceDefault).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
