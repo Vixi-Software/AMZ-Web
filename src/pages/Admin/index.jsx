@@ -9,45 +9,11 @@ import ProductForm from './Product/ProductForm';
 import { Modal, message } from 'antd';
 import { db } from '../../utils/firebase';
 import { doc, setDoc, updateDoc, deleteField } from 'firebase/firestore';
-import getGoogleDriveThumbnail from '../../utils/googleDriveImage'
+import { productToPipeString, pipeStringToProductObject } from '../../utils/convertFireBase.js'
+import {getCollectionNameByCode} from '../../utils/getKeyFirebase.js'
 
-function getCollectionNameByCode(code) {
-  switch (code) {
-    case '03-di-dong-cu':
-      return '03-di-dong-cu';
-    case '05-loa-karaoke':
-      return '05-loa-karaoke';
-    case '04-de-ban-cu':
-      return '04-de-ban-cu';
-    case '02-chup-tai-cu':
-      return '02-chup-tai-cu';
-    case '01-nhet-tai-cu':
-      return '01-nhet-tai-cu';
-    case '06-hang-newseal':
-      return '06-hang-newseal';
-    default:
-      return 'test';
-  }
-}
 
-function getCategoryByCode(code) {
-  switch (code) {
-    case '03-di-dong-cu':
-      return 'Loa di động cũ';
-    case '05-loa-karaoke':
-      return 'Loa karaoke cũ';
-    case '04-de-ban-cu':
-      return 'Loa để bàn cũ';
-    case '02-chup-tai-cu':
-      return 'Tai nghe chụp tai cũ';
-    case '01-nhet-tai-cu':
-      return 'Tai nghe nhét tai cũ';
-    case '06-hang-newseal':
-      return 'Hàng new seal';
-    default:
-      return '';
-  }
-}
+
 
 function Admin() {
   const [items, setItems] = useState([]);
@@ -103,72 +69,19 @@ function Admin() {
   ];
 
   // fields là mảng sau khi split từ value (bỏ code, page)
-  function pipeStringToProductObject(fields, code) {
-    return {
-      brand: fields[0] || "",
-      name: fields[1] || "",
-      colors: fields[2] ? [fields[2]] : [],
-      pricesBanLe: Number(fields[3]) || 0,
-      pricesBanBuon: Number(fields[4]) || 0,
-      salePrice: Number(fields[5]) || 0,
-      status: fields[6] === "0", // 0: hiển thị, 1: ẩn
-      statusSell: fields[7] ? [fields[7]] : [],
-      images: fields[8] ? getGoogleDriveThumbnail(fields[8].split(";;")[0]) : [],
-      description: fields[9] || "",
-      tableInfo: fields[10] || "",
-      isbestSeller: fields[11] === "0", // 0: true, 1: false
-      highlights: fields[12] || "",
-      videoUrl: fields[13] || "", // Thêm trường videoUrl
-      inventories: fields[14] ? Number(fields[14]) : 0, // lấy tồn kho nếu có
-      category: getCategoryByCode(code), // lấy category từ code
-      // Bổ sung các trường khác nếu cần
-    };
-  }
+  
 
   // Parse pipe string (full) to product object (dựa vào ProductForm)
   function parsePipeString(pipeString) {
     const arr = String(pipeString).split("|");
     // arr[0]: code, arr[1]: page, arr[2...]: fields
-    return {
-      ...pipeStringToProductObject(arr.slice(2), arr[0]),
+    return {...pipeStringToProductObject(arr.slice(2), arr[0]),
       _code: arr[0],
       _page: arr[1],
     };
   }
 
-  // Convert product object to pipe string (reuse from ProductForm)
-  function productToPipeString(product, code, page) {
-    const brand = product.brand || 'null';
-    const name = product.name || 'null';
-    const color = Array.isArray(product.colors) ? product.colors[0] : (product.colors || 'null');
-    const priceBanLe = product.pricesBanLe || 'null';
-    const priceBanBuon = product.pricesBanBuon || 'null';
-    const salePrice = product.salePrice || 'null';
-    const statusSell = Array.isArray(product.statusSell) ? product.statusSell[0] : (product.statusSell || 'null');
-    const isbestSeller = product.isbestSeller ? '0' : '1';
-    const tableInfo = product.tableInfo || 'null';
-    const decription = product.description || 'null';
-    const highlights = product.highlights || 'null';
-    const videoUrl = product.videoUrl || 'null';
-    const images = Array.isArray(product.images) ? product.images.join(';;') : (product.images || 'null');
-    return [
-      code,
-      page,
-      brand,
-      name,
-      color,
-      priceBanLe,
-      priceBanBuon,
-      salePrice,
-      isbestSeller,
-      statusSell,
-      images,
-      decription,
-      highlights,
-      tableInfo,
-      videoUrl
-    ].join('|');
-  }
+  
 
   // Update product in Firestore
   async function handleUpdateProduct(updated, key, code, page) {
@@ -279,7 +192,8 @@ function Admin() {
                 Object.entries(items[page])
                   .filter(([key, value]) => {
                     // Bỏ các hàng có key === 'id' và value === 'page1'
-                    if (key === 'id' && value === 'page1') return false;
+                    if (key === 'id') return false;
+                    
                     // Lọc theo searchText
                     if (searchText.trim() !== "") {
                       const arr = String(value).split("|");
