@@ -459,6 +459,47 @@ function ProductForm({ initialValues = {}, onFinish }) {
               style={{ width: '100%' }}
               placeholder="Nhập link hình ảnh, Enter để thêm"
               tokenSeparators={[',', ' ']}
+              open={false} // ⛔ Tắt dropdown
+              dropdownStyle={{ display: 'none' }} // Cách ẩn cứng nếu cần
+              tagRender={({ label, closable, onClose }) => (
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '2px 8px',
+                    background: '#e6f7ff',
+                    borderRadius: '4px',
+                    margin: '2px',
+                    fontSize: 13,
+                    maxWidth: '100%',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-all',
+                  }}
+                >
+                  <a
+                    href={label}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: '#1890ff',
+                      textDecoration: 'underline',
+                      maxWidth: 'calc(100% - 20px)',
+                      overflowWrap: 'break-word',
+                      wordBreak: 'break-all',
+                    }}
+                  >
+                    {label}
+                  </a>
+                  {closable && (
+                    <span
+                      onClick={onClose}
+                      style={{ marginLeft: 8, cursor: 'pointer', color: '#f5222d' }}
+                    >
+                      ×
+                    </span>
+                  )}
+                </div>
+              )}
             />
           </Form.Item>
         </Col>
