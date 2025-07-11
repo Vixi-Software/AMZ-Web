@@ -2,13 +2,9 @@ import React, { useState } from 'react'
 import { Form, Input, InputNumber, Select, Button, Row, Col, message, Switch } from 'antd'
 import { db } from '../../../utils/firebase'
 import { doc, setDoc } from 'firebase/firestore'
+import { productToPipeString } from '../../../utils/convertFireBase.js'
 
 const { TextArea } = Input
-
-const statusOptions = [
-  { label: 'Hiển thị trên website', value: true },
-  { label: 'Ẩn trên website', value: false }
-]
 
 const productTypeOptions = [
   { label: 'Loa di động cũ', value: 'Loa di động cũ' },
@@ -186,6 +182,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
   }
 
   const upsertField = async (fieldKey, fieldValue, docId) => {
+    console.log(fieldKey +" aa "+fieldValue + " aa" +docId);
     const docRef = doc(db, colectionName, docId)
     await setDoc(docRef, { [fieldKey]: fieldValue }, { merge: true })
   }
@@ -224,7 +221,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
     }
     try {
       const page = await getNextAvailablePage();
-      const pipeString = productToPipeString(result, page)
+      const pipeString = productToPipeString(result,colectionName, page)
       // await addProduct(pipeString)
       // Lưu vào Firestore dạng map: page -> { timestamp: pipeString }
       const timestamp = Math.floor(Date.now() / 1000) // số giây hiện tại
@@ -236,44 +233,6 @@ function ProductForm({ initialValues = {}, onFinish }) {
       console.error('Thêm sản phẩm thất bại:', err)
       message.error('Thêm sản phẩm thất bại!')
     }
-  }
-
-  function productToPipeString(product, page) {
-    const code = colectionName;
-    // const page = 'page1'; // Xóa dòng này, dùng tham số page
-    const brand = product.brand || '';
-    const name = product.name || '';
-    const color = Array.isArray(product.colors) ? product.colors[0] : (product.colors || '');
-    const priceBanLe = product.pricesBanLe || '';
-    const priceBanBuon = product.pricesBanBuon || '';
-    const salePrice = product.salePrice || '';
-    const status = product.status || '';
-    const statusSell = Array.isArray(product.statusSell) ? product.statusSell[0] : (product.statusSell || '');
-    const isbestSeller = product.isbestSeller ? '0' : '1';
-    const tableInfo = product.tableInfo || '';
-    const decription = product.description || '';
-    const highlights = product.highlights || '';
-    const videoUrl = product.videoUrl || '';
-    const images = Array.isArray(product.images) ? product.images.join(';;') : (product.images || '');
-    // Các trường còn lại nếu không có thì để null
-    return [
-      code,
-      page,
-      brand,
-      name,
-      color,
-      priceBanLe,
-      priceBanBuon,
-      salePrice,
-      status ? '0' : '1',
-      statusSell,
-      images,
-      decription,
-      tableInfo,
-      isbestSeller,
-      highlights,
-      videoUrl
-    ].join('|');
   }
 
   // Khi submit form
@@ -521,13 +480,6 @@ function ProductForm({ initialValues = {}, onFinish }) {
 
       {/* Thông số kỹ thuật dạng bảng 2 cột */}
       <Form.Item label="Thông số kỹ thuật">
-        {typeof initialValues.tableInfo === 'string'
-          && initialValues.tableInfo.trim().toLowerCase() !== 'null'
-          && initialValues.tableInfo.trim() !== '' && (
-            <div style={{ marginBottom: 12 }}>
-              <div dangerouslySetInnerHTML={{ __html: initialValues.tableInfo }} />
-            </div>
-        )}
         {renderTableRows()}
         <Button type="primary" onClick={handleAddRow} style={{ marginTop: 8, color: '#1890ff', border: '1px solid #1890ff', backgroundColor: 'white', borderRadius: '8px', fontWeight: '500'}}>
           Thêm hàng
