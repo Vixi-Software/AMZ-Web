@@ -97,18 +97,16 @@ function ProductDetail() {
   // --- SỬA ĐỔI DỮ LIỆU ĐẦU VÀO CHO PHÙ HỢP ---
   const productName = product.name;
   const rawImages = product?.images || product?.image || []
-  const imageArray = rawImages.split(";;")
-  const images = Array.isArray(imageArray)
-    ? imageArray.map(img => getGoogleDriveThumbnail(img))
-    : [getGoogleDriveThumbnail(imageArray)]
+  const imageArray = rawImages.split
+  const images = Array.isArray(rawImages)
+    ? rawImages.map(img => getGoogleDriveThumbnail(img))
+    : [getGoogleDriveThumbnail(rawImages)]
   console.log("Image", images)
   const productColor = product?.colors || product?.color || []
   const priceForSale = Number(product.priceForSale).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   const priceDefault = Number(product.priceDefault).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   const condition = product.condition;
-  
-  
-  
+    
   if (!product) {
     return (
       <div>

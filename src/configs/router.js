@@ -5,7 +5,6 @@ import ProductLayout from "../layouts/product-layout";
 import AdminLayout from "../layouts/admin-layout";
 import BasicLayout from "../layouts/basic-layout";
 import EmptyLayout from "../layouts/empty-layout";
-import NewSeal from "../pages/NewSeal";
 import FixPage from "../pages/Fix";
 import Admin from "../pages/Admin";
 
@@ -31,7 +30,6 @@ const AppRoute = [
     { path: routePath.sale, page: Sale, layout: BasicLayout },
     { path: routePath.login, page: Login, layout: EmptyLayout },
     { path: routePath.fix, page: FixPage, layout: BasicLayout },
-    { path: routePath.newSeal, page: NewSeal, layout: BasicLayout },
 
     // ======= Admin Product Pages =======
     // { path: routePath.admin, page: ProductManagement, layout: AdminLayout, protect: true },

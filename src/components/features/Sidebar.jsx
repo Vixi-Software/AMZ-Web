@@ -110,7 +110,8 @@ export default function Sidebar() {
                   if (item.label === "Khuyến mãi hot") {
                     navigate(routePath.sale);
                   } else if (item.label === "Hàng newseal") {
-                    navigate(routePath.newSeal);
+                    dispatch(setCategory(item.value));
+                    navigate(routePath.product);
                   } else if (item.label === "Bảo hành - sửa chữa") {
                     navigate(routePath.fix);
                   }
