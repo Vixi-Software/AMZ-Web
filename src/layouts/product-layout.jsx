@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import routePath from '../constants/routePath';
 import Breadcum from '../components/features/Breadcum';
 import { useProductService } from '../services/productService'
+import { selectCategory } from '../store/features/filterProduct/filterProductSlice';
 
 const CustomArrow = ({ className, style, onClick, direction }) => (
   <div
@@ -36,7 +37,34 @@ const CustomArrow = ({ className, style, onClick, direction }) => (
 
 function ProductLayout({ children }) {
   const screens = Grid.useBreakpoint()
-  const category = useSelector(state => state.filterProduct.category)
+  const selectedCategory = useSelector(selectCategory);
+  let category = ""
+
+  switch (selectedCategory) {
+    case "01-nhet-tai-cu":
+      category = "Tai nghe nhét tai cũ"
+      break;
+    case "02-chup-tai-cu":
+      category = "Tai nghe chụp tai cũ"
+      break;
+    case "03-di-dong-cu":
+      category = "Loa di động cũ"
+      break;
+    case "04-de-ban-cu":
+      category = "Loa để bàn cũ"
+      break;
+    case "05-loa-karaoke":
+      category = "Loa karaoke cũ"
+      break;
+    case "06-hang-newseal":
+      category = "Hàng newseal"
+      break;
+    default:
+      break;
+  }
+
+
+
   const { getProductsByCategory } = useProductService()
   const defaultBrands = [
     'Acnos',
@@ -58,33 +86,33 @@ function ProductLayout({ children }) {
   ]
   const [brandsByCategory, setBrandsByCategory] = useState(defaultBrands)
 
-  useEffect(() => {
-    if (category) {
-      getProductsByCategory(category).then(products => {
-        const brands = Array.from(
-          new Set(
-            products
-              .map(p => p.brand)
-              .filter(Boolean)
-          )
-        )
-        setBrandsByCategory(brands.length > 0 ? brands : defaultBrands)
-      })
-    } else {
-      setBrandsByCategory(defaultBrands)
-    }
-  }, [category])
+  // useEffect(() => {
+  //   if (category) {
+  //     getProductsByCategory(category).then(products => {
+  //       const brands = Array.from(
+  //         new Set(
+  //           products
+  //             .map(p => p.brand)
+  //             .filter(Boolean)
+  //         )
+  //       )
+  //       setBrandsByCategory(brands.length > 0 ? brands : defaultBrands)
+  //     })
+  //   } else {
+  //     setBrandsByCategory(defaultBrands)
+  //   }
+  // }, [category])
 
   const navigate = useNavigate()
 
   const priceRange1M = [
-  { value: [0, 1000000], label: 'Dưới 1 triệu đồng' },
-  { value: [1000000, 2000000], label: 'Từ 1 triệu - 2 triệu' },
-  { value: [2000000, 3000000], label: 'Từ 2 triệu - 3 triệu' },
-  { value: [3000000, 5000000], label: 'Từ 3 triệu - 5 triệu' },
-  { value: [5000000, 7000000], label: 'Từ 5 triệu - 7 triệu' },
-  { value: [7000000, Infinity], label: 'Trên 7 triệu' }
-];
+    { value: [0, 1000000], label: 'Dưới 1 triệu đồng' },
+    { value: [1000000, 2000000], label: 'Từ 1 triệu - 2 triệu' },
+    { value: [2000000, 3000000], label: 'Từ 2 triệu - 3 triệu' },
+    { value: [3000000, 5000000], label: 'Từ 3 triệu - 5 triệu' },
+    { value: [5000000, 7000000], label: 'Từ 5 triệu - 7 triệu' },
+    { value: [7000000, Infinity], label: 'Trên 7 triệu' }
+  ];
   const priceRangeLoa = [
     { value: [0, 5000000], label: 'Dưới 5 triệu' },
     { value: [5000000, 10000000], label: '5 - 10 triệu' },
@@ -165,9 +193,9 @@ function ProductLayout({ children }) {
               }}
             >
               <div className="carousel-container group mb-4">
-                <Carousel 
-                  autoplay 
-                  arrows 
+                <Carousel
+                  autoplay
+                  arrows
                   prevArrow={<CustomArrow direction="prev" />}
                   nextArrow={<CustomArrow direction="next" />}
                   className="product-carousel"

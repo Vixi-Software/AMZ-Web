@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCategory } from "../../store/features/filterProduct/filterProductSlice";
 import { useNavigate } from "react-router-dom";
 import routePath from "../../constants/routePath";
-import getGoogleDriveThumbnail from '../../utils/googleDriveImage' // Thêm dòng này
 
 const { useBreakpoint } = Grid;
 
@@ -16,7 +15,7 @@ function BannerCustom() {
   const home = useSelector(state => state.homeSetting.homeSettings);
 
   const bannerUrl = home && home[0]?.bannerAllLink
-    ? getGoogleDriveThumbnail(home[0].bannerAllLink)
+    ? home[0].bannerAllLink
     : bannerCutom;
 
   // const isMobile = screens.xs;
