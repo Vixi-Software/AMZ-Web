@@ -351,7 +351,7 @@ function Admin() {
             width="60vw"
             footer={null}
             onCancel={() => setEditModal({ visible: false, key: '', value: '', page: '', code: '' })}
-            destroyOnClose
+            destroyOnHidden
           >
             <ProductForm
               initialValues={editModal.value}
