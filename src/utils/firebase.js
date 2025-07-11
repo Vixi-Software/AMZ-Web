@@ -1,9 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {
-  initializeFirestore,
-  persistentLocalCache,
-  persistentSingleTabManager
-} from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
@@ -17,14 +13,13 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-// ✅ Cách mới để bật cache offline
+// Bật offline persistence
 const db = initializeFirestore(app, {
   localCache: persistentLocalCache({
-    tabManager: persistentSingleTabManager()
-  })
+    tabManager: persistentMultipleTabManager(),
+  }),
 });
-
-const auth = getAuth(app);
 
 export { db, auth };
