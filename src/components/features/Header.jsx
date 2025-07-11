@@ -178,32 +178,32 @@ function Header() {
     {
       icon: <img src={images['item11.png']} alt="" width={30} height={30} />,
       label: "Tai nghe nhét tai cũ",
-      value: "tai nghe",
+      value: "Tai nghe nhét tai cũ",
     },
     {
       icon: <img src={images['item10.png']} alt="" width={30} height={30} />,
       label: "Tai nghe chụp tai cũ",
-      value: "Tai nghe cắm dây",
+      value: "Tai nghe chụp tai cũ",
     },
     {
       icon: <img src={images['item9.png']} alt="" width={30} height={30} />,
       label: "Loa di động cũ",
-      value: "Loa di động",
+      value: "Loa di động cũ",
     },
     {
       icon: <img src={images['item8.png']} alt="" width={30} height={30} />,
       label: "Loa để bàn cũ",
-      value: "Loa để bàn",
+      value: "Loa để bàn cũ",
     },
     {
       icon: <img src={images['item7.png']} alt="" width={30} height={30} />,
       label: "Loa karaoke cũ",
-      value: "Loa",
+      value: "Loa karaoke cũ",
     },
     {
       icon: <img src={images['item6.png']} alt="" width={30} height={30} />,
       label: "Thu cũ đổi mới",
-      value: "thu-cu-doi-moi",
+      value: "Thu cũ đổi mới",
     },
   ]
 
@@ -211,6 +211,7 @@ function Header() {
     {
       icon: <img src={images['item5.png']} alt="" width={30} height={30} />,
       label: "Hàng newseal",
+      value: "Hàng newseal"
     },
     {
       icon: <img src={images['item4.png']} alt="" width={30} height={30} />,
@@ -313,10 +314,10 @@ function Header() {
                   className="w-full flex items-center gap-3 text-[15px] text-gray-800 rounded py-1 cursor-pointer transition-all duration-200 group hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 hover:scale-[1.03] hover:shadow-md"
                   onClick={() => {
                     setOpen(false)
-                    if (item.value === "thu-cu-doi-moi") {
+                    if (item.value === "Thu cũ đổi mới") {
                       navigate(routePath.exchange)
                     } else {
-                      dispatch(setCategory(item.value))
+                      dispatch(setCategory(item.value))                      
                       navigate(routePath.product)
                     }
                   }}

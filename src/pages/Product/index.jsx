@@ -31,7 +31,7 @@ function Product() {
   const allProductsArray = Object.values(allProductsState).flat();
   const category = useSelector(selectCategory);
   const filteredProduct = allProductsArray.filter(
-    (product) => product.collection === category
+    (product) => product.category === category
   );
   const brands = useSelector(selectBrands);
   const priceRanges = useSelector(selectPriceRanges);

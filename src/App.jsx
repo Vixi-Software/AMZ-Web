@@ -12,7 +12,7 @@ function AppContent() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const isLoading = useSelector((state) => state.loading.isLoading);
-  const { getAllDocsWithSubcollections } = useFirestore(db, 'home');
+  const { getAllDocsWithSubcollections } = useFirestore(db);
   const dispatch = useDispatch();
   const allProductsState = useSelector((state) => state.allProducts);
 
