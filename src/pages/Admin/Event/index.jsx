@@ -164,7 +164,7 @@ function EventManagement() {
         onCancel={closeModal}
         onOk={handleOk}
         okText={modal.type === 'add' ? 'Thêm' : 'Lưu'}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical" initialValues={modal.record || {}}>
           <Form.Item

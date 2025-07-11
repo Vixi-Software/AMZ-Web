@@ -27,10 +27,8 @@ function AppContent() {
 
 
   useEffect(() => {
-    console.log("fetching")
     const fetchData = async () => {
       const allProducts = await getAllDocsWithSubcollections(collections);
-      // console.log('All Products:', allProducts);
       dispatch(deleteAllProducts());
       allProducts.forEach((product) => {
         dispatch(importProductByType(product.collection, {...product}));
