@@ -2,7 +2,7 @@ import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase.js";
 
 // Đổi tên collection cho loa karaoke
-const COLLECTION_NAME = "005-loa-karaoke";
+const COLLECTION_NAME = "05-loa-karaoke";
 
 // Đơn giản hóa cache cho loa karaoke
 const cache = {
@@ -11,7 +11,7 @@ const cache = {
     lastFetch: null
 };
 
-const CACHE_KEY = '005-loa-karaoke';
+const CACHE_KEY = '05-loa-karaoke';
 
 function saveCacheToLocalStorage() {
     try {

@@ -2,7 +2,7 @@ import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase.js";
 
 // Đổi tên collection cho loa di động
-const COLLECTION_NAME = "003-di-dong-cu";
+const COLLECTION_NAME = "03-di-dong-cu";
 
 // Đơn giản hóa cache cho loa di động
 const cache = {
@@ -11,7 +11,7 @@ const cache = {
   lastFetch: null
 };
 
-const CACHE_KEY = '003-di-dong-cu';
+const CACHE_KEY = '03-di-dong-cu';
 
 function saveCacheToLocalStorage() {
   try {
