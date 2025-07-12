@@ -20,12 +20,12 @@ function SideBarProduct({
   const filteredProduct = allProductsArray.filter(
     (product) => product.collection === category
   );
-  const allBrands = [
-    ...new Set(filteredProduct.map((product) => product.brand).filter(Boolean))
-  ];
+  // const brands = [
+  //   ...new Set(filteredProduct.map((product) => product.brand).filter(Boolean))
+  // ];
  
 
-  const memoBrands = useMemo(() => allBrands, [allBrands]);
+  const memoBrands = useMemo(() => brands, [brands]);
 
   const handleBrandClick = (brand) => {
     if (selectedBrands.includes(brand)) {

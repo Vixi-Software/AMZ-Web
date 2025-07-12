@@ -11,6 +11,7 @@ import routePath from '../constants/routePath';
 import Breadcum from '../components/features/Breadcum';
 import { useProductService } from '../services/productService'
 import { selectCategory } from '../store/features/filterProduct/filterProductSlice';
+import { getCollectionByCategory } from '../utils/getKeyFirebase';
 
 const CustomArrow = ({ className, style, onClick, direction }) => (
   <div
@@ -37,33 +38,9 @@ const CustomArrow = ({ className, style, onClick, direction }) => (
 
 function ProductLayout({ children }) {
   const screens = Grid.useBreakpoint()
-  const selectedCategory = useSelector(selectCategory);
-  let category = ""
-
-  switch (selectedCategory) {
-    case "01-nhet-tai-cu":
-      category = "Tai nghe nhét tai cũ"
-      break;
-    case "02-chup-tai-cu":
-      category = "Tai nghe chụp tai cũ"
-      break;
-    case "03-di-dong-cu":
-      category = "Loa di động cũ"
-      break;
-    case "04-de-ban-cu":
-      category = "Loa để bàn cũ"
-      break;
-    case "05-loa-karaoke":
-      category = "Loa karaoke cũ"
-      break;
-    case "06-hang-newseal":
-      category = "Hàng newseal"
-      break;
-    default:
-      break;
-  }
-
-
+  const category = useSelector(selectCategory);
+  const allProductsState = useSelector((state) => state.allProducts[getCollectionByCategory(category)]);
+  const allProductsArray = Object.values(allProductsState).flat();
 
   const { getProductsByCategory } = useProductService()
   const defaultBrands = [
@@ -84,24 +61,24 @@ function ProductLayout({ children }) {
     'Sony',
     'Ultimate Ears'
   ]
-  const [brandsByCategory, setBrandsByCategory] = useState(defaultBrands)
+  const [brands, setBrands] = useState(defaultBrands)
 
-  // useEffect(() => {
-  //   if (category) {
-  //     getProductsByCategory(category).then(products => {
-  //       const brands = Array.from(
-  //         new Set(
-  //           products
-  //             .map(p => p.brand)
-  //             .filter(Boolean)
-  //         )
-  //       )
-  //       setBrandsByCategory(brands.length > 0 ? brands : defaultBrands)
-  //     })
-  //   } else {
-  //     setBrandsByCategory(defaultBrands)
-  //   }
-  // }, [category])
+  useEffect(() => {
+    if (category) {
+        const filteredBrands = Array.from(
+          new Set(
+            allProductsArray
+              .map(p => p.brand)
+              .filter(Boolean)
+          )
+        )
+        console.log('filteredBrands:',filteredBrands)
+        setBrands(filteredBrands.length > 0 ? filteredBrands : defaultBrands)      
+
+    } else {
+      setBrands(defaultBrands)
+    }
+  }, [category])
 
   const navigate = useNavigate()
 
@@ -253,7 +230,7 @@ function ProductLayout({ children }) {
             {screens.sm && (
               <div className={`bg-white rounded-lg p-4 shadow-lg transition-shadow duration-300 hover:shadow-2xl`}>
                 <SideBarProduct
-                  brands={brandsByCategory}
+                  brands={brands}
                   priceRanges={getPriceRangesByCategory()}
                   needs={[
                     { value: 'chongon', label: 'Chống ồn' },
