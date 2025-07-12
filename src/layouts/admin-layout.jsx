@@ -69,7 +69,7 @@ function AdminLayout({ children }) {
   if (!user) return null; // Trả về null nếu không có user
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ height: '100vh', overflow: 'hidden' }}>
       <Sider
         collapsible
         collapsed={collapsed}
@@ -78,6 +78,12 @@ function AdminLayout({ children }) {
         style={{
           background: '#fff',
           borderRight: '1px solid #f0f0f0',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 1000,
+          overflow: 'auto',
         }}
       >
         <div
@@ -104,8 +110,22 @@ function AdminLayout({ children }) {
           defaultOpenKeys={['sub-product', 'sub-post', 'sub-config']} // Thêm dòng này để mở mặc định các submenu
         />
       </Sider>
-      <Layout>
-        <Header style={{ padding: '0 24px', background: colorBgContainer, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', minHeight: 64 }}>
+      <Layout style={{ marginLeft: collapsed ? 80 : 260, transition: 'margin-left 0.2s' }}>
+        <Header style={{ 
+          padding: '0 24px', 
+          background: colorBgContainer, 
+          display: 'flex', 
+          justifyContent: 'flex-end', 
+          alignItems: 'center', 
+          minHeight: 64,
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          left: collapsed ? 80 : 260,
+          zIndex: 999,
+          borderBottom: '1px solid #f0f0f0',
+          transition: 'left 0.2s'
+        }}>
           {user && (
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Text style={{ marginRight: 12 }}>{user.email}</Text>
@@ -116,11 +136,16 @@ function AdminLayout({ children }) {
             </div>
           )}
         </Header>
-        <Content style={{ margin: '16px' }}>
+        <Content style={{ 
+          marginTop: 64, 
+          height: 'calc(100vh - 64px)',
+          overflow: 'auto',
+          padding: '16px'
+        }}>
           <div
             style={{
               padding: 24,
-              minHeight: 360,
+              minHeight: 'calc(100vh - 128px)',
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
