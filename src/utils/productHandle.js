@@ -15,6 +15,7 @@ export const handleProduct = (data) => {
     'images',
     'description',
     'features',
+    'tableInfo',
     'youtubeUrl',
     'category',
   ];

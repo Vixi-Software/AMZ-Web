@@ -33,7 +33,6 @@ function Product() {
   const filteredProduct = allProductsArray.filter(
     (product) => product.category === category
   );
-  console.log("prd", filteredProduct)
   const brands = useSelector(selectBrands);
   const priceRanges = useSelector(selectPriceRanges);
   const [loading, setLoading] = useState(false);
@@ -48,7 +47,6 @@ function Product() {
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
-      // console.log(brands, priceRanges)
       const filtered = filteredProduct
         // Filter by brand
         .filter(product => {

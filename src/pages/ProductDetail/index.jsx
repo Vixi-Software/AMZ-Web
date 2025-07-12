@@ -8,6 +8,7 @@ import { setCategory, resetFilter } from '../../store/features/filterProduct/fil
 import ProductCard from '../../components/features/ProductCard'
 import { useProductService } from '../../services/productService'
 import { usePostService } from '../../services/postService'
+import { parseStringToTableInfo } from '../../utils/tableInfoParse'
 
 function ProductDetail() {
   const product = useSelector(state => state.product.product)
@@ -435,7 +436,7 @@ function ProductDetail() {
               />
             ) : (
               (() => {
-                const rows = parseTableInfo(product.tableInfo)
+                const rows = parseStringToTableInfo(product.tableInfo)
                 if (
                   !rows.length ||
                   (rows.length === 1 && !rows[0].key && !rows[0].value)
@@ -551,24 +552,5 @@ function ProductDetail() {
   )
 }
 
-function parseTableInfo(html) {
-  if (!html) return [{ key: '', value: '' }]
-  const rowRegex = /<tr.*?>(.*?)<\/tr>/g
-  const cellRegex = /<td.*?>(.*?)<\/td>/g
-  const rows = []
-  let rowMatch
-  while ((rowMatch = rowRegex.exec(html))) {
-    const cells = []
-    let cellMatch
-    while ((cellMatch = cellRegex.exec(rowMatch[1]))) {
-      const text = cellMatch[1].replace(/<.*?>/g, '').trim()
-      cells.push(text)
-    }
-    if (cells.length === 2) {
-      rows.push({ key: cells[0], value: cells[1] })
-    }
-  }
-  return rows.length ? rows : [{ key: '', value: '' }]
-}
 
 export default ProductDetail
