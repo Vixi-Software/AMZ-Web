@@ -2,7 +2,7 @@ import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase.js";
 
 // Đổi tên collection cho newseal
-const COLLECTION_NAME = "006-hang-newseal";
+const COLLECTION_NAME = "06-hang-newseal";
 
 // Đơn giản hóa cache cho newseal
 const cache = {
@@ -11,7 +11,7 @@ const cache = {
   lastFetch: null
 };
 
-const CACHE_KEY = '006-hang-newseal';
+const CACHE_KEY = '06-hang-newseal';
 
 function saveCacheToLocalStorage() {
   try {

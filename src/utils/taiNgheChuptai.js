@@ -2,7 +2,7 @@ import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase.js";
 
 // Đổi tên collection cho tai nghe chụp tai
-const COLLECTION_NAME = "002-chup-tai-cu";
+const COLLECTION_NAME = "02-chup-tai-cu";
 
 // Đơn giản hóa cache cho chụp tai
 const cache = {
@@ -11,7 +11,7 @@ const cache = {
   lastFetch: null
 };
 
-const CACHE_KEY = '002-chup-tai-cu';
+const CACHE_KEY = '02-chup-tai-cu';
 
 function saveCacheToLocalStorage() {
   try {
