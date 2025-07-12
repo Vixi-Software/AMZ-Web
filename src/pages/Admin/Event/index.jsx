@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import CTable from '../../../components/ui/table'
 import { Alert, Modal, Form, Input, DatePicker, Button, Popconfirm, message } from 'antd'
 import moment from 'moment'
-import { db } from '../../../utils/firebase'
-import { useFirestore } from '../../../hooks/useFirestore'
+import eventService from '../../../services/eventService'
 
 const columns = [
   {
@@ -44,13 +43,6 @@ function EventManagement() {
   const [modal, setModal] = useState({ visible: false, type: '', record: null })
   const [form] = Form.useForm()
 
-  const {
-    getAllDocs,
-    addDocData,
-    updateDocData,
-    deleteDocData,
-  } = useFirestore(db, "eventAMZ")
-
   // Mở modal Thêm/Sửa
   const openModal = (type, record = null) => {
     setModal({ visible: true, type, record })
@@ -68,11 +60,16 @@ function EventManagement() {
   // Đóng modal
   const closeModal = () => setModal({ visible: false, type: '', record: null })
 
-  // Lấy danh sách sự kiện từ Firestore
+  // Lấy danh sách sự kiện từ service
   React.useEffect(() => {
     const fetchEvents = async () => {
-      const events = await getAllDocs()
-      setDataSource(events)
+      try {
+        const events = await eventService.getAllEvents()
+        setDataSource(events)
+      } catch (error) {
+        message.error('Lỗi khi tải danh sách sự kiện!')
+        console.error(error)
+      }
     }
     fetchEvents()
   }, [])
@@ -80,36 +77,36 @@ function EventManagement() {
   // Xử lý submit form
   const handleOk = () => {
     form.validateFields().then(async values => {
-      const data = {
-        ...values,
-        date: values.date.format('YYYY-MM-DD'),
-        endDate: values.endDate ? values.endDate.format('YYYY-MM-DD') : null,
+      try {
+        if (modal.type === 'add') {
+          const newEvent = await eventService.createEvent(values)
+          setDataSource([...dataSource, newEvent])
+          message.success('Đã thêm sự kiện!')
+        } else if (modal.type === 'edit') {
+          const updatedEvent = await eventService.updateEvent(modal.record.id, values)
+          setDataSource(dataSource.map(item =>
+            item.id === modal.record.id ? updatedEvent : item
+          ))
+          message.success('Đã cập nhật sự kiện!')
+        }
+        closeModal()
+      } catch (error) {
+        message.error('Có lỗi xảy ra!')
+        console.error(error)
       }
-      if (modal.type === 'add') {
-        const id = await addDocData(data)
-        setDataSource([
-          ...dataSource,
-          { ...data, id },
-        ])
-        message.success('Đã thêm sự kiện!')
-      } else if (modal.type === 'edit') {
-        await updateDocData(modal.record.id, data)
-        setDataSource(dataSource.map(item =>
-          item.id === modal.record.id
-            ? { ...item, ...data }
-            : item
-        ))
-        message.success('Đã cập nhật sự kiện!')
-      }
-      closeModal()
     })
   }
 
   // Xử lý xóa
   const handleDelete = async (record) => {
-    await deleteDocData(record.id)
-    setDataSource(dataSource.filter(item => item.id !== record.id))
-    message.success('Đã xóa sự kiện!')
+    try {
+      await eventService.deleteEvent(record.id)
+      setDataSource(dataSource.filter(item => item.id !== record.id))
+      message.success('Đã xóa sự kiện!')
+    } catch (error) {
+      message.error('Lỗi khi xóa sự kiện!')
+      console.error(error)
+    }
   }
 
   // Thêm cột thao tác
@@ -120,10 +117,11 @@ function EventManagement() {
       key: 'actions',
       render: (_, record) => (
         <>
-          <Button size="small" onClick={() => openModal('edit', record)} style={{ marginRight: 8 }}>
+          <Button key={`edit-${record.id}`} size="small" onClick={() => openModal('edit', record)} style={{ marginRight: 8 }}>
             Sửa
           </Button>
           <Popconfirm
+            key={`delete-${record.id}`}
             title="Bạn chắc chắn muốn xóa?"
             onConfirm={() => handleDelete(record)}
             okText="Xóa"

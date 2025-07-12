@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Table, Button, Modal, Form, Input, Select, DatePicker, message, Space, Popconfirm, Tag } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
-import { db } from '../../../utils/firebase'
-import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from 'firebase/firestore'
+import React, { useState } from 'react'
+import CTable from '../../../components/ui/table'
+import { Alert, Modal, Form, Input, Select, Button, Popconfirm, message, Tag } from 'antd'
+import warrantyService from '../../../services/warrantyService'
+import DataCacheExample from '../../../components/examples/DataCacheExample'
 
 const { Option } = Select
 const { TextArea } = Input
@@ -21,251 +21,217 @@ const priorityOptions = [
   { label: 'Khẩn cấp', value: 'urgent', color: 'red' },
 ]
 
+const columns = [
+  {
+    title: 'Mã bảo hành',
+    dataIndex: 'warrantyCode',
+    enableSort: true,
+    enableFilter: true,
+    filterType: 'text',
+    render: (text) => <strong>{text}</strong>
+  },
+  {
+    title: 'Khách hàng',
+    dataIndex: 'customerName',
+    enableSort: true,
+    enableFilter: true,
+    filterType: 'text',
+  },
+  {
+    title: 'Sản phẩm',
+    dataIndex: 'productName',
+    enableSort: true,
+    enableFilter: true,
+    filterType: 'text',
+  },
+  {
+    title: 'Trạng thái',
+    dataIndex: 'status',
+    enableFilter: true,
+    filterType: 'select',
+    filterOptions: statusOptions.map(s => ({ text: s.label, value: s.value })),
+    render: (status) => {
+      const statusConfig = statusOptions.find(s => s.value === status)
+      return <Tag color={statusConfig?.color}>{statusConfig?.label}</Tag>
+    }
+  },
+  {
+    title: 'Độ ưu tiên',
+    dataIndex: 'priority',
+    enableFilter: true,
+    filterType: 'select',
+    filterOptions: priorityOptions.map(p => ({ text: p.label, value: p.value })),
+    render: (priority) => {
+      const priorityConfig = priorityOptions.find(p => p.value === priority)
+      return <Tag color={priorityConfig?.color}>{priorityConfig?.label}</Tag>
+    }
+  },
+]
+
 function WarrantyManagement() {
-  const [warranties, setWarranties] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [modalVisible, setModalVisible] = useState(false)
-  const [editingWarranty, setEditingWarranty] = useState(null)
+  const [dataSource, setDataSource] = useState([])
+  const [modal, setModal] = useState({ visible: false, type: '', record: null })
   const [form] = Form.useForm()
 
-  // Fetch warranties from Firestore
-  useEffect(() => {
-    const warrantyRef = collection(db, 'warranties')
-    const q = query(warrantyRef, orderBy('createdAt', 'desc'))
-    
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const warrantyData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        key: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate(),
-        updatedAt: doc.data().updatedAt?.toDate(),
-      }))
-      setWarranties(warrantyData)
-      setLoading(false)
-    })
+  // Mở modal Thêm/Sửa
+  const openModal = (type, record = null) => {
+    setModal({ visible: true, type, record })
+    if (type === 'edit' && record) {
+      form.setFieldsValue(record)
+    } else {
+      form.resetFields()
+    }
+  }
 
-    return () => unsubscribe()
+  // Đóng modal
+  const closeModal = () => setModal({ visible: false, type: '', record: null })
+
+  // Lấy danh sách bảo hành từ service
+  React.useEffect(() => {
+    const fetchWarranties = async () => {
+      try {
+        const warranties = await warrantyService.getAllWarranties()
+        setDataSource(warranties)
+      } catch (error) {
+        message.error('Lỗi khi tải danh sách bảo hành!')
+        console.error(error)
+      }
+    }
+    fetchWarranties()
   }, [])
 
-  const columns = [
-    {
-      title: 'Mã bảo hành',
-      dataIndex: 'warrantyCode',
-      key: 'warrantyCode',
-      width: 150,
-      render: (text) => <strong>{text}</strong>
-    },
-    {
-      title: 'Khách hàng',
-      dataIndex: 'customerName',
-      key: 'customerName',
-      width: 150,
-    },
-    {
-      title: 'Sản phẩm',
-      dataIndex: 'productName',
-      key: 'productName',
-      width: 200,
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      width: 120,
-      render: (status) => {
-        const statusConfig = statusOptions.find(s => s.value === status)
-        return <Tag color={statusConfig?.color}>{statusConfig?.label}</Tag>
+  // Xử lý submit form
+  const handleOk = () => {
+    form.validateFields().then(async values => {
+      try {
+        // Validate dữ liệu
+        const validationErrors = warrantyService.validateWarrantyData(values)
+        if (validationErrors.length > 0) {
+          message.error(validationErrors[0])
+          return
+        }
+
+        if (modal.type === 'add') {
+          const newWarranty = await warrantyService.createWarranty(values)
+          setDataSource([...dataSource, newWarranty])
+          message.success('Đã thêm bảo hành!')
+        } else if (modal.type === 'edit') {
+          const updatedWarranty = await warrantyService.updateWarranty(modal.record.id, values)
+          setDataSource(dataSource.map(item =>
+            item.id === modal.record.id ? updatedWarranty : item
+          ))
+          message.success('Đã cập nhật bảo hành!')
+        }
+        closeModal()
+      } catch (error) {
+        message.error('Có lỗi xảy ra!')
+        console.error(error)
       }
-    },
-    {
-      title: 'Độ ưu tiên',
-      dataIndex: 'priority',
-      key: 'priority',
-      width: 120,
-      render: (priority) => {
-        const priorityConfig = priorityOptions.find(p => p.value === priority)
-        return <Tag color={priorityConfig?.color}>{priorityConfig?.label}</Tag>
-      }
-    },
-    {
-      title: 'Ngày tạo',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      width: 120,
-      render: (date) => date ? date.toLocaleDateString('vi-VN') : '-'
-    },
+    })
+  }
+
+  // Xử lý xóa
+  const handleDelete = async (record) => {
+    try {
+      await warrantyService.deleteWarranty(record.id)
+      setDataSource(dataSource.filter(item => item.id !== record.id))
+      message.success('Đã xóa bảo hành!')
+    } catch (error) {
+      message.error('Lỗi khi xóa bảo hành!')
+      console.error(error)
+    }
+  }
+
+  // Thêm cột thao tác
+  const tableColumns = [
+    ...columns,
     {
       title: 'Thao tác',
       key: 'actions',
-      width: 150,
       render: (_, record) => (
-        <Space>
-          <Button
-            icon={<EyeOutlined />}
-            size="small"
-            onClick={() => handleView(record)}
-          />
-          <Button
-            icon={<EditOutlined />}
-            size="small"
-            type="primary"
-            onClick={() => handleEdit(record)}
-          />
+        <>
+          <Button key={`edit-${record.id}`} size="small" onClick={() => openModal('edit', record)} style={{ marginRight: 8 }}>
+            Sửa
+          </Button>
           <Popconfirm
-            title="Bạn có chắc chắn muốn xóa?"
-            onConfirm={() => handleDelete(record.id)}
-            okText="Có"
-            cancelText="Không"
+            key={`delete-${record.id}`}
+            title="Bạn chắc chắn muốn xóa?"
+            onConfirm={() => handleDelete(record)}
+            okText="Xóa"
+            cancelText="Hủy"
           >
-            <Button icon={<DeleteOutlined />} size="small" danger />
+            <Button size="small" danger>
+              Xóa
+            </Button>
           </Popconfirm>
-        </Space>
+        </>
       ),
     },
   ]
 
-  const handleAdd = () => {
-    setEditingWarranty(null)
-    form.resetFields()
-    setModalVisible(true)
-  }
-
-  const handleEdit = (warranty) => {
-    setEditingWarranty(warranty)
-    form.setFieldsValue({
-      ...warranty,
-      createdAt: warranty.createdAt,
-    })
-    setModalVisible(true)
-  }
-
-  const handleView = (warranty) => {
-    Modal.info({
-      title: `Chi tiết bảo hành - ${warranty.warrantyCode}`,
-      width: 600,
-      content: (
-        <div>
-          <p><strong>Khách hàng:</strong> {warranty.customerName}</p>
-          <p><strong>Số điện thoại:</strong> {warranty.customerPhone}</p>
-          <p><strong>Email:</strong> {warranty.customerEmail}</p>
-          <p><strong>Sản phẩm:</strong> {warranty.productName}</p>
-          <p><strong>Mô tả vấn đề:</strong> {warranty.issueDescription}</p>
-          <p><strong>Ghi chú:</strong> {warranty.notes || 'Không có'}</p>
-          <p><strong>Trạng thái:</strong> {statusOptions.find(s => s.value === warranty.status)?.label}</p>
-          <p><strong>Độ ưu tiên:</strong> {priorityOptions.find(p => p.value === warranty.priority)?.label}</p>
-        </div>
-      ),
-    })
-  }
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteDoc(doc(db, 'warranties', id))
-      message.success('Xóa bảo hành thành công!')
-    } catch (error) {
-      console.error('Error deleting warranty:', error)
-      message.error('Có lỗi xảy ra khi xóa!')
-    }
-  }
-
-  const handleSubmit = async (values) => {
-    try {
-      setLoading(true)
-      const warrantyData = {
-        ...values,
-        warrantyCode: values.warrantyCode || `WR${Date.now()}`,
-        updatedAt: new Date(),
-      }
-
-      if (editingWarranty) {
-        await updateDoc(doc(db, 'warranties', editingWarranty.id), warrantyData)
-        message.success('Cập nhật bảo hành thành công!')
-      } else {
-        await addDoc(collection(db, 'warranties'), {
-          ...warrantyData,
-          createdAt: new Date(),
-        })
-        message.success('Thêm bảo hành thành công!')
-      }
-
-      setModalVisible(false)
-      form.resetFields()
-    } catch (error) {
-      console.error('Error saving warranty:', error)
-      message.error('Có lỗi xảy ra!')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
-    <div style={{ padding: '24px' }}>
-      <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Quản lý bảo hành</h2>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Thêm bảo hành
-        </Button>
-      </div>
-
-      <Table
-        columns={columns}
-        dataSource={warranties}
-        loading={loading}
-        scroll={{ x: 1200 }}
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} mục`,
-        }}
+    <div>
+      <Button
+        type="primary"
+        style={{ marginBottom: 16 }}
+        onClick={() => openModal('add')}
+      >
+        Thêm bảo hành
+      </Button>
+      <CTable
+        columns={tableColumns}
+        dataSource={dataSource}
+        rowKey="id"
       />
-
       <Modal
-        title={editingWarranty ? 'Chỉnh sửa bảo hành' : 'Thêm bảo hành mới'}
-        open={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={null}
+        open={modal.visible}
+        title={modal.type === 'add' ? 'Thêm bảo hành' : 'Sửa bảo hành'}
+        onCancel={closeModal}
+        onOk={handleOk}
+        okText={modal.type === 'add' ? 'Thêm' : 'Lưu'}
+        destroyOnHidden
         width={800}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          initialValues={{
-            status: 'pending',
-            priority: 'normal',
-          }}
-        >
+        <Form form={form} layout="vertical" initialValues={{ status: 'pending', priority: 'normal' }}>
           <Form.Item
-            name="warrantyCode"
             label="Mã bảo hành"
-            rules={[{ required: true, message: 'Vui lòng nhập mã bảo hành!' }]}
+            name="warrantyCode"
+            rules={[{ required: true, message: 'Nhập mã bảo hành' }]}
           >
-            <Input placeholder="Nhập mã bảo hành" />
+            <Input 
+              placeholder="Nhập mã bảo hành hoặc để trống để tự động tạo"
+              addonAfter={
+                <Button 
+                  size="small" 
+                  onClick={() => form.setFieldsValue({ warrantyCode: warrantyService.generateWarrantyCode() })}
+                >
+                  Tự động
+                </Button>
+              }
+            />
           </Form.Item>
 
           <Form.Item
-            name="customerName"
             label="Tên khách hàng"
-            rules={[{ required: true, message: 'Vui lòng nhập tên khách hàng!' }]}
+            name="customerName"
+            rules={[{ required: true, message: 'Nhập tên khách hàng' }]}
           >
             <Input placeholder="Nhập tên khách hàng" />
           </Form.Item>
 
           <Form.Item
-            name="customerPhone"
             label="Số điện thoại"
-            rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+            name="customerPhone"
+            rules={[{ required: true, message: 'Nhập số điện thoại' }]}
           >
             <Input placeholder="Nhập số điện thoại" />
           </Form.Item>
 
           <Form.Item
-            name="customerEmail"
             label="Email"
+            name="customerEmail"
             rules={[
-              { required: true, message: 'Vui lòng nhập email!' },
+              { required: true, message: 'Nhập email' },
               { type: 'email', message: 'Email không hợp lệ!' }
             ]}
           >
@@ -273,25 +239,25 @@ function WarrantyManagement() {
           </Form.Item>
 
           <Form.Item
-            name="productName"
             label="Tên sản phẩm"
-            rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm!' }]}
+            name="productName"
+            rules={[{ required: true, message: 'Nhập tên sản phẩm' }]}
           >
             <Input placeholder="Nhập tên sản phẩm" />
           </Form.Item>
 
           <Form.Item
-            name="issueDescription"
             label="Mô tả vấn đề"
-            rules={[{ required: true, message: 'Vui lòng mô tả vấn đề!' }]}
+            name="issueDescription"
+            rules={[{ required: true, message: 'Mô tả vấn đề' }]}
           >
             <TextArea rows={4} placeholder="Mô tả chi tiết vấn đề của sản phẩm" />
           </Form.Item>
 
           <Form.Item
-            name="status"
             label="Trạng thái"
-            rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
+            name="status"
+            rules={[{ required: true, message: 'Chọn trạng thái' }]}
           >
             <Select placeholder="Chọn trạng thái">
               {statusOptions.map(option => (
@@ -303,9 +269,9 @@ function WarrantyManagement() {
           </Form.Item>
 
           <Form.Item
-            name="priority"
             label="Độ ưu tiên"
-            rules={[{ required: true, message: 'Vui lòng chọn độ ưu tiên!' }]}
+            name="priority"
+            rules={[{ required: true, message: 'Chọn độ ưu tiên' }]}
           >
             <Select placeholder="Chọn độ ưu tiên">
               {priorityOptions.map(option => (
@@ -316,22 +282,13 @@ function WarrantyManagement() {
             </Select>
           </Form.Item>
 
-          <Form.Item name="notes" label="Ghi chú">
+          <Form.Item label="Ghi chú" name="notes">
             <TextArea rows={3} placeholder="Ghi chú thêm (không bắt buộc)" />
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-            <Space>
-              <Button onClick={() => setModalVisible(false)}>
-                Hủy
-              </Button>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                {editingWarranty ? 'Cập nhật' : 'Thêm mới'}
-              </Button>
-            </Space>
           </Form.Item>
         </Form>
       </Modal>
+
+      {/* <DataCacheExample /> */}
     </div>
   )
 }
