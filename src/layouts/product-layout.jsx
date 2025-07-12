@@ -9,9 +9,9 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import routePath from '../constants/routePath';
 import Breadcum from '../components/features/Breadcum';
-import { useProductService } from '../services/productService'
 import { selectCategory } from '../store/features/filterProduct/filterProductSlice';
 import { getCollectionByCategory } from '../utils/getKeyFirebase';
+import FloatButtonPage from '../components/features/FloatButtonPage';
 
 const CustomArrow = ({ className, style, onClick, direction }) => (
   <div
@@ -64,14 +64,14 @@ function ProductLayout({ children }) {
 
   useEffect(() => {
     if (category) {
-        const filteredBrands = Array.from(
-          new Set(
-            allProductsArray
-              .map(p => p.brand)
-              .filter(Boolean)
-          )
+      const filteredBrands = Array.from(
+        new Set(
+          allProductsArray
+            .map(p => p.brand)
+            .filter(Boolean)
         )
-        setBrands(filteredBrands.length > 0 ? filteredBrands : defaultBrands)      
+      )
+      setBrands(filteredBrands.length > 0 ? filteredBrands : defaultBrands)
 
     } else {
       setBrands(defaultBrands)
@@ -251,6 +251,7 @@ function ProductLayout({ children }) {
           </Col>
         </Row>
       </div>
+      <FloatButtonPage />
     </div>
   )
 }

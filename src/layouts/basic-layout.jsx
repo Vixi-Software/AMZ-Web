@@ -1,6 +1,7 @@
 import React from 'react'
 import Header from '../components/features/Header'
 import Footer from '../components/features/Footer'
+import FloatButtonPage from '../components/features/FloatButtonPage'
 
 function BasicLayout({ children }) {
   return (
@@ -10,6 +11,7 @@ function BasicLayout({ children }) {
         {children}
         <Footer />
       </div>
+      <FloatButtonPage />
     </div>
   )
 }
