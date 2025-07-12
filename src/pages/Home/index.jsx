@@ -63,6 +63,21 @@ function Home() {
     fetchProducts();
   }, []);
 
+
+  const combinedCategory = (category) => {
+    switch (category) {
+      case "Tai nghe nhét tai cũ":
+      case "Tai nghe chụp tai cũ":
+        return "Tai nghe"
+      case "Loa di động cũ":
+      case "Loa dể bàn cũ":
+      case "Loa karaoke cũ":
+        return "Loa"
+      default:
+        return ""
+    }
+  }
+ 
   // Hàm lọc cho từng ProductGrid
   const handleFilterBestSeller = async (category) => {
     if (activeBestSeller === category) {
@@ -71,7 +86,7 @@ function Home() {
     } else {
       setActiveBestSeller(category); // Đánh dấu nút đang active
       const filtered = allBestSellerProducts.filter(
-        (product) => product.category && product.category.toLowerCase().includes(category.toLowerCase())
+        (product) => combinedCategory(product.category) && combinedCategory(product.category).toLowerCase().includes(category.toLowerCase())
       );
       setProductsBestSeller(filtered);
     }
@@ -84,7 +99,7 @@ function Home() {
     } else {
       setActiveOnSale(category); // Đánh dấu nút đang active
       const filtered = allSaleProducts.filter(
-        (product) => product.category && product.category.toLowerCase().includes(category.toLowerCase())
+        (product) => combinedCategory(product.category) && combinedCategory(product.category).toLowerCase().includes(category.toLowerCase())
       );
       setProductsOnSale(filtered);
     }

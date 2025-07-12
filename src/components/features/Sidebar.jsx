@@ -8,32 +8,32 @@ const mainItems = [
   {
     icon: <img src={images['item11.png']} alt="" width={30} height={30} />,
     label: "Tai nghe nhét tai cũ",
-    value: "01-nhet-tai-cu",
+    value: "Tai nghe nhét tai cũ",
   },
   {
     icon: <img src={images['item10.png']} alt="" width={30} height={30} />,
     label: "Tai nghe chụp tai cũ",
-    value: "02-chup-tai-cu",
+    value: "Tai nghe chụp tai cũ",
   },
   {
     icon: <img src={images['item9.png']} alt="" width={30} height={30} />,
     label: "Loa di động cũ",
-    value: "03-di-dong-cu",
+    value: "Loa di động cũ",
   },
   {
     icon: <img src={images['item8.png']} alt="" width={30} height={30} />,
     label: "Loa để bàn cũ",
-    value: "04-de-ban-cu",
+    value: "Loa để bàn cũ",
   },
   {
     icon: <img src={images['item7.png']} alt="" width={30} height={30} />,
     label: "Loa karaoke cũ",
-    value: "05-loa-karaoke",
+    value: "Loa karaoke cũ",
   },
   {
     icon: <img src={images['item6.png']} alt="" width={30} height={30} />,
     label: "Thu cũ đổi mới",
-    value: "thu-cu-doi-moi",
+    value: "Thu cũ đổi mới",
   },
 ];
 
@@ -41,7 +41,7 @@ const exploreItems = [
   {
     icon: <img src={images['item5.png']} alt="" width={30} height={30} />,
     label: "Hàng newseal",
-    value:'06-hang-newseal'
+    value: "Hàng newseal"
   },
   {
     icon: <img src={images['item4.png']} alt="" width={30} height={30} />,
