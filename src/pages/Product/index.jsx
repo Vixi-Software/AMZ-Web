@@ -33,6 +33,7 @@ function Product() {
   const filteredProduct = allProductsArray.filter(
     (product) => product.category === category
   );
+  console.log("prd", filteredProduct)
   const brands = useSelector(selectBrands);
   const priceRanges = useSelector(selectPriceRanges);
   const [loading, setLoading] = useState(false);

@@ -53,8 +53,6 @@ function AppContent() {
               path={route.path}
               element={
                 <Layout>
-                  {/* {loading ? <Loading /> : null} */}
-
                   <Page />
                 </Layout>
               }
