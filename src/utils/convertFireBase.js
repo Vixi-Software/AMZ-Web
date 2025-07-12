@@ -1,4 +1,4 @@
-import {getCategoryByCode} from '../utils/getKeyFirebase.js'
+import {getCategoryByCollection} from '../utils/getKeyFirebase.js'
 
 // Convert product object to pipe string (reuse from ProductForm)
   function productToPipeString(product, code, page) {
@@ -49,7 +49,7 @@ import {getCategoryByCode} from '../utils/getKeyFirebase.js'
       isbestSeller: fields[11] === "0", // 0: true, 1: false
       highlights: fields[10] || "",
       videoUrl: fields[12] || "", // Thêm trường videoUrl
-      category: getCategoryByCode(code), // lấy category từ code
+      category: getCategoryByCollection(code), // lấy category từ code
       // Bổ sung các trường khác nếu cần
     };
   }

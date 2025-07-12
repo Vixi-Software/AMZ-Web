@@ -10,7 +10,6 @@ import { Modal, message } from 'antd';
 import { db } from '../../utils/firebase';
 import { doc, setDoc, updateDoc, deleteField } from 'firebase/firestore';
 import { productToPipeString, pipeStringToProductObject } from '../../utils/convertFireBase.js'
-import {getCollectionNameByCode} from '../../utils/getKeyFirebase.js'
 
 
 
@@ -86,7 +85,7 @@ function Admin() {
   // Update product in Firestore
   async function handleUpdateProduct(updated, key, code, page) {
     try {
-      const collectionName = getCollectionNameByCode(code);
+      const collectionName = code;
       const docRef = doc(db, collectionName, page);
       const pipeString = productToPipeString(updated, code, page);
       await setDoc(docRef, { [key]: pipeString }, { merge: true });
@@ -100,7 +99,7 @@ function Admin() {
   // Xóa sản phẩm trong Firestore (chỉ xóa 1 key-value trong document)
   async function handleDeleteProduct(key, code, page) {
     try {
-      const collectionName = getCollectionNameByCode(code);
+      const collectionName = code;
       const docRef = doc(db, collectionName, page);
       await updateDoc(docRef, { [key]: deleteField() });
       message.success('Xóa sản phẩm thành công!');
