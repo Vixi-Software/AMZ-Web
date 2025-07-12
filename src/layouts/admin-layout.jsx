@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   AppstoreOutlined,
   PlusSquareOutlined,
@@ -8,16 +8,30 @@ import {
   CalendarOutlined,
   SettingOutlined,
   HomeOutlined,
+  ToolOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Avatar, Typography, Button, theme } from 'antd';
+import { Layout, Menu, theme } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/features/auth/authSlice';
+import { selectUser, selectUserEmail } from '../store/selectors/authSelectors';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import AMZLogo from '../assets/amzLogo.jpg';
+import { useSidebar } from '../hooks/useSidebar';
+import { LAYOUT_STYLES, SIDEBAR_WIDTH } from '../constants/styles';
+import UserInfo from '../components/features/UserInfo';
+import Logo from '../components/features/Logo';
 import routePath from '../constants/routePath';
 
 const { Header, Content, Sider } = Layout;
-const { Text } = Typography;
+
+// Tách component MenuItem để tối ưu re-render
+const MenuItem = React.memo(({ to, icon, text, collapsed }) => (
+  <Link to={to}>
+    {icon}
+    {!collapsed && <span style={LAYOUT_STYLES.menuItemIcon}>{text}</span>}
+  </Link>
+));
+
+MenuItem.displayName = 'MenuItem';
 
 function getItem(label, key, icon, children) {
   return {
@@ -28,37 +42,77 @@ function getItem(label, key, icon, children) {
   };
 }
 
-const items = [
-  getItem('Quản lý sản phẩm', 'sub-product', <AppstoreOutlined />, [
-    getItem(<Link to={routePath.admin}><UnorderedListOutlined /> Danh sách sản phẩm</Link>, routePath.admin),
-    getItem(<Link to={routePath.adminProductAdd}><PlusSquareOutlined /> Thêm sản phẩm</Link>, routePath.adminProductAdd),
-    // Có thể thêm các route con khác nếu cần
-  ]),
-  getItem('Quản lý bài viết', 'sub-post', <FileTextOutlined />, [
-    getItem(<Link to={routePath.adminPost}><UnorderedListOutlined /> Danh sách bài viết</Link>, routePath.adminPost),
-    getItem(<Link to={routePath.adminPostAdd}><EditOutlined /> Thêm bài viết</Link>, routePath.adminPostAdd),
-    // Có thể thêm các route con khác nếu cần
-  ]),
-  getItem(<Link to={routePath.adminEvent}><CalendarOutlined /> Quản lý sự kiện</Link>, routePath.adminEvent, ),
-  getItem('Quản lý trang', 'sub-config', <SettingOutlined />, [
-    getItem(<Link to={routePath.adminConfig}><HomeOutlined /> Trang chủ</Link>, routePath.adminConfig),
-    // Thêm các route con khác nếu cần
-  ]),
+// Function to generate menu items
+const getMenuItems = (collapsed) => [
+  getItem(
+    <MenuItem to={routePath.adminConfig} icon={<HomeOutlined />} text="Trang chủ" collapsed={collapsed} />, 
+    routePath.adminConfig
+  ),
+  getItem(
+    <MenuItem to={routePath.adminEvent} icon={<CalendarOutlined />} text="Quản lý sự kiện" collapsed={collapsed} />, 
+    routePath.adminEvent
+  ),
+  getItem(
+    <MenuItem to={routePath.adminWarranty} icon={<ToolOutlined />} text="Quản lý bảo hành sửa chữa" collapsed={collapsed} />, 
+    routePath.adminWarranty
+  ),
+  getItem(
+    collapsed ? <AppstoreOutlined /> : 'Quản lý sản phẩm', 
+    'sub-product', 
+    <AppstoreOutlined />, 
+    [
+      getItem(
+        <MenuItem to={routePath.admin} icon={<UnorderedListOutlined />} text="Danh sách sản phẩm" collapsed={collapsed} />, 
+        routePath.admin
+      ),
+      getItem(
+        <MenuItem to={routePath.adminProductAdd} icon={<PlusSquareOutlined />} text="Thêm sản phẩm" collapsed={collapsed} />, 
+        routePath.adminProductAdd
+      ),
+    ]
+  ),
+  getItem(
+    collapsed ? <FileTextOutlined /> : 'Quản lý bài viết', 
+    'sub-post', 
+    <FileTextOutlined />, 
+    [
+      getItem(
+        <MenuItem to={routePath.adminPost} icon={<UnorderedListOutlined />} text="Danh sách bài viết" collapsed={collapsed} />, 
+        routePath.adminPost
+      ),
+      getItem(
+        <MenuItem to={routePath.adminPostAdd} icon={<EditOutlined />} text="Thêm bài viết" collapsed={collapsed} />, 
+        routePath.adminPostAdd
+      ),
+    ]
+  ),
+  // getItem('Quản lý trang', 'sub-config', <SettingOutlined />, [
+  //   // Thêm các route con khác nếu cần
+  // ]),
 ];
 
 function AdminLayout({ children }) {
-  const [collapsed, setCollapsed] = useState(false);
   const dispatch = useDispatch();
-  const user = useSelector(state => state.auth.user);
+  const user = useSelector(selectUser);
+  const userEmail = useSelector(selectUserEmail);
   const navigate = useNavigate();
   const location = useLocation();
+  const { collapsed, handleCollapse, defaultOpenKeys } = useSidebar();
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const handleLogout = () => {
+  // Memoize callback để tránh re-render không cần thiết
+  const handleLogout = React.useCallback(() => {
     dispatch(logout());
-  };
+  }, [dispatch]);
+
+  const handleLogoClick = React.useCallback(() => {
+    navigate(routePath.admin);
+  }, [navigate]);
+
+  // Memoize menu items để tránh tính toán lại
+  const menuItems = React.useMemo(() => getMenuItems(collapsed), [collapsed]);
 
   useEffect(() => {
     if (!user) {
@@ -69,58 +123,31 @@ function AdminLayout({ children }) {
   if (!user) return null; // Trả về null nếu không có user
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={LAYOUT_STYLES.layout}>
       <Sider
         collapsible
         collapsed={collapsed}
-        onCollapse={setCollapsed}
-        width={260} // Tăng chiều rộng sidebar tại đây
-        style={{
-          background: '#fff',
-          borderRight: '1px solid #f0f0f0',
-        }}
+        onCollapse={handleCollapse}
+        width={SIDEBAR_WIDTH}
+        style={LAYOUT_STYLES.sider}
       >
-        <div
-          style={{
-            height: 48,
-            margin: 16,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <img
-            src={AMZLogo}
-            alt="Logo"
-            onClick={() => navigate(routePath.admin)}
-            style={{ width: 40, height: 40, borderRadius: '50%', cursor: 'pointer', objectFit: 'cover' }}
-          />
-        </div>
+        <Logo onClick={handleLogoClick} />
         <Menu
           theme="light"
           selectedKeys={[location.pathname]}
           mode="inline"
-          items={items}
-          defaultOpenKeys={['sub-product', 'sub-post', 'sub-config']} // Thêm dòng này để mở mặc định các submenu
+          items={menuItems}
+          defaultOpenKeys={defaultOpenKeys}
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: '0 24px', background: colorBgContainer, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', minHeight: 64 }}>
-          {user && (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Text style={{ marginRight: 12 }}>{user.email}</Text>
-              <Avatar src="https://i.pravatar.cc/40" />
-              <Button type="link" onClick={handleLogout} style={{ marginLeft: 16 }}>
-                Đăng xuất
-              </Button>
-            </div>
-          )}
+        <Header style={{ ...LAYOUT_STYLES.header, background: colorBgContainer }}>
+          {user && <UserInfo userEmail={userEmail} onLogout={handleLogout} />}
         </Header>
-        <Content style={{ margin: '16px' }}>
+        <Content style={LAYOUT_STYLES.content}>
           <div
             style={{
-              padding: 24,
-              minHeight: 360,
+              ...LAYOUT_STYLES.contentInner,
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
@@ -133,4 +160,5 @@ function AdminLayout({ children }) {
   );
 }
 
-export default AdminLayout;
+// Sử dụng React.memo để tối ưu component
+export default React.memo(AdminLayout);

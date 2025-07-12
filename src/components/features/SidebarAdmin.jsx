@@ -4,6 +4,7 @@ import {
   AppstoreOutlined,
   FileTextOutlined,
   SettingOutlined,
+  ToolOutlined,
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import routePath from '../../constants/routePath'
@@ -28,6 +29,8 @@ function SidebarAdmin() {
     // eventAdd: routePath.adminEventAdd, // Nếu có
     // eventEdit: routePath.adminEventEdit, // Nếu có
 
+    warrantyList: routePath.adminWarranty,
+
     config: routePath.adminConfig,
   }
 
@@ -41,7 +44,7 @@ function SidebarAdmin() {
   const currentKey = routeToMenuKey[location.pathname]
 
   // Quản lý trạng thái openKeys
-  const [openKeys, setOpenKeys] = useState(['sub1', 'sub2', 'sub3'])
+  const [openKeys, setOpenKeys] = useState(['sub1', 'sub2', 'sub3', 'sub4'])
 
   const handleMenuClick = ({ key }) => {
     const route = menuKeyToRoute[key]
@@ -74,7 +77,10 @@ function SidebarAdmin() {
           <Menu.Item key="postAdd">Thêm bài đăng</Menu.Item>
           <Menu.Item key="postEdit">Sửa bài đăng</Menu.Item>
         </Menu.SubMenu>
-        <Menu.SubMenu key="sub3" icon={<SettingOutlined />} title="Quản lý website">
+        <Menu.SubMenu key="sub3" icon={<ToolOutlined />} title="Quản lý bảo hành">
+          <Menu.Item key="warrantyList">Danh sách bảo hành</Menu.Item>
+        </Menu.SubMenu>
+        <Menu.SubMenu key="sub4" icon={<SettingOutlined />} title="Quản lý website">
           <Menu.Item key="eventList">Sự kiện</Menu.Item>
           <Menu.Item key="config">Quản lý trang</Menu.Item>
         </Menu.SubMenu>

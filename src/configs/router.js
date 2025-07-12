@@ -19,6 +19,7 @@ const PostManagement = lazy(() => import("@/pages/Admin/Post"));
 const ProductForm = lazy(() => import("@/pages/Admin/Product/ProductForm"));
 const EventManagement = lazy(() => import("@/pages/Admin/Event"));
 const PageManagement = lazy(() => import("@/pages/Admin/Page"));
+const WarrantyManagement = lazy(() => import("@/pages/Admin/Warranty"));
 const Login = lazy(() => import("../pages/Login"));
 
 const AppRoute = [
@@ -44,6 +45,9 @@ const AppRoute = [
 
     // ======= Admin Event Pages =======
     { path: routePath.adminEvent, page: EventManagement, layout: AdminLayout, protect: true },
+    
+    // ======= Admin Warranty Pages =======
+    { path: routePath.adminWarranty, page: WarrantyManagement, layout: AdminLayout, protect: true },
     
     // ======= Admin Config Pages =======
     { path: routePath.adminConfig, page: PageManagement, layout: AdminLayout, protect: true },

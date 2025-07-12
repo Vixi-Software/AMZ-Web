@@ -27,6 +27,9 @@ const routePath = {
 
     // ======= Admin Config Pages =======
     adminConfig: "/admin/config",
+
+    // ======= Admin Warranty Repair Pages =======
+    adminWarranty: "/admin/warranty",
 };
 
 export default routePath;
