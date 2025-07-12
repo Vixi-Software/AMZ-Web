@@ -1,16 +1,16 @@
 function getCollectionByCategory(code) {
   switch (code) {
-    case 'Loa di động cũ':
-      return '03-di-dong-cu';
-    case 'Loa karaoke cũ':
-      return '05-loa-karaoke';
-    case 'Loa để bàn cũ':
-      return '04-de-ban-cu';
-    case 'Tai nghe chụp tai cũ':
-      return '02-chup-tai-cu';
     case 'Tai nghe nhét tai cũ':
       return '01-nhet-tai-cu';
-    case 'Hàng new seal':
+    case 'Tai nghe chụp tai cũ':
+      return '02-chup-tai-cu';
+    case 'Loa di động cũ':
+      return '03-di-dong-cu';
+    case 'Loa để bàn cũ':
+      return '04-de-ban-cu';
+    case 'Loa karaoke cũ':
+      return '05-loa-karaoke';
+    case 'Hàng newseal':
       return '06-hang-newseal';
     default:
       return 'test';
@@ -30,7 +30,7 @@ function getCategoryByCollection(collection) {
     case '05-loa-karaoke':
       return 'Loa karaoke cũ';
     case '06-hang-newseal':
-      return 'Hàng new seal';
+      return 'Hàng newseal';
     default:
       return '';
   }

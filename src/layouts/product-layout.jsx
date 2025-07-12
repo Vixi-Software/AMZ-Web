@@ -42,7 +42,6 @@ function ProductLayout({ children }) {
   const allProductsState = useSelector((state) => state.allProducts[getCollectionByCategory(category)]);
   const allProductsArray = Object.values(allProductsState).flat();
 
-  const { getProductsByCategory } = useProductService()
   const defaultBrands = [
     'Acnos',
     'Alpha Works',
@@ -72,7 +71,6 @@ function ProductLayout({ children }) {
               .filter(Boolean)
           )
         )
-        console.log('filteredBrands:',filteredBrands)
         setBrands(filteredBrands.length > 0 ? filteredBrands : defaultBrands)      
 
     } else {
