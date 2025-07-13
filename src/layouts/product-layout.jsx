@@ -106,7 +106,7 @@ function ProductLayout({ children }) {
       case 'Loa di động cũ':
       case 'Loa để bàn cũ':
         return priceRange1M;
-      case 'Loa':
+      case 'Loa karaoke cũ':
         return priceRangeLoa;
       default:
         return priceRangeDefault;
