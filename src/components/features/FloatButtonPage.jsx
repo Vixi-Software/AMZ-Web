@@ -4,8 +4,8 @@ import { FacebookFilled, PhoneOutlined } from '@ant-design/icons'
 import '../../assets/css/FloatButton.css'
 
 const BUTTON_STYLE = {
-  width: 100,
-  height: 100,
+  width: 70,
+  height: 70,
   fontSize: 36,
   display: 'flex',
   alignItems: 'center',
@@ -42,6 +42,12 @@ function FloatButtonPage() {
     phone: false
   })
 
+  const [hoveredButton, setHoveredButton] = useState({
+    zalo: false,
+    facebook: false,
+    phone: false
+  })
+
   // Tự động hiển thị tooltip mỗi 5 giây
   useEffect(() => {
     const interval = setInterval(() => {
@@ -70,7 +76,9 @@ function FloatButtonPage() {
       <FloatButton.Group shape="circle" style={{ right: 24, bottom: 24 }}>
         <FloatButton
           description={
-            <span style={{ fontWeight: 'bold', color: '#0068FF', fontSize: 16 }}>Zalo ngay</span>
+            <span style={{ fontWeight: 'bold', color: '#0068FF', fontSize: 14 }}>
+              {hoveredButton.zalo ? 'Liên lạc ngay' : 'Zalo'}
+            </span>
           }
           style={ZALO_BUTTON_STYLE}
           tooltip={{
@@ -95,10 +103,18 @@ function FloatButtonPage() {
           onClick={() => {
             window.open('https://zalo.me/0333571236', '_blank')
           }}
+          onMouseEnter={() => {
+            setHoveredButton(prev => ({ ...prev, zalo: true }))
+          }}
+          onMouseLeave={() => {
+            setHoveredButton(prev => ({ ...prev, zalo: false }))
+          }}
         />
         <FloatButton
           description={
-            <span style={{ fontWeight: 'bold', color: '#1877f2', fontSize: 16 }}>Nhắn tin ngay</span>
+            <span style={{ fontWeight: 'bold', color: '#1877f2', fontSize: 14 }}>
+              {hoveredButton.facebook ? 'Nhắn tin ngay' : <FacebookFilled style={{ fontSize: 30}}/>}
+            </span>
           }
           style={FACEBOOK_BUTTON_STYLE}
           tooltip={{
@@ -123,10 +139,18 @@ function FloatButtonPage() {
           onClick={() => {
             window.open('https://www.facebook.com/amztechdn', '_blank')
           }}
+          onMouseEnter={() => {
+            setHoveredButton(prev => ({ ...prev, facebook: true }))
+          }}
+          onMouseLeave={() => {
+            setHoveredButton(prev => ({ ...prev, facebook: false }))
+          }}
         />
         <FloatButton
           description={
-            <span style={{ fontWeight: 'bold', color: '#25D366', fontSize: 16 }}>Gọi ngay</span>
+            <span style={{ fontWeight: 'bold', color: '#25D366', fontSize: 14 }}>
+              {hoveredButton.phone ? 'Gọi ngay' : <PhoneOutlined style={{ fontSize: 30}}/>}
+            </span>
           }
           style={PHONE_BUTTON_STYLE}
           tooltip={{
@@ -147,6 +171,12 @@ function FloatButtonPage() {
                 setVisibleTooltips(prev => ({ ...prev, phone: false }))
               }
             }
+          }}
+          onMouseEnter={() => {
+            setHoveredButton(prev => ({ ...prev, phone: true }))
+          }}
+          onMouseLeave={() => {
+            setHoveredButton(prev => ({ ...prev, phone: false }))
           }}
           // onClick={() => {
           //   window.open('tel:0333571236')
