@@ -325,7 +325,6 @@ function Admin() {
                               style={{ background: '#ff9800', color: '#fff', border: 'none', borderRadius: '3px', padding: '4px 8px', cursor: 'pointer' }}
                               onClick={() => {
                                 const obj = parsePipeString(value);
-                                console.log(obj)
                                 setEditModal({ visible: true, key, value: obj, page: pageName, code });
                               }}
                             >Sửa</button>

@@ -52,8 +52,7 @@ import {getCategoryByCollection} from '../utils/getKeyFirebase.js'
       category: getCategoryByCollection(code), // lấy category từ code
       // Bổ sung các trường khác nếu cần
     };
-    console.log("product", product)
-    console.log("Fields", fields)
+ 
     return product
   }
 
