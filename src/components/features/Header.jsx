@@ -70,9 +70,10 @@ function Header() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 4 }}>
           <>
             <div>
-              {item.images[0] ? (
+              {item.images.split(';;')[0] ? (
+                console.log(item.images.split(';;')[0] + ";aaaa"),
                 <img
-                  src={item.images[0]}
+                  src={item.images.split(';;')[0]}
                   alt={item.name}
                   style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }}
                 />
@@ -96,8 +97,6 @@ function Header() {
                   <span
                     style={{
                       fontSize: 12,
-                      // color: item.status === 'Còn hàng' ? '#52c41a' : '#ff4d4f',
-                      // background: item.status === 'Còn hàng' ? '#f6ffed' : '#fff1f0',
                       color:'#ff4d4f',
                       background: '#fff1f0',
                       borderRadius: 4,
