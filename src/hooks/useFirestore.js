@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 
 import { useCallback } from "react";
-import { handleProduct } from "../utils/productHandle";
+import { handleProduct } from "../utils/productHandle.js";
 
 export const useFirestore = (db, collectionName = "home") => {
   const colRef = collection(db, collectionName);

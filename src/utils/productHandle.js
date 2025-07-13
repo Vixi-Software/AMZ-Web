@@ -15,6 +15,7 @@ export const handleProduct = (data) => {
     'images',
     'description',
     'features',
+    'tableInfo',
     'youtubeUrl',
     'category',
   ];
@@ -36,7 +37,7 @@ export const handleProduct = (data) => {
       product.category = "Loa di động cũ"
       break;
     case "04-de-ban-cu":
-      product.category = "Loa dể bàn cũ"
+      product.category = "Loa để bàn cũ"
       break;
     case "05-loa-karaoke":
       product.category = "Loa karaoke cũ"

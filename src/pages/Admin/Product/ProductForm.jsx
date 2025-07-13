@@ -3,6 +3,7 @@ import { Form, Input, InputNumber, Select, Button, Row, Col, message, Switch } f
 import { db } from '../../../utils/firebase'
 import { doc, setDoc } from 'firebase/firestore'
 import { productToPipeString } from '../../../utils/convertFireBase.js'
+import { parseStringToTableInfo, parseTableInfoToString } from '../../../utils/tableInfoParse.js'
 
 const { TextArea } = Input
 
@@ -88,28 +89,11 @@ function getCollectionNameByCategory(category) {
   }
 }
 
-function parseHtmlTableToRows(html) {
-  // Tạo một DOM ảo để parse HTML
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  const rows = [];
-  const trList = div.querySelectorAll('tr');
-  trList.forEach(tr => {
-    const tds = tr.querySelectorAll('td');
-    if (tds.length >= 2) {
-      rows.push({
-        key: tds[0].textContent.trim(),
-        value: tds[1].textContent.trim(),
-      });
-    }
-  });
-  return rows.length ? rows : [{ key: '', value: '' }];
-}
 
 function ProductForm({ initialValues = {}, onFinish }) {
   // Nếu có initialValues.tableInfo thì parse ra tableRows, nếu không thì 1 dòng rỗng
   const [tableRows, setTableRows] = useState(
-    initialValues.tableInfo ? parseHtmlTableToRows(initialValues.tableInfo) : [{ key: '', value: '' }]
+    initialValues.tableInfo ? parseStringToTableInfo(initialValues.tableInfo) : [{ key: '', value: '' }]
   );
   const [category, setCategory] = useState(initialValues.category || '');
   const [colectionName, setColectionName] = useState(getCollectionNameByCategory(initialValues.category || ''));
@@ -135,11 +119,11 @@ function ProductForm({ initialValues = {}, onFinish }) {
 
   const handleRemoveRow = (index) => {
     if (tableRows.length <= 1) {
-    message.warning('Phải có ít nhất 1 dòng.');
-    return;
-  }
-  const newRows = tableRows.filter((_, i) => i !== index);
-  setTableRows(newRows);
+      message.warning('Phải có ít nhất 1 dòng.');
+      return;
+    }
+    const newRows = tableRows.filter((_, i) => i !== index);
+    setTableRows(newRows);
   };
 
   const renderTableRows = () => (
@@ -166,23 +150,9 @@ function ProductForm({ initialValues = {}, onFinish }) {
     ))
   )
 
-  const convertRowsToHtmlTable = () => {
-    if (!tableRows.length) return ''
-    let html = '<table className="w-full border border-gray-200 rounded">'
-    tableRows.forEach((row, idx) => {
-      if (row.key || row.value) {
-        html += `<tr${idx % 2 === 1 ? ' className="bg-gray-100"' : ''}>`
-        html += `<td className="font-bold border px-2 py-1">${row.key}</td>`
-        html += `<td className="border px-2 py-1">${row.value}</td>`
-        html += '</tr>'
-      }
-    })
-    html += '</table>'
-    return html
-  }
+
 
   const upsertField = async (fieldKey, fieldValue, docId) => {
-    console.log(fieldKey +" aa "+fieldValue + " aa" +docId);
     const docRef = doc(db, colectionName, docId)
     await setDoc(docRef, { [fieldKey]: fieldValue }, { merge: true })
   }
@@ -215,20 +185,19 @@ function ProductForm({ initialValues = {}, onFinish }) {
       salePrice: values.salePrice || 0, // Thêm dòng này
       inventories: values.inventories || 0,
       sku: values.sku || '',
-      tableInfo: convertRowsToHtmlTable(),
+      tableInfo: parseTableInfoToString(tableRows),
       isbestSeller: !!values.isbestSeller, // Thêm dòng này
       videoUrl: values.videoUrl || '', // Thêm dòng này
     }
     try {
       const page = await getNextAvailablePage();
-      const pipeString = productToPipeString(result,colectionName, page)
+      const pipeString = productToPipeString(result, colectionName, page)
       // await addProduct(pipeString)
       // Lưu vào Firestore dạng map: page -> { timestamp: pipeString }
       const timestamp = Math.floor(Date.now() / 1000) // số giây hiện tại
       // Ghi vào đúng document pageN, thêm field mới với key là timestamp
       await upsertField(timestamp, pipeString, page)
       message.success('Thêm sản phẩm thành công!')
-
     } catch (err) {
       console.error('Thêm sản phẩm thất bại:', err)
       message.error('Thêm sản phẩm thất bại!')
@@ -237,8 +206,9 @@ function ProductForm({ initialValues = {}, onFinish }) {
 
   // Khi submit form
   const handleFormFinish = async (values) => {
-    // Đảm bảo tableInfo luôn được cập nhật từ tableRows khi submit
-    values.tableInfo = convertRowsToHtmlTable();
+    // // Đảm bảo tableInfo luôn được cập nhật từ tableRows khi submit
+
+    values.tableInfo = parseTableInfoToString(tableRows);
     if (onFinish) {
       // Nếu là sửa, gọi prop onFinish (truyền lên từ Admin)
       await onFinish(values);
@@ -506,7 +476,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
       </Row>
 
       <Row gutter={16}>
-        
+
         <Col span={12}>
           <Form.Item label="Mô tả ngắn" name="description">
             <TextArea autoSize={{ minRows: 5, maxRows: 20 }} />
@@ -522,13 +492,13 @@ function ProductForm({ initialValues = {}, onFinish }) {
       {/* Thông số kỹ thuật dạng bảng 2 cột */}
       <Form.Item label="Thông số kỹ thuật">
         {renderTableRows()}
-        <Button type="primary" onClick={handleAddRow} style={{ marginTop: 8, color: '#1890ff', border: '1px solid #1890ff', backgroundColor: 'white', borderRadius: '8px', fontWeight: '500'}}>
-          Thêm hàng
+        <Button type="primary" onClick={handleAddRow} style={{ marginTop: 8, color: '#1890ff', border: '1px solid #1890ff', backgroundColor: 'white', borderRadius: '8px', fontWeight: '500' }}>
+          Thêm thuộc tính
         </Button>
       </Form.Item>
 
       <Form.Item>
-        <div style={{ textAlign: 'right', marginRight: 20}}>
+        <div style={{ textAlign: 'right', marginRight: 20 }}>
           {/* <Button type="default" style={{ marginRight: 16 }} onClick={() => {setEditModal(prev => ({ ...prev, visible: false }))}}>
             Huỷ
           </Button> */}

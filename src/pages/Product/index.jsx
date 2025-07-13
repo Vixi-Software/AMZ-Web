@@ -47,7 +47,6 @@ function Product() {
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
-      // console.log(brands, priceRanges)
       const filtered = filteredProduct
         // Filter by brand
         .filter(product => {
