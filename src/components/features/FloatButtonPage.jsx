@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { FloatButton } from 'antd'
-import { FacebookFilled, PhoneOutlined } from '@ant-design/icons'
 import '../../assets/css/FloatButton.css'
+import ZaloIcon from '../../assets/ic-zalo.svg'
+import FacebookIcon from '../../assets/ic-facebook.svg'
+import PhoneIcon from '../../assets/ic-phone.svg'
 
 const BUTTON_STYLE = {
   width: 70,
@@ -77,17 +79,14 @@ function FloatButtonPage() {
         <FloatButton
           description={
             <span style={{ fontWeight: 'bold', color: '#0068FF', fontSize: 14 }}>
-              {hoveredButton.zalo ? 'Liên lạc ngay' : 'Zalo'}
+              {hoveredButton.zalo ? 'Liên hệ ngay' : <img src={ZaloIcon} alt="Zalo" style={{ width: 40, height: 40 }} />}
             </span>
           }
           style={ZALO_BUTTON_STYLE}
           tooltip={{
             title: (
               <div>
-                <div style={{ fontWeight: 'bold', marginBottom: 4 }}>💬 Zalo Chat</div>
-                <div>Tư vấn nhanh qua Zalo</div>
-                <div>📞 0333.571.236</div>
-                <div>⚡ Phản hồi trong 1 phút</div>
+                <div>Liên hệ ngay 0333.571.236</div>
               </div>
             ),
             placement: 'left',
@@ -113,17 +112,14 @@ function FloatButtonPage() {
         <FloatButton
           description={
             <span style={{ fontWeight: 'bold', color: '#1877f2', fontSize: 14 }}>
-              {hoveredButton.facebook ? 'Nhắn tin ngay' : <FacebookFilled style={{ fontSize: 30}}/>}
+              {hoveredButton.facebook ? 'Liên hệ ngay' : <img src={FacebookIcon} alt="Facebook" style={{ width: 40, height: 40 }} />}
             </span>
           }
           style={FACEBOOK_BUTTON_STYLE}
           tooltip={{
             title: (
               <div>
-                <div style={{ fontWeight: 'bold', marginBottom: 4 }}>📘 Facebook Chat</div>
-                <div>Nhắn tin Facebook</div>
-                <div>🔥 Hỗ trợ 24/7</div>
-                <div>💬 @amztechdn</div>
+                <div>Liên hệ ngay AMZ TECH</div>
               </div>
             ),
             placement: 'left',
@@ -149,17 +145,14 @@ function FloatButtonPage() {
         <FloatButton
           description={
             <span style={{ fontWeight: 'bold', color: '#25D366', fontSize: 14 }}>
-              {hoveredButton.phone ? 'Gọi ngay' : <PhoneOutlined style={{ fontSize: 30}}/>}
+              {hoveredButton.phone ? 'Gọi ngay' : <img src={PhoneIcon} alt="Phone" style={{ width: 40, height: 40 }} />}
             </span>
           }
           style={PHONE_BUTTON_STYLE}
           tooltip={{
             title: (
               <div>
-                <div style={{ fontWeight: 'bold', marginBottom: 4 }}>📞 Gọi ngay</div>
-                <div>Tư vấn qua điện thoại</div>
-                <div>☎️ 0333.571.236</div>
-                <div>🆓 Miễn phí cuộc gọi</div>
+                <div>Gọi ngay 0333.571.236</div>
               </div>
             ),
             placement: 'left',
