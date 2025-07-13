@@ -33,7 +33,7 @@ function AppContent() {
       allProducts.forEach((product) => {
         dispatch(importProductByType(product.collection, {...product}));
       });
-
+      console.log("all", allProducts)
     };
     fetchData();
     

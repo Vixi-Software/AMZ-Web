@@ -5,11 +5,11 @@ import {getCategoryByCollection} from '../utils/getKeyFirebase.js'
     const brand = product.brand || 'null';
     const name = product.name || 'null';
     const color = Array.isArray(product.colors) ? product.colors[0] : (product.colors || 'null');
-    const priceBanLe = product.pricesBanLe || 'null';
-    const priceBanBuon = product.pricesBanBuon || 'null';
-    const salePrice = product.salePrice || 'null';
-    const statusSell = Array.isArray(product.statusSell) ? product.statusSell[0] : (product.statusSell || 'null');
-    const isbestSeller = product.isbestSeller ? '0' : '1';
+    const priceBanLe = product.priceForSale || 'null';
+    const priceBanBuon = product.priceDefault || 'null';
+    const salePercent = product.salePercent || 'null';
+    const condition = Array.isArray(product.condition) ? product.condition[0] : (product.condition || 'null');
+    const isbestSeller = product.isbestSeller ? '1' : '0';
     const tableInfo = product.tableInfo || 'null';
     const decription = product.description || 'null';
     const highlights = product.highlights || 'null';
@@ -23,9 +23,9 @@ import {getCategoryByCollection} from '../utils/getKeyFirebase.js'
       color,
       priceBanLe,
       priceBanBuon,
-      salePrice,
+      salePercent,
       isbestSeller,
-      statusSell,
+      condition,
       images,
       decription,
       highlights,
@@ -35,23 +35,26 @@ import {getCategoryByCollection} from '../utils/getKeyFirebase.js'
   }
 
   function pipeStringToProductObject(fields, code) {
-    return {
+    const product ={
       brand: fields[0] || "",
       name: fields[1] || "",
       colors: fields[2] ? [fields[2]] : [],
-      pricesBanLe: Number(fields[3]) || 0,
-      pricesBanBuon: Number(fields[4]) || 0,
-      salePrice: Number(fields[5]) || 0,
-      statusSell: fields[7] ? [fields[7]] : [],
+      priceForSale: Number(fields[3]) || 0,
+      priceDefault: Number(fields[4]) || 0,
+      salePercent: Number(fields[5]) || 0,
+      isbestSeller: fields[6] == "1", // 0: true, 1: false
+      condition: fields[7] ? [fields[7]] : [],
       images: fields[8].split(";;") ? fields[8].split(";;") : [],
       description: fields[9] || "",
-      tableInfo: fields[11] || "",
-      isbestSeller: fields[11] === "0", // 0: true, 1: false
       highlights: fields[10] || "",
+      tableInfo: fields[11] || "",
       videoUrl: fields[12] || "", // Thêm trường videoUrl
       category: getCategoryByCollection(code), // lấy category từ code
       // Bổ sung các trường khác nếu cần
     };
+    console.log("product", product)
+    console.log("Fields", fields)
+    return product
   }
 
   function getGoogleDriveThumbnail(urlOrArray) {

@@ -84,10 +84,10 @@ export const useProductService = () => {
   };
 
   const getFinalPrice = (product) => {
-    if (product.salePrice && product.pricesBanLe) {
-      return product.pricesBanLe - (product.pricesBanLe * product.salePrice) / 100;
+    if (product.salePercent && product.priceForSale) {
+      return product.priceForSale - (product.priceForSale * product.salePercent) / 100;
     }
-    return product.pricesBanLe || 0;
+    return product.priceForSale || 0;
   };
 
   const filterProduct = async (filter = {}, sort = '') => {
@@ -160,14 +160,14 @@ export const useProductService = () => {
         return false;
       }
 
-      // Lọc theo statusSell
+      // Lọc theo condition
       if (
-        filter.statusSell &&
-        filter.statusSell.trim() !== "" &&
-        (!product.statusSell ||
-          !product.statusSell
+        filter.condition &&
+        filter.condition.trim() !== "" &&
+        (!product.condition ||
+          !product.condition
             .map((s) => s.toLowerCase())
-            .includes(filter.statusSell.toLowerCase()))
+            .includes(filter.condition.toLowerCase()))
       ) {
         return false;
       }
@@ -204,8 +204,8 @@ export const useProductService = () => {
         break;
       case 'hotdeal':
         filteredProducts.sort((a, b) => {
-          const aHasSale = !!a.salePrice;
-          const bHasSale = !!b.salePrice;
+          const aHasSale = !!a.salePercent;
+          const bHasSale = !!b.salePercent;
           if (aHasSale !== bHasSale) return bHasSale - aHasSale;
           return (b.discountPercent || 0) - (a.discountPercent || 0);
         });

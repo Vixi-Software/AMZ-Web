@@ -35,7 +35,6 @@ function Header() {
   }, [])
 
   // const { searchProductsByName, getProductById, getRandomProducts } = useProductHelper()
-  const { getProductsByName, getProductByIdFromStore } = useProductService()
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
@@ -57,8 +56,8 @@ function Header() {
       ignoreLocation: true,
     })
     const results = fuse.search(value).map(result => result.item)
-
     const productMap = new Map()
+
     results.forEach(item => {
       productMap.set(item.id, item)
     })
@@ -71,7 +70,7 @@ function Header() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 4 }}>
           <>
             <div>
-              {item.image[0] ? (
+              {item.images[0] ? (
                 <img
                   src={item.images[0]}
                   alt={item.name}

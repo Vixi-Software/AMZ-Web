@@ -95,8 +95,8 @@ export async function pushAllProductsToFirestore() {
 
       const colors = product.options?.[0]?.values || [];
       const inventories = product.variants?.reduce((sum, v) => sum + (v.inventories || 0), 0) || 0;
-      const pricesBanLe = product.variants?.[0]?.prices?.[0]?.value
-      const pricesBanBuon = product.variants?.[0]?.prices?.[1]?.value
+      const priceForSale = product.variants?.[0]?.prices?.[0]?.value
+      const priceDefault = product.variants?.[0]?.prices?.[1]?.value
       const sku = product.variants?.[0]?.sku || "";
       const nameParts = product.name.split('-').map(s => s.trim());
       const shortName = nameParts[2] || product.name;
@@ -116,13 +116,13 @@ export async function pushAllProductsToFirestore() {
         images: product.images,
         name: shortName,
         colors,
-        statusSell: product.options?.[1]?.values || [],
+        condition: product.options?.[1]?.values || [],
         product_type: product.product_type,
         status: product.status,
         tags: product.tags,
         inventories,
-        pricesBanLe,
-        pricesBanBuon,
+        priceForSale,
+        priceDefault,
         sku
       });
     }

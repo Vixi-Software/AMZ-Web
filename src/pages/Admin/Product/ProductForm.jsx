@@ -35,7 +35,7 @@ const brandOptions = [
   { label: 'Ultimate Ears', value: 'Ultimate Ears' },
 ]
 
-const statusSellOptions = [
+const conditionOptions = [
   { label: '99-98% Nobox', value: '99-98% Nobox' },
   { label: '99-98% Fullbox', value: '99-98% Fullbox' },
   { label: 'New Seal', value: 'New Seal' },
@@ -179,14 +179,14 @@ function ProductForm({ initialValues = {}, onFinish }) {
       tags: typeof values.tags === 'string' ? values.tags : (Array.isArray(values.tags) ? values.tags.join(',') : ''),
       images: Array.isArray(values.images) ? values.images.join(';;') : (values.images || ''),
       colors: values.colors || [],
-      statusSell: values.statusSell || [],
-      pricesBanBuon: values.pricesBanBuon || 0,
-      pricesBanLe: values.pricesBanLe || 0,
-      salePrice: values.salePrice || 0, // Thêm dòng này
+      condition: values.condition || [],
+      priceDefault: values.priceDefault || 0,
+      priceForSale: values.priceForSale || 0,
+      salePercent: values.salePercent || 0, // Thêm dòng này
       inventories: values.inventories || 0,
       sku: values.sku || '',
       tableInfo: parseTableInfoToString(tableRows),
-      isbestSeller: !!values.isbestSeller, // Thêm dòng này
+      isbestSeller: values.isbestSeller, // Thêm dòng này
       videoUrl: values.videoUrl || '', // Thêm dòng này
     }
     try {
@@ -207,7 +207,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
   // Khi submit form
   const handleFormFinish = async (values) => {
     // // Đảm bảo tableInfo luôn được cập nhật từ tableRows khi submit
-
+    console.log("Vls", values)
     values.tableInfo = parseTableInfoToString(tableRows);
     if (onFinish) {
       // Nếu là sửa, gọi prop onFinish (truyền lên từ Admin)
@@ -220,71 +220,71 @@ function ProductForm({ initialValues = {}, onFinish }) {
   //Vĩ: 11/07/2022 00:59 - Tự động correct giá bán & giá gốc & sale
   const [form] = Form.useForm();
   const handleAutoCalculate = (changedValues, allValues) => {
-    const { pricesBanBuon, pricesBanLe, salePrice } = allValues;
+    const { priceDefault, priceForSale, salePercent } = allValues;
     const changedField = Object.keys(changedValues)[0];
 
     // Nếu có giá gốc + phần trăm => tính lại giá bán
     if (
-      pricesBanBuon &&
-      salePrice &&
-      changedField === 'pricesBanBuon'
+      priceDefault &&
+      salePercent &&
+      changedField === 'priceDefault'
     ) {
-      const newBanLe = Math.round(pricesBanBuon * (1 - salePrice / 100));
-      form.setFieldsValue({ pricesBanLe: newBanLe });
+      const newBanLe = Math.round(priceDefault * (1 - salePercent / 100));
+      form.setFieldsValue({ priceForSale: newBanLe });
     }
 
     // Nếu có giá gốc + giá bán => tính lại phần trăm
     if (
-      pricesBanBuon &&
-      pricesBanLe &&
-      changedField === 'pricesBanBuon'
+      priceDefault &&
+      priceForSale &&
+      changedField === 'priceDefault'
     ) {
-      const newPercent = Math.round((1 - pricesBanLe / pricesBanBuon) * 100);
-      form.setFieldsValue({ salePrice: newPercent });
+      const newPercent = Math.round((1 - priceForSale / priceDefault) * 100);
+      form.setFieldsValue({ salePercent: newPercent });
     }
 
     // Nếu đủ cả 3 trường mà sửa giá bán => tính lại phần trăm
     if (
-      pricesBanBuon &&
-      pricesBanLe &&
-      salePrice &&
-      changedField === 'pricesBanLe'
+      priceDefault &&
+      priceForSale &&
+      salePercent &&
+      changedField === 'priceForSale'
     ) {
-      const newPercent = Math.round((1 - pricesBanLe / pricesBanBuon) * 100);
-      form.setFieldsValue({ salePrice: newPercent });
+      const newPercent = Math.round((1 - priceForSale / priceDefault) * 100);
+      form.setFieldsValue({ salePercent: newPercent });
     }
 
     // Nếu đủ 3 trường mà sửa phần trăm => tính lại giá bán
     if (
-      pricesBanBuon &&
-      pricesBanLe &&
-      salePrice &&
-      changedField === 'salePrice'
+      priceDefault &&
+      priceForSale &&
+      salePercent &&
+      changedField === 'salePercent'
     ) {
-      const newBanLe = Math.round(pricesBanBuon * (1 - salePrice / 100));
-      form.setFieldsValue({ pricesBanLe: newBanLe });
+      const newBanLe = Math.round(priceDefault * (1 - salePercent / 100));
+      form.setFieldsValue({ priceForSale: newBanLe });
     }
 
     // Nếu có giá gốc + giá bán (sale chưa có) => tính sale
     if (
-      pricesBanBuon &&
-      pricesBanLe &&
-      !salePrice &&
-      changedField === 'pricesBanLe'
+      priceDefault &&
+      priceForSale &&
+      !salePercent &&
+      changedField === 'priceForSale'
     ) {
-      const percent = Math.round((1 - pricesBanLe / pricesBanBuon) * 100);
-      form.setFieldsValue({ salePrice: percent });
+      const percent = Math.round((1 - priceForSale / priceDefault) * 100);
+      form.setFieldsValue({ salePercent: percent });
     }
 
     // Nếu có giá gốc + phần trăm (giá bán chưa có) => tính giá bán
     if (
-      pricesBanBuon &&
-      salePrice &&
-      !pricesBanLe &&
-      changedField === 'salePrice'
+      priceDefault &&
+      salePercent &&
+      !priceForSale &&
+      changedField === 'salePercent'
     ) {
-      const price = Math.round(pricesBanBuon * (1 - salePrice / 100));
-      form.setFieldsValue({ pricesBanLe: price });
+      const price = Math.round(priceDefault * (1 - salePercent / 100));
+      form.setFieldsValue({ priceForSale: price });
     }
   };
 
@@ -346,11 +346,11 @@ function ProductForm({ initialValues = {}, onFinish }) {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="Tình trạng bán" name="statusSell" rules={[{ required: true, message: 'Vui lòng nhập tình trạng bán' }]}>
+          <Form.Item label="Tình trạng bán" name="condition" rules={[{ required: true, message: 'Vui lòng nhập tình trạng bán' }]}>
             <Select
               mode="multiple"
               placeholder="Chọn tình trạng bán"
-              options={statusSellOptions}
+              options={conditionOptions}
             />
           </Form.Item>
         </Col>
@@ -365,7 +365,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
         <Col span={8}>
           <Form.Item
             label="Giá gốc (VNĐ)"
-            name="pricesBanBuon"
+            name="priceDefault"
             rules={[
               { required: true, message: 'Vui lòng nhập giá bán buôn' },
               { type: 'number', min: 0, message: 'Chỉ nhập số lớn hơn hoặc bằng 0' }
@@ -382,7 +382,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
         <Col span={8}>
           <Form.Item
             label="Giá bán (VNĐ)"
-            name="pricesBanLe"
+            name="priceForSale"
             rules={[
               { required: true, message: 'Vui lòng nhập giá bán lẻ' },
               { type: 'number', min: 0, message: 'Chỉ nhập số lớn hơn hoặc bằng 0' }
@@ -399,7 +399,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
         <Col span={8}>
           <Form.Item
             label="Phần trăm giảm (%)"
-            name="salePrice"
+            name="salePercent"
             rules={[
               { required: false, message: 'Vui lòng nhập phần trăm giảm giá (nếu có)' },
               { type: 'number', min: 0, message: 'Chỉ nhập số lớn hơn hoặc bằng 0' }
