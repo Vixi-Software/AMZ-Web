@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { setProduct } from '../../store/features/product/productSlice'
 import { setLoading } from '../../store/features/loading/loadingSlice'
 import routePath from '../../constants/routePath'
+import BestSellerIcon from '../../assets/ic-bestseller.png'
 
 function ProductCard({ product }) {
   const dispatch = useDispatch();
@@ -172,6 +173,22 @@ function ProductCard({ product }) {
               Ảnh chưa được cập nhật
             </div>
           )}
+
+          {product.isBestSeller === "1" && (
+            <img
+              src={BestSellerIcon} // Hoặc BestSellerBadge nếu bạn dùng icon khác
+              alt="Best Seller"
+              style={{
+                position: 'absolute',
+                bottom: -50,
+                right: 10,
+                width: 120,
+                height: 120,
+                zIndex: 3,
+                objectFit: 'contain'
+              }}
+            />
+          )}
         </div>
       }
     >
@@ -179,7 +196,10 @@ function ProductCard({ product }) {
         <div className="flex justify-between gap-1">
           {/* phần trái */}
           <div>
-            <div className="be-vietnam-pro-medium text-sm sm:text-[16px] mb-1 flex items-center gap-2">
+            <div className="be-vietnam-pro-medium text-sm sm:text-[16px] mb-1 flex items-center gap-1">
+              {product.isBestSeller === "1" && (
+                <span style={{ fontSize: 16 }}>🔥</span>
+              )}
               {productName}
             </div>
             <div className="font-bold text-base sm:text-[21px] text-[#D65312] leading-none">
