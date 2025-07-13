@@ -3,6 +3,7 @@ import Header from '../components/features/Header'
 import Sidebar from '../components/features/Sidebar'
 import { Flex, Grid } from 'antd'
 import Footer from '../components/features/Footer'
+import FloatButtonPage from '../components/features/FloatButtonPage'
 
 const { useBreakpoint } = Grid
 
@@ -46,6 +47,7 @@ function MainLayout({ children }) {
           </div>
         </Flex>
       </div>
+      <FloatButtonPage />
     </div>
   )
 }

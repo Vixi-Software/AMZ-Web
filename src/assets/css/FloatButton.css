@@ -1,0 +1,109 @@
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.ant-float-btn:hover .ant-float-btn-body .ant-float-btn-description span {
+    color: white !important;
+}
+
+.ant-float-btn:hover .ant-float-btn-body .ant-float-btn-description .anticon {
+    color: white !important;
+}
+
+/* Custom tooltip styles */
+.ant-tooltip .ant-tooltip-inner {
+    background: linear-gradient(135deg, #f44c0e, #f44c0e, #f44c0e, #f44c0e) !important;
+    background-size: 300% 300% !important;
+    animation: gradientShift 3s ease infinite !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    font-family: 'Segoe UI', sans-serif !important;
+    position: relative !important;
+}
+
+.ant-tooltip .ant-tooltip-inner::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
+    border-radius: 12px !important;
+    pointer-events: none !important;
+}
+
+.ant-tooltip .ant-tooltip-inner>div {
+    position: relative !important;
+    z-index: 1 !important;
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.ant-tooltip .ant-tooltip-inner>div>div:first-child {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    margin-bottom: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.ant-tooltip .ant-tooltip-inner>div>div:not(:first-child) {
+    font-size: 14px !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    margin-bottom: 4px !important;
+    font-weight: 500 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.ant-tooltip .ant-tooltip-inner>div>div:last-child {
+    margin-bottom: 0 !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+}
+
+.ant-tooltip .ant-tooltip-arrow::before {
+    background: linear-gradient(135deg, #ff6b35, #ff8c42) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.ant-tooltip .ant-tooltip-arrow::after {
+    background: linear-gradient(135deg, #ff6b35, #ff8c42) !important;
+}
+
+/* Hover effects for tooltips */
+.ant-tooltip:hover .ant-tooltip-inner {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 40px rgba(255, 107, 53, 0.5),
+        0 0 25px rgba(255, 149, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
