@@ -6,7 +6,6 @@ import {
   FileTextOutlined,
   EditOutlined,
   CalendarOutlined,
-  SettingOutlined,
   HomeOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Avatar, Typography, Button, theme } from 'antd';
@@ -28,22 +27,34 @@ function getItem(label, key, icon, children) {
   };
 }
 
-const items = [
-  getItem('Quản lý sản phẩm', 'sub-product', <AppstoreOutlined />, [
-    getItem(<Link to={routePath.admin}><UnorderedListOutlined /> Danh sách sản phẩm</Link>, routePath.admin),
-    getItem(<Link to={routePath.adminProductAdd}><PlusSquareOutlined /> Thêm sản phẩm</Link>, routePath.adminProductAdd),
-    // Có thể thêm các route con khác nếu cần
-  ]),
-  getItem('Quản lý bài viết', 'sub-post', <FileTextOutlined />, [
-    getItem(<Link to={routePath.adminPost}><UnorderedListOutlined /> Danh sách bài viết</Link>, routePath.adminPost),
-    getItem(<Link to={routePath.adminPostAdd}><EditOutlined /> Thêm bài viết</Link>, routePath.adminPostAdd),
-    // Có thể thêm các route con khác nếu cần
-  ]),
-  getItem(<Link to={routePath.adminEvent}><CalendarOutlined /> Quản lý sự kiện</Link>, routePath.adminEvent, ),
-  getItem('Quản lý trang', 'sub-config', <SettingOutlined />, [
-    getItem(<Link to={routePath.adminConfig}><HomeOutlined /> Trang chủ</Link>, routePath.adminConfig),
-    // Thêm các route con khác nếu cần
-  ]),
+// Tạo items động dựa trên trạng thái collapsed
+const createMenuItems = (collapsed) => [
+  getItem(
+    collapsed ? <Link to={routePath.adminConfig}><HomeOutlined /></Link> : <Link to={routePath.adminConfig}><HomeOutlined /> Trang chủ</Link>,
+    routePath.adminConfig
+  ),
+  getItem(
+    collapsed ? <Link to={routePath.adminEvent}><CalendarOutlined /></Link> : <Link to={routePath.adminEvent}><CalendarOutlined /> Quản lý sự kiện</Link>,
+    routePath.adminEvent
+  ),
+  getItem(
+    collapsed ? null : 'Quản lý sản phẩm',
+    'sub-product',
+    <AppstoreOutlined />,
+    collapsed ? null : [
+      getItem(<Link to={routePath.admin}><UnorderedListOutlined /> Danh sách sản phẩm</Link>, routePath.admin),
+      getItem(<Link to={routePath.adminProductAdd}><PlusSquareOutlined /> Thêm sản phẩm</Link>, routePath.adminProductAdd),
+    ]
+  ),
+  getItem(
+    collapsed ? null : 'Quản lý bài viết',
+    'sub-post',
+    <FileTextOutlined />,
+    collapsed ? null : [
+      getItem(<Link to={routePath.adminPost}><UnorderedListOutlined /> Danh sách bài viết</Link>, routePath.adminPost),
+      getItem(<Link to={routePath.adminPostAdd}><EditOutlined /> Thêm bài viết</Link>, routePath.adminPostAdd),
+    ]
+  ),
 ];
 
 function AdminLayout({ children }) {
@@ -69,15 +80,21 @@ function AdminLayout({ children }) {
   if (!user) return null; // Trả về null nếu không có user
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ height: '100vh', overflow: 'hidden' }}>
       <Sider
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
-        width={260} // Tăng chiều rộng sidebar tại đây
+        width={260} // Chiều rộng khi mở rộng
+        collapsedWidth={80} // Chiều rộng khi thu gọn
         style={{
           background: '#fff',
           borderRight: '1px solid #f0f0f0',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 100,
         }}
       >
         <div
@@ -93,19 +110,40 @@ function AdminLayout({ children }) {
             src={AMZLogo}
             alt="Logo"
             onClick={() => navigate(routePath.admin)}
-            style={{ width: 40, height: 40, borderRadius: '50%', cursor: 'pointer', objectFit: 'cover' }}
+            style={{
+              width: collapsed ? 32 : 40,
+              height: collapsed ? 32 : 40,
+              borderRadius: '50%',
+              cursor: 'pointer',
+              objectFit: 'cover',
+              transition: 'all 0.2s'
+            }}
           />
         </div>
         <Menu
           theme="light"
           selectedKeys={[location.pathname]}
           mode="inline"
-          items={items}
-          defaultOpenKeys={['sub-product', 'sub-post', 'sub-config']} // Thêm dòng này để mở mặc định các submenu
+          items={createMenuItems(collapsed)}
+          defaultOpenKeys={collapsed ? [] : ['sub-product', 'sub-post']} // Không mở submenu khi collapsed
         />
       </Sider>
-      <Layout>
-        <Header style={{ padding: '0 24px', background: colorBgContainer, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', minHeight: 64 }}>
+      <Layout style={{ marginLeft: collapsed ? 80 : 260, transition: 'margin-left 0.2s' }}>
+        <Header style={{ 
+          padding: '0 24px', 
+          background: colorBgContainer, 
+          display: 'flex', 
+          justifyContent: 'flex-end', 
+          alignItems: 'center', 
+          minHeight: 64,
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          left: collapsed ? 80 : 260,
+          zIndex: 99,
+          transition: 'left 0.2s',
+          borderBottom: '1px solid #f0f0f0'
+        }}>
           {user && (
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Text style={{ marginRight: 12 }}>{user.email}</Text>
@@ -116,11 +154,16 @@ function AdminLayout({ children }) {
             </div>
           )}
         </Header>
-        <Content style={{ margin: '16px' }}>
+        <Content style={{ 
+          marginTop: 64, 
+          height: 'calc(100vh - 64px)',
+          overflow: 'auto',
+          padding: '16px'
+        }}>
           <div
             style={{
               padding: 24,
-              minHeight: 360,
+              minHeight: 'calc(100vh - 96px)',
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
