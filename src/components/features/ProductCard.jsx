@@ -107,7 +107,7 @@ function ProductCard({ product }) {
         }
       }}
       style={{
-        boxShadow: '0 0 5px 2px rgba(0,0,0,0.35)',
+        boxShadow: '0 0 5px 2px rgba(0,0,0,0.1)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'stretch',
