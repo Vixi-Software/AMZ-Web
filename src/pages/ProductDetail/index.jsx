@@ -9,6 +9,7 @@ import ProductCard from '../../components/features/ProductCard'
 import { useProductService } from '../../services/productService'
 import { usePostService } from '../../services/postService'
 import { parseStringToTableInfo } from '../../utils/tableInfoParse'
+import ReactMarkdown from 'react-markdown';
 
 function ProductDetail() {
   const product = useSelector(state => state.product.product)
@@ -34,8 +35,9 @@ function ProductDetail() {
   // Thêm hook để lấy tiêu đề YouTube động
   const [youtubeTitle, setYoutubeTitle] = useState('Video đánh giá loa')
   // Lấy videoUrl từ product, fallback nếu không có
-  const videoUrl = product?.videoUrl || 'https://www.youtube.com/watch?v=hwsKMrkCalE'
+  const videoUrl = product.youtubeUrl || 'https://www.youtube.com/watch?v=hwsKMrkCalE'
   // Hàm lấy videoId từ url
+  console.log("video", videoUrl)
   function extractYoutubeVideoId(url) {
     const match = url.match(/(?:[?&]v=|youtu\.be\/|embed\/)([\w-]{11})/)
     return match ? match[1] : null
@@ -95,15 +97,17 @@ function ProductDetail() {
   }
 
   // --- SỬA ĐỔI DỮ LIỆU ĐẦU VÀO CHO PHÙ HỢP ---
+  console.log('product', product)
   const productName = product.name;
   const rawImages = product.images
   const imageArray = rawImages.split(";;")
   const images = imageArray
-  const productColor = product?.colors || product?.color || []
+  const productColor = product.color || []
+  // const productColor = product?.colors || product?.color || []
   const priceForSale = Number(product.priceForSale).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   const priceDefault = Number(product.priceDefault).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   const condition = product.condition;
-    
+
   if (!product) {
     return (
       <div>
@@ -286,7 +290,7 @@ function ProductDetail() {
           <div className="mb-3">
             <div className="font-semibold mb-1">Màu sắc</div>
             <div className="flex gap-2">
-              {loading
+              {/* {loading
                 ? Array(2)
                   .fill(0)
                   .map((_, idx) => (
@@ -311,12 +315,43 @@ function ProductDetail() {
                       {color}
                     </span>
                   )
-                )}
+                )} */}
+              {loading
+                ? Array(2)
+                  .fill(0)
+                  .map((_, idx) => (
+                    <Skeleton.Button
+                      key={idx}
+                      active
+                      size="small"
+                      style={{ width: 60 }}
+                    />
+                  ))
+                : (Array.isArray(productColor) ? productColor : [productColor]).map((color, idx, arr) => {
+                  const isSingleColor = arr.length === 1;
+                  const isSelected = isSingleColor || selectedOptions.color === color;
+
+                  return (
+                    <span
+                      key={idx}
+                      className={`rounded-md px-4 py-1 font-medium cursor-${isSingleColor ? 'default' : 'pointer'} border transition-colors duration-150 ${isSelected
+                        ? 'bg-orange-500 text-white border-orange-500'
+                        : 'bg-white text-gray-800 border-gray-300'
+                        }`}
+                      style={{ minWidth: 60, display: 'inline-block', textAlign: 'center' }}
+                      onClick={() => {
+                        if (!isSingleColor) handleSelectOption('color', color);
+                      }}
+                    >
+                      {color}
+                    </span>
+                  );
+                })}
             </div>
           </div>
 
           {/* Condition Options */}
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <div className="font-semibold mb-1">Tình trạng</div>
             <div className="flex gap-2">
               {loading ? (
@@ -333,6 +368,26 @@ function ProductDetail() {
                     }`}
                   style={{ minWidth: 80, display: 'inline-block', textAlign: 'center' }}
                   onClick={() => handleSelectOption('condition', condition)}
+                >
+                  {condition}
+                </span>
+              )}
+            </div>
+          </div> */}
+          <div className="mb-3">
+            <div className="font-semibold mb-1">Tình trạng</div>
+            <div className="flex gap-2">
+              {loading ? (
+                <Skeleton.Button active size="small" style={{ width: 80 }} />
+              ) : (
+                <span
+                  className={`rounded-md px-4 py-1 font-medium ${'cursor-default'
+                    } border transition-colors duration-150 bg-orange-500 text-white border-orange-500`}
+                  style={{
+                    minWidth: 80,
+                    display: 'inline-block',
+                    textAlign: 'center',
+                  }}
                 >
                   {condition}
                 </span>
@@ -410,20 +465,28 @@ function ProductDetail() {
         <Col xs={24} md={15} className="bg-white py-4">
           <div className="text-black text-base mb-2 bg-gray-200 p-3 rounded-md">
             <h3 className="text-lg text-orange-400 text-center font-semibold mb-2">
+              Tính năng nổi bật
+            </h3>
+            <ReactMarkdown>{product.features}</ReactMarkdown>
+          </div>
+          <div className="text-black text-base mb-2 bg-gray-200 p-3 rounded-md">
+            <h3 className="text-lg text-orange-400 text-center font-semibold mb-2">
               Mô tả sản phẩm
             </h3>
-            {loading ? (
+            <ReactMarkdown>{product.description}</ReactMarkdown>
+            {/* {loading ? (
               <Skeleton active paragraph={{ rows: 4 }} />
             ) : (
               !product.description ||
-              product.description.trim().toLowerCase() === 'null' ? (
+                product.description.trim().toLowerCase() === 'null' ? (
                 'Chưa cập nhật mô tả sản phẩm...'
               ) : (
                 product.description
               )
-            )}
+            )} */}
           </div>
         </Col>
+
         <Col xs={24} md={9}>
           <div className="bg-white rounded-lg shadow-lg">
             {loading ? (
@@ -493,7 +556,7 @@ function ProductDetail() {
           </div>
 
           {/* Hiển thị video YouTube */}
-          {product?.videoUrl && (
+          {product.youtubeUrl && (
             <div className="mt-6 flex justify-center">
               <div className="bg-white rounded-lg shadow-lg flex flex-col items-center p-4 gap-4 w-full max-w-[560px] mx-auto">
                 {/* Tiêu đề nằm trên và dọc toàn bộ card */}
@@ -528,25 +591,25 @@ function ProductDetail() {
 
       <Row className='bg-white px-4 mt-8' >
         <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">Bài viết liên quan</h2>
-        {posts && posts.length > 0 ? (
-          <div className="flex flex-col gap-4">
-            {posts.map((post, idx) => (
-              <div key={post.id || idx} className="transition">
-                <h3 className="font-semibold text-lg mb-2">{post.title}</h3>
-                <div className="text-gray-700 mb-2" dangerouslySetInnerHTML={{ __html: post.content }} />
-                {/* Nếu có ảnh */}
-                {post.image && (
-                  <img src={post.image} alt={post.title} className="w-full h-40 object-cover rounded mb-2" />
-                )}
-                {/* Có thể thêm nút xem chi tiết nếu muốn */}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div>Không có bài viết nào.</div>
-        )}
-      </div>
+          <h2 className="text-xl font-bold mb-4">Bài viết liên quan</h2>
+          {posts && posts.length > 0 ? (
+            <div className="flex flex-col gap-4">
+              {posts.map((post, idx) => (
+                <div key={post.id || idx} className="transition">
+                  <h3 className="font-semibold text-lg mb-2">{post.title}</h3>
+                  <div className="text-gray-700 mb-2" dangerouslySetInnerHTML={{ __html: post.content }} />
+                  {/* Nếu có ảnh */}
+                  {post.image && (
+                    <img src={post.image} alt={post.title} className="w-full h-40 object-cover rounded mb-2" />
+                  )}
+                  {/* Có thể thêm nút xem chi tiết nếu muốn */}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div>Không có bài viết nào.</div>
+          )}
+        </div>
       </Row>
     </div>
   )
