@@ -4,6 +4,7 @@ import { db } from '../../../utils/firebase'
 import { doc, setDoc } from 'firebase/firestore'
 import { productToPipeString } from '../../../utils/convertFireBase.js'
 import { parseStringToTableInfo, parseTableInfoToString } from '../../../utils/tableInfoParse.js'
+import MDEditor from "@uiw/react-md-editor";
 
 const { TextArea } = Input
 
@@ -475,15 +476,26 @@ function ProductForm({ initialValues = {}, onFinish }) {
       </Row>
 
       <Row gutter={16}>
-
         <Col span={12}>
           <Form.Item label="Mô tả ngắn" name="description">
-            <TextArea autoSize={{ minRows: 5, maxRows: 20 }} />
+          <MDEditor
+              height={200}
+              preview="edit"
+              previewOptions={{
+                className: "bg-white"
+              }}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item label="Tính năng nổi bật" name="highlights">
-            <TextArea autoSize={{ minRows: 5, maxRows: 20 }} placeholder="Mỗi dòng là một tính năng nổi bật" />
+            <MDEditor
+              height={200}
+              preview="edit"
+              previewOptions={{
+                className: "bg-white"
+              }}
+            />
           </Form.Item>
         </Col>
       </Row>
