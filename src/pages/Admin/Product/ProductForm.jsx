@@ -477,7 +477,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
 
       <Row gutter={16}>
         <Col span={12}>
-          <Form.Item label="Mô tả ngắn" name="description">
+          <Form.Item label="Đặc điểm nổi bật" name="description">
           <MDEditor
               height={200}
               preview="edit"
@@ -498,6 +498,22 @@ function ProductForm({ initialValues = {}, onFinish }) {
             />
           </Form.Item>
         </Col>
+      </Row>
+      <Row gutter={16}>
+        <Form.Item
+          label="Bài viết sản phẩm"
+          name="highlights"
+          style={{ width: '100%' }} // mở rộng form item ra toàn bộ
+        >
+          <MDEditor
+            height={200}
+            preview="edit"
+            style={{ width: '100%' }} // rất quan trọng
+            previewOptions={{
+              className: "bg-white"
+            }}
+          />
+        </Form.Item>
       </Row>
 
       {/* Thông số kỹ thuật dạng bảng 2 cột */}
