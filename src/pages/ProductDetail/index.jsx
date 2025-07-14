@@ -213,7 +213,9 @@ function ProductDetail() {
                       </li>
                     ))
                 ) : product.features ? (
-                  <ReactMarkdown>{product.features}</ReactMarkdown>
+                  <div className="text-[15px]">
+                    <ReactMarkdown>{product.features}</ReactMarkdown>
+                  </div>
                 ) : (
                   <li className="mb-2">Chưa cập nhật tính năng nổi bật...</li>
                 )}
