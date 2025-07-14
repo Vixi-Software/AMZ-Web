@@ -171,9 +171,9 @@ function FloatButtonPage() {
           onMouseLeave={() => {
             setHoveredButton(prev => ({ ...prev, phone: false }))
           }}
-          // onClick={() => {
-          //   window.open('tel:0333571236')
-          // }}
+          onClick={() => {
+            window.open('tel:0333571236')
+          }}
         />
       </FloatButton.Group>
     </>
