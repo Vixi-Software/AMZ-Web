@@ -212,12 +212,8 @@ function ProductDetail() {
                         />
                       </li>
                     ))
-                ) : product.highlights ? (
-                  product.highlights.split('\n').map((line, idx) => (
-                    <li key={idx} className="mb-2">
-                      {line}
-                    </li>
-                  ))
+                ) : product.features ? (
+                  <ReactMarkdown>{product.features}</ReactMarkdown>
                 ) : (
                   <li className="mb-2">Chưa cập nhật tính năng nổi bật...</li>
                 )}
@@ -462,28 +458,15 @@ function ProductDetail() {
       </div>
 
       <Row gutter={24} className="mt-8">
-        <Col xs={24} md={15} className="bg-white py-4">
-          <div className="text-black text-base mb-2 bg-gray-200 p-3 rounded-md">
+        <Col xs={24} md={15} className="bg-white py-8">
+          <div className="text-black text-base mb-2 bg-gray-200 p-3 rounded-md mx-4">
             <h3 className="text-lg text-orange-400 text-center font-semibold mb-2">
-              Tính năng nổi bật
-            </h3>
-            <ReactMarkdown>{product.features}</ReactMarkdown>
-          </div>
-          <div className="text-black text-base mb-2 bg-gray-200 p-3 rounded-md">
-            <h3 className="text-lg text-orange-400 text-center font-semibold mb-2">
-              Mô tả sản phẩm
+              Đặc Điểm Nổi Bật
             </h3>
             <ReactMarkdown>{product.description}</ReactMarkdown>
-            {/* {loading ? (
-              <Skeleton active paragraph={{ rows: 4 }} />
-            ) : (
-              !product.description ||
-                product.description.trim().toLowerCase() === 'null' ? (
-                'Chưa cập nhật mô tả sản phẩm...'
-              ) : (
-                product.description
-              )
-            )} */}
+          </div>
+          <div className="text-black text-base mb-2 mx-4">
+            <ReactMarkdown>{product.description}</ReactMarkdown>
           </div>
         </Col>
 
