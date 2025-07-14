@@ -320,7 +320,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
         <Col span={8}>
           <Form.Item label="Màu sắc" name="colors" rules={[{ required: true, message: 'Vui lòng nhập màu sắc' }]}>
             <Select
-              mode="multiple"
+              mode="single"
               placeholder="Chọn màu sắc"
               optionLabelProp="label"
               options={colorOptions.map(opt => ({
@@ -347,7 +347,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
         <Col span={8}>
           <Form.Item label="Tình trạng bán" name="condition" rules={[{ required: true, message: 'Vui lòng nhập tình trạng bán' }]}>
             <Select
-              mode="multiple"
+              mode="single"
               placeholder="Chọn tình trạng bán"
               options={conditionOptions}
             />
