@@ -1,12 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form, Input, InputNumber, Select, Button, Row, Col, message, Switch } from 'antd'
-import { db } from '../../../utils/firebase'
-import { doc, setDoc } from 'firebase/firestore'
-import { productToPipeString } from '../../../utils/convertFireBase.js'
-import { parseStringToTableInfo, parseTableInfoToString } from '../../../utils/tableInfoParse.js'
-import MDEditor from "@uiw/react-md-editor";
+import { db } from '@/utils/firebase'
+import { collection, doc, getDocs, query, setDoc} from 'firebase/firestore'
+import { productToPipeString } from '@/utils/convertFireBase.js'
+import { parseStringToTableInfo, parseTableInfoToString } from '@/utils/tableInfoParse.js'
 
-const { TextArea } = Input
 
 const productTypeOptions = [
   { label: 'Loa di động cũ', value: 'Loa di động cũ' },
@@ -71,6 +69,8 @@ const colorOptions = [
   { label: 'Khác', value: 'Khác', color: '#888888' },
 ]
 
+
+
 function getCollectionNameByCategory(category) {
   switch (category) {
     case 'Loa di động cũ':
@@ -98,11 +98,16 @@ function ProductForm({ initialValues = {}, onFinish }) {
   );
   const [category, setCategory] = useState(initialValues.category || '');
   const [colectionName, setColectionName] = useState(getCollectionNameByCategory(initialValues.category || ''));
-
+  const [postOptions, setPostOptions] = useState({lable:"", value:""})
+  
   // Cập nhật colectionName khi category thay đổi
-  React.useEffect(() => {
+  useEffect(() => {
     setColectionName(getCollectionNameByCategory(category));
   }, [category]);
+
+  useEffect(() => {
+    getAllPostTitles();
+  }, []);
 
   const handleAddRow = () => {
     if (tableRows.length >= 10) {
@@ -173,6 +178,19 @@ function ProductForm({ initialValues = {}, onFinish }) {
     }
   };
 
+  const getAllPostTitles = async () => {
+    const colRef = collection(db, "productPosts");
+  
+    const q = query(colRef);
+    const snapshot = await getDocs(q);
+    const result = snapshot.docs.map(doc => ({
+      value: doc.id,
+      label: doc.data().title || '(Không có tiêu đề)',
+    }));
+  
+    setPostOptions(result);
+  };
+
   const handleFinish = async (values) => {
     const result = {
       ...values,
@@ -189,6 +207,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
       tableInfo: parseTableInfoToString(tableRows),
       isbestSeller: values.isbestSeller, // Thêm dòng này
       videoUrl: values.videoUrl || '', // Thêm dòng này
+      post: values.post || '',
     }
     try {
       const page = await getNextAvailablePage();
@@ -430,7 +449,13 @@ function ProductForm({ initialValues = {}, onFinish }) {
               placeholder="Nhập link hình ảnh, Enter để thêm"
               tokenSeparators={[',', ' ']}
               open={false} // ⛔ Tắt dropdown
-              dropdownStyle={{ display: 'none' }} // Cách ẩn cứng nếu cần
+              styles={{
+                popup: {
+                  root: {
+                    display: 'none',
+                  },
+                },
+              }} // Cách ẩn cứng nếu cần
               tagRender={({ label, closable, onClose }) => (
                 <div
                   style={{
@@ -478,42 +503,35 @@ function ProductForm({ initialValues = {}, onFinish }) {
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item label="Đặc điểm nổi bật" name="description">
-          <MDEditor
-              height={200}
-              preview="edit"
-              previewOptions={{
-                className: "bg-white"
-              }}
+            <Input.TextArea
+              rows={5}
+              style={{ width: '100%', padding: '8px' }}
+              placeholder="Nhập Đặc điểm nổi bật"
             />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item label="Tính năng nổi bật" name="highlights">
-            <MDEditor
-              height={200}
-              preview="edit"
-              previewOptions={{
-                className: "bg-white"
-              }}
+            <Input.TextArea
+              rows={5}
+              style={{ width: '100%', padding: '8px' }}
+              placeholder="Nhập Tính năng nổi bật"
             />
           </Form.Item>
         </Col>
       </Row>
       <Row gutter={16}>
-        <Form.Item
-          label="Bài viết sản phẩm"
-          name="highlights"
-          style={{ width: '100%' }} // mở rộng form item ra toàn bộ
-        >
-          <MDEditor
-            height={200}
-            preview="edit"
-            style={{ width: '100%' }} // rất quan trọng
-            previewOptions={{
-              className: "bg-white"
-            }}
-          />
-        </Form.Item>
+          <Form.Item
+            label="Bài viết sản phẩm"
+            name="post"
+            style={{ width: '100%' }} // mở rộng form item ra toàn bộ
+          >
+            <Select
+              mode="single"
+              placeholder="Chọn bài viết đính kèm"
+              options={postOptions}
+            />
+          </Form.Item>
       </Row>
 
       {/* Thông số kỹ thuật dạng bảng 2 cột */}

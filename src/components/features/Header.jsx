@@ -266,7 +266,7 @@ function Header() {
       ) : (
         <Space size="large" direction="vertical" className="w-full">
           <Space>
-            <Dropdown overlay={storeMenu} trigger={['click']}>
+            <Dropdown menu={storeMenu} trigger={['click']}>
               <span className="text-[#F37021] cursor-pointer">
                 <EnvironmentOutlined style={{ color: '#F37021', fontSize: '1.125rem' }} /> Tìm cửa hàng
               </span>
@@ -455,7 +455,7 @@ function Header() {
         <Col xs={0} sm={0} md={0} lg={6} className="hidden lg:block">
           <div className='!mt-[-25px]  hidden lg:block'>
             <Space>
-              <Dropdown overlay={storeMenu} trigger={['click']}>
+              <Dropdown menu={storeMenu} trigger={['click']}>
                 <span className="text-[#F37021] inline-block cursor-pointer">
                   <EnvironmentOutlined style={{ color: '#F37021', fontSize: '1.125rem' }} /> Tìm cửa hàng
                 </span>

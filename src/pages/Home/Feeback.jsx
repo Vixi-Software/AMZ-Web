@@ -44,7 +44,9 @@ function Feeback() {
             <Card
               key={idx}
               className="flex-1 rounded-xl shadow-md transition transform hover:-translate-y-2 hover:shadow-xl"
-              bodyStyle={{ padding: '20px' }}
+              style={{
+                body: { padding: '20px' }
+              }}
             >
               <div className="flex items-center gap-3 mb-2">
                 <Avatar src={fb.avatar} size={48} />

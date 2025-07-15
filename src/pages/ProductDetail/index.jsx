@@ -9,13 +9,15 @@ import ProductCard from '../../components/features/ProductCard'
 import { useProductService } from '../../services/productService'
 import { usePostService } from '../../services/postService'
 import { parseStringToTableInfo } from '../../utils/tableInfoParse'
-import ReactMarkdown from 'react-markdown';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from "@/utils/firebase";
 
 function ProductDetail() {
   const product = useSelector(state => state.product.product)
   const [selectedImage, setSelectedImage] = useState(0)
   const [relatedProducts, setRelatedProducts] = useState([])
   const [posts, setPosts] = useState([])
+  const [currentPost, setCurrentPost] = useState("")
   const { getRelatedProductsByCategory } = useProductService()
   const { getPostsWithStore } = usePostService()
   const navigate = useNavigate()
@@ -23,8 +25,7 @@ function ProductDetail() {
   const { md } = Grid.useBreakpoint()
   const isSmall = !md
 
-
-
+ 
   const [selectedOptions, setSelectedOptions] = useState({
     color: null,
     condition: null,
@@ -37,12 +38,30 @@ function ProductDetail() {
   // Lấy videoUrl từ product, fallback nếu không có
   const videoUrl = product.youtubeUrl || 'https://www.youtube.com/watch?v=hwsKMrkCalE'
   // Hàm lấy videoId từ url
-  console.log("video", videoUrl)
+  // console.log("video", videoUrl)
   function extractYoutubeVideoId(url) {
     const match = url.match(/(?:[?&]v=|youtu\.be\/|embed\/)([\w-]{11})/)
     return match ? match[1] : null
   }
   const youtubeVideoId = extractYoutubeVideoId(videoUrl)
+
+  const getPostById = async (id) => {
+    const docRef = doc(db, 'productPosts', id); // collection name + doc id
+    const snapshot = await getDoc(docRef);
+    console.log("snapshot", snapshot)
+    if (snapshot.exists()) {
+      const data = snapshot.data();
+      setCurrentPost(data.content)
+    } else {
+      setCurrentPost("")
+    }
+  };
+
+  useEffect(() => {
+    getPostById(product.post)
+  }, []);
+
+
   useEffect(() => {
     async function fetchYoutubeTitle() {
       if (!youtubeVideoId) {
@@ -214,7 +233,9 @@ function ProductDetail() {
                     ))
                 ) : product.features ? (
                   <div className="text-[15px]">
-                    <ReactMarkdown>{product.features}</ReactMarkdown>
+                    <div className="whitespace-pre-line p-2">
+                      {product.features}
+                    </div>
                   </div>
                 ) : (
                   <li className="mb-2">Chưa cập nhật tính năng nổi bật...</li>
@@ -465,10 +486,10 @@ function ProductDetail() {
             <h3 className="text-lg text-orange-400 text-center font-semibold mb-2">
               Đặc Điểm Nổi Bật
             </h3>
-            <ReactMarkdown>{product.description}</ReactMarkdown>
+           {product.description}
           </div>
           <div className="text-black text-base mb-2 mx-4">
-            <ReactMarkdown>{product.description}</ReactMarkdown>
+          <div dangerouslySetInnerHTML={{ __html: currentPost }} />
           </div>
         </Col>
 

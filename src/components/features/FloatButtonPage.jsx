@@ -92,7 +92,7 @@ function FloatButtonPage() {
             placement: 'left',
             open: visibleTooltips.zalo,
             color: 'transparent',
-            overlayClassName: 'custom-tooltip',
+            classNames: 'custom-tooltip',
             onOpenChange: (open) => {
               if (!open) {
                 setVisibleTooltips(prev => ({ ...prev, zalo: false }))
@@ -125,7 +125,7 @@ function FloatButtonPage() {
             placement: 'left',
             open: visibleTooltips.facebook,
             color: 'transparent',
-            overlayClassName: 'custom-tooltip',
+            classNames: 'custom-tooltip',
             onOpenChange: (open) => {
               if (!open) {
                 setVisibleTooltips(prev => ({ ...prev, facebook: false }))
@@ -158,7 +158,7 @@ function FloatButtonPage() {
             placement: 'left',
             open: visibleTooltips.phone,
             color: 'transparent',
-            overlayClassName: 'custom-tooltip',
+            classNames: 'custom-tooltip',
             onOpenChange: (open) => {
               if (!open) {
                 setVisibleTooltips(prev => ({ ...prev, phone: false }))
