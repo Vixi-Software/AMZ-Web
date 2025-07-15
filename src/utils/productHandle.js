@@ -17,6 +17,7 @@ export const handleProduct = (data) => {
     'features',
     'tableInfo',
     'youtubeUrl',
+    'post',
     'category',
   ];
 
@@ -49,6 +50,5 @@ export const handleProduct = (data) => {
       product.category = ""
       break;
   }
-
   return product;
 };

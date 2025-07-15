@@ -15,6 +15,7 @@ import {getCategoryByCollection} from '../utils/getKeyFirebase.js'
     const highlights = product.highlights || 'null';
     const videoUrl = product.videoUrl || 'null';
     const images = Array.isArray(product.images) ? getGoogleDriveThumbnail(product.images).join(';;') : (getGoogleDriveThumbnail(product.images) || 'null');
+    const post = product.post || 'null'
     return [
       code,
       page,
@@ -30,7 +31,8 @@ import {getCategoryByCollection} from '../utils/getKeyFirebase.js'
       decription,
       highlights,
       tableInfo,
-      videoUrl
+      videoUrl,
+      post
     ].join('|');
   }
 
@@ -49,6 +51,7 @@ import {getCategoryByCollection} from '../utils/getKeyFirebase.js'
       highlights: fields[10] || "",
       tableInfo: fields[11] || "",
       videoUrl: fields[12] || "", // Thêm trường videoUrl
+      post: fields[13] || "", // Thêm trường videoUrl
       category: getCategoryByCollection(code), // lấy category từ code
       // Bổ sung các trường khác nếu cần
     };

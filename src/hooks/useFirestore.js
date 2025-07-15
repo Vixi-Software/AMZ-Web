@@ -29,10 +29,10 @@ export const useFirestore = (db, collectionName = "home") => {
   //   return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
   // }, [db, collectionName]);
 
-  // const addDocData = useCallback(async (data) => {
-  //   const docRef = await addDoc(colRef, data);
-  //   return docRef.id;
-  // }, [colRef]);
+  const addDocData = useCallback(async (data) => {
+    const docRef = await addDoc(colRef, data);
+    return docRef.id;
+  }, [colRef]);
 
   // const updateDocData = useCallback(async (id, data) => {
   //   const docRef = doc(db, collectionName, id);
@@ -111,7 +111,7 @@ export const useFirestore = (db, collectionName = "home") => {
     getAllDocsWithSubcollections,
     getAllDocs,
     // getDocById,
-    // addDocData,
+    addDocData,
     // updateDocData,
     // deleteDocData,
     // getDocsByPage, // Thêm hàm mới vào return
