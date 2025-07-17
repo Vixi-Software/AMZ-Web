@@ -52,7 +52,7 @@ const createMenuItems = (collapsed) => [
     <FileTextOutlined />,
     collapsed ? null : [
       getItem(<Link to={routePath.adminPost}><UnorderedListOutlined /> Danh sách bài viết</Link>, routePath.adminPost),
-      getItem(<Link to={routePath.adminPostAdd}><EditOutlined /> Thêm bài viết</Link>, routePath.adminPostAdd),
+      // getItem(<Link to={routePath.adminPostAdd}><EditOutlined /> Thêm bài viết</Link>, routePath.adminPostAdd),
     ]
   ),
 ];

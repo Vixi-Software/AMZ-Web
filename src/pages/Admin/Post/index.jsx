@@ -3,26 +3,12 @@ import React, { useEffect, useState } from 'react'
 import CTable from '../../../components/ui/table'
 import { db } from '../../../utils/firebase'
 import { useFirestore } from '../../../hooks/useFirestore'
-import { message, Modal, Form, Input } from 'antd' // Thêm dòng này
+import { message, Modal, Form, Input, Select } from 'antd' // Thêm dòng này
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import PostForm from './PostForm'
+import { collection, deleteDoc, doc, getDocs, query } from 'firebase/firestore'
 
-const columns = [
-  {
-    title: 'Tiêu đề',
-    dataIndex: 'title',
-    enableSort: true,
-    enableFilter: true,
-    filterType: 'text',
-  },
-  {
-    title: 'Ngày đăng',
-    dataIndex: 'date',
-    enableSort: true,
-    enableFilter: true,
-    filterType: 'dateRange',
-  },
-]
 
 const modules = {
   toolbar: [
@@ -46,9 +32,13 @@ const formats = [
   'link', 'image', 'video'
 ]
 
+const postTypeOptions = [
+  { label: 'Bài viết chung', value: 'postService' },
+  { label: 'Sản phẩm', value: 'productPosts' },
+]
 
 function PostManagement() {
-  const { getAllDocs, updateDocData, deleteDocData } = useFirestore(db, 'postService')
+  // const { getAllDocs, updateDocData, deleteDocData } = useFirestore(db, 'postService')
   const [dataSource, setDataSource] = useState([])
   const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
@@ -59,52 +49,97 @@ function PostManagement() {
   const [editTitle, setEditTitle] = useState('')
   const [editContent, setEditContent] = useState('') // Thêm state này
   const [editForm] = Form.useForm() // Thêm dòng này
+  const [collectionName, setCollectionName] = useState('postService')
+  const [formType, setFormType] = useState('Add')
+
+  const columns = [
+    {
+      title: 'Tiêu đề',
+      dataIndex: 'title',
+      enableSort: true,
+      enableFilter: true,
+      filterType: 'text',
+    },
+    {
+      title: 'Ngày đăng',
+      dataIndex: 'date',
+      align: 'center',
+      enableSort: true,
+      enableFilter: true,
+      filterType: 'dateRange',
+    },
+    {
+      title: 'Sửa/Xoá',
+      key: 'action',
+      align: 'center',
+      render: (text, record) => (
+        <div style={{ display: "flex", gap: "5px", justifyContent: "center" }}>
+          <button
+            style={{ background: '#ff9800', color: '#fff', border: 'none', borderRadius: '3px', padding: '4px 8px', cursor: 'pointer' }}
+            onClick={() => {
+              setFormType('Update')
+              handleEdit(record, 'Update')
+            }}
+          >Sửa</button>
+          <button
+            style={{ background: '#f44336', color: '#fff', border: 'none', borderRadius: '3px', padding: '4px 8px', cursor: 'pointer' }}
+            onClick={() => {
+              handleDelete(record)
+            }}
+          >Xóa</button>
+        </div>
+      ),
+    },
+  ]
 
   const fetchData = async () => {
     setLoading(true)
-    const data = await getAllDocs()
-    setDataSource(data)
+    const colRef = collection(db, collectionName);
+    const q = query(colRef);
+    const snapshot = await getDocs(q);
+    const result = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    setDataSource(result);
     setLoading(false)
   }
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [collectionName])
+
 
   // Xử lý xóa bài viết với xác nhận của Ant Design
-  const handleDelete = () => {
-    if (selectedRows.length !== 1) {
-      message.warning('Vui lòng chọn một bài viết để xóa!')
-      return
-    }
-    const target =  selectedRows[0]
+  const handleDelete = (record) => {
     Modal.confirm({
       title: 'Bạn có chắc muốn xóa bài viết này?',
-      content: `Tiêu đề: ${target.title}`,
+      content: `Tiêu đề: ${record.title}`,
       okText: 'Xóa',
       okType: 'danger',
       cancelText: 'Hủy',
       onOk: async () => {
-        await deleteDocData(target.id)
-        fetchData()
-        message.success('Đã xóa bài viết!')
+        try {
+          const docRef = doc(db, collectionName, record.id);
+          await deleteDoc(docRef);
+          message.success('🗑️ Đã xoá bài viết');
+          fetchData()
+        } catch (error) {
+          console.error('❌ Lỗi khi xoá:', error);
+          message.error('Xoá thất bại');
+        }
       },
     })
   }
 
   // Khi mở modal sửa, set giá trị cho form
-  const handleEdit = () => {
-    if (selectedRows.length !== 1) {
-      message.warning('Vui lòng chọn một bài viết để sửa!')
-      return
-    }
-
-    setEditRecord(selectedRows[0]) // Lấy bản ghi đầu tiên trong selectedRows
-    setEditTitle(selectedRows[0].title)
-    setEditContent(selectedRows[0].content || '') // Thêm dòng này
+  const handleEdit = (record = {}, type = "Add") => {
+    setEditRecord(record || '')
+    setEditTitle(record.title || '')
+    setEditContent(record.content || '') // Thêm dòng này
     setEditModalOpen(true)
-    editForm.setFieldsValue({ title: selectedRows[0].title, content: selectedRows[0].content || '' })
+    setFormType(type)
+    editForm.setFieldsValue({ title: record.title, content: record.content || '' })
+    fetchData()
   }
+
 
   // Lưu chỉnh sửa
   const handleSaveEdit = async () => {
@@ -131,21 +166,9 @@ function PostManagement() {
   }
 
   // Xử lý xem nội dung
-  const handleViewContent = (record) => {
-    let content = ''
-    if (record && record.content) {
-      content = record.content
-    } else if (selectedRows.length === 1) {
-      content = selectedRows[0].content || ''
-    } else if (selectedRows.length === 0) {
-      message.warning('Vui lòng chọn một bài viết để xem nội dung!')
-      return
-    } else {
-      message.warning('Chỉ được chọn một bài viết để xem nội dung!')
-      return
-    }
-    setModalContent(content)
-    setModalOpen(true)
+  const handleFinishPostForm = () => {
+    setEditModalOpen(false)
+    fetchData()
   }
 
   // Đóng modal
@@ -156,39 +179,28 @@ function PostManagement() {
 
   return (
     <div>
-      <h2>Quản lý bài viết</h2>
+      {/* Post Type Selector */}
+      <div className='mb-4'>
+        <label style={{ fontWeight: 500, marginRight: 10, }}>Chọn loại bài viết:</label>
+        <Select
+          options={postTypeOptions}
+          value={collectionName}
+          onChange={val => setCollectionName(val)}
+          style={{ width: 300, marginTop: 8 }}
+        />
+      </div>
       <CTable
         columns={columns}
         dataSource={dataSource}
         loading={loading}
-        onRowSelectionChange={setSelectedRows} // Xử lý chọn hàng
-        actions={[
+        action={
           {
             key: 'add',
             label: 'Thêm bài viết',
             type: 'primary',
-            onClick: () => alert('Thêm bài viết'),
-          },
-          {
-            key: 'view',
-            label: 'Xem nội dung',
-            type: 'default',
-            onClick: handleViewContent, // truyền hàm xử lý xem nội dung
-          },
-          {
-            key: 'edit',
-            label: 'Sửa',
-            type: 'default',
-            onClick: handleEdit, // truyền hàm xử lý sửa
-          },
-          {
-            key: 'delete',
-            label: 'Xóa',
-            type: 'default',
-            danger: true,
-            onClick: handleDelete, // truyền hàm xử lý xóa
-          },
-        ]}
+            onClick: () => handleEdit('', 'Add'),
+          }
+        }
       />
 
       {/* Modal xem nội dung dùng Ant Design */}
@@ -206,15 +218,20 @@ function PostManagement() {
 
       {/* Modal sửa bài viết dùng Ant Design */}
       <Modal
-        title="Sửa bài viết"
+        title=""
         open={editModalOpen}
-        onOk={handleSaveEdit}
+        // onOk={handleSaveEdit}
         onCancel={handleCloseEditModal}
-        okText="Lưu"
-        cancelText="Hủy"
+        // okText="Lưu"
+        // cancelText="Hủy"
+        footer={null}
+        destroyOnHidden
         width={800} // Cho rộng hơn để dễ sửa nội dung
       >
-        <Form form={editForm} layout="vertical">
+        <PostForm initialValues={editRecord} type={formType} collection={collectionName} onFinish={handleFinishPostForm}>
+
+        </PostForm>
+        {/* <Form form={editForm} layout="vertical">
           <Form.Item
             label="Tiêu đề"
             name="title"
@@ -239,7 +256,7 @@ function PostManagement() {
               style={{ height: '100%', minHeight: 300 }}
             />
           </Form.Item>
-        </Form>
+        </Form> */}
       </Modal>
     </div>
   )
