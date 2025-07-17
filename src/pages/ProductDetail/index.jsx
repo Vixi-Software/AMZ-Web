@@ -25,7 +25,7 @@ function ProductDetail() {
   const { md } = Grid.useBreakpoint()
   const isSmall = !md
 
- 
+
   const [selectedOptions, setSelectedOptions] = useState({
     color: null,
     condition: null,
@@ -309,32 +309,7 @@ function ProductDetail() {
           <div className="mb-3">
             <div className="font-semibold mb-1">Màu sắc</div>
             <div className="flex gap-2">
-              {/* {loading
-                ? Array(2)
-                  .fill(0)
-                  .map((_, idx) => (
-                    <Skeleton.Button
-                      key={idx}
-                      active
-                      size="small"
-                      style={{ width: 60 }}
-                    />
-                  ))
-                : (Array.isArray(productColor) ? productColor : [productColor]).map(
-                  (color, idx) => (
-                    <span
-                      key={idx}
-                      className={`rounded-md px-4 py-1 font-medium cursor-pointer border transition-colors duration-150 ${selectedOptions.color === color
-                        ? 'bg-orange-500 text-white border-orange-500'
-                        : 'bg-white text-gray-800 border-gray-300'
-                        }`}
-                      style={{ minWidth: 60, display: 'inline-block', textAlign: 'center' }}
-                      onClick={() => handleSelectOption('color', color)}
-                    >
-                      {color}
-                    </span>
-                  )
-                )} */}
+         
               {loading
                 ? Array(2)
                   .fill(0)
@@ -369,30 +344,6 @@ function ProductDetail() {
             </div>
           </div>
 
-          {/* Condition Options */}
-          {/* <div className="mb-3">
-            <div className="font-semibold mb-1">Tình trạng</div>
-            <div className="flex gap-2">
-              {loading ? (
-                <Skeleton.Button
-                  active
-                  size="small"
-                  style={{ width: 80 }}
-                />
-              ) : (
-                <span
-                  className={`rounded-md px-4 py-1 font-medium cursor-pointer border transition-colors duration-150 ${selectedOptions.condition === condition
-                    ? 'bg-orange-500 text-white border-orange-500'
-                    : 'bg-white text-gray-700 border-[#999999]'
-                    }`}
-                  style={{ minWidth: 80, display: 'inline-block', textAlign: 'center' }}
-                  onClick={() => handleSelectOption('condition', condition)}
-                >
-                  {condition}
-                </span>
-              )}
-            </div>
-          </div> */}
           <div className="mb-3">
             <div className="font-semibold mb-1">Tình trạng</div>
             <div className="flex gap-2">
@@ -486,10 +437,10 @@ function ProductDetail() {
             <h3 className="text-lg text-orange-400 text-center font-semibold mb-2">
               Đặc Điểm Nổi Bật
             </h3>
-           {product.description}
+            {product.description}
           </div>
           <div className="text-black text-base mb-2 mx-4">
-          <div dangerouslySetInnerHTML={{ __html: currentPost }} />
+            <div dangerouslySetInnerHTML={{ __html: currentPost }} />
           </div>
         </Col>
 
@@ -595,28 +546,6 @@ function ProductDetail() {
         </Col>
       </Row>
 
-      <Row className='bg-white px-4 mt-8' >
-        <div className="mt-8">
-          <h2 className="text-xl font-bold mb-4">Bài viết liên quan</h2>
-          {posts && posts.length > 0 ? (
-            <div className="flex flex-col gap-4">
-              {posts.map((post, idx) => (
-                <div key={post.id || idx} className="transition">
-                  <h3 className="font-semibold text-lg mb-2">{post.title}</h3>
-                  <div className="text-gray-700 mb-2" dangerouslySetInnerHTML={{ __html: post.content }} />
-                  {/* Nếu có ảnh */}
-                  {post.image && (
-                    <img src={post.image} alt={post.title} className="w-full h-40 object-cover rounded mb-2" />
-                  )}
-                  {/* Có thể thêm nút xem chi tiết nếu muốn */}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div>Không có bài viết nào.</div>
-          )}
-        </div>
-      </Row>
     </div>
   )
 }

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { getAllTaiNgheNhetTai } from "../../utils/taiNgheNhetTaiHelper";
-import { getAllNewSealTaiNghe } from "../../utils/newSeal";
-import { getAllLoaKaraoke } from "../../utils/loaKaraoke";
-import { getAllLoaDeBan } from "../../utils/loaDeBan"; // Thêm import
-import { getAllTaiNgheChupTai } from "../../utils/taiNgheChuptai";
-import { getAllLoaDiDong } from "../../utils/diDong";
-import ProductForm from './Product/ProductForm';
+import { getAllTaiNgheNhetTai } from "@/utils/taiNgheNhetTaiHelper.js";
+import { getAllNewSealTaiNghe } from "@/utils/newSeal.js";
+import { getAllLoaKaraoke } from "@/utils/loaKaraoke.js";
+import { getAllLoaDeBan } from "@/utils/loaDeBan.js"; // Thêm import
+import { getAllTaiNgheChupTai } from "@/utils/taiNgheChuptai.js";
+import { getAllLoaDiDong } from "@/utils/diDong.js";
+import ProductForm from './Product/ProductForm.jsx';
 import { Modal, message } from 'antd';
-import { db } from '../../utils/firebase';
+import { db } from '@/utils/firebase.js';
 import { doc, setDoc, updateDoc, deleteField } from 'firebase/firestore';
-import { productToPipeString, pipeStringToProductObject } from '../../utils/convertFireBase.js'
+import { productToPipeString, pipeStringToProductObject } from '@/utils/convertFireBase.js'
 
 
 

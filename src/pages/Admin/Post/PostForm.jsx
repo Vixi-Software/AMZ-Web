@@ -1,26 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { Button, Space, message, Modal, Form, Input, Select } from 'antd'
-import routePath from '../../../constants/routePath'
-import { db } from '../../../utils/firebase'
-import { useFirestore } from '../../../hooks/useFirestore'
-import { useNavigate } from 'react-router-dom'
-import { addDoc, collection } from 'firebase/firestore'
+import { Button, message, Modal, Input, Select } from 'antd'
+import { db } from '@/utils/firebase'
 
-const reactQuillModules = {
-  toolbar: [
-    [{ 'header': [1, 2, 3, false] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-    [{ 'indent': '-1' }, { 'indent': '+1' }],
-    [{ 'align': [] }],
-    ['blockquote', 'code-block'],
-    ['link', 'image', 'video'],
-    ['clean']
-  ]
-}
+import { addDoc, collection, doc, updateDoc } from 'firebase/firestore'
+
+const formatDateTime = (date) => {
+  const d = new Date(date);
+  const hours = d.getHours().toString().padStart(2, '0');
+  const minutes = d.getMinutes().toString().padStart(2, '0');
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const year = d.getFullYear();
+  return `${hours}:${minutes} ${day}/${month}/${year}`;
+};
 
 const reactQuillFormats = [
   'header', 'bold', 'italic', 'underline', 'strike',
@@ -31,42 +25,147 @@ const reactQuillFormats = [
 ]
 
 const postTypeOptions = [
-  { label: 'Sản phẩm', value: 'productPosts' },
   { label: 'Bài viết chung', value: 'postService' },
+  { label: 'Sản phẩm', value: 'productPosts' },
 ]
 
-function PostForm() {
+function PostForm({ initialValues = {}, collectionOrigin = "postService", type = "Add", onFinish }) {
+  console.log("type", type, collectionOrigin)
   const [content, setContent] = useState('')
-  const [collectionName, setCollectionName] = useState('postService')
+  const [collectionName, setCollectionName] = useState(collectionOrigin)
   const [titlePost, setTitlePost] = useState("")
-  const [modalOpen, setModalOpen] = useState(false)
-  const [form] = Form.useForm()
-  const navigate = useNavigate()
-  // const { addDocData } = useFirestore(db, collectionName)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState('')
+  const quillRef = useRef(null)
+  const [savedRange, setSavedRange] = useState(null);
+  const [currentTime, setCurrentTime] = useState(
+    formatDateTime(new Date())
+  );
+
+  const handleImageClick = () => {
+    const editor = quillRef.current?.getEditor()
+    const range = editor?.getSelection()
+    if (range) setSavedRange(range)
+    setIsModalOpen(true)
+  };
+  // Insert image when user clicks "Insert"
+  const insertImage = () => {
+    const editor = quillRef.current?.getEditor()
+
+    if (!savedRange) {
+      message.warning('Vui lòng chọn vị trí trong nội dung để chèn ảnh.')
+      return;
+    }
+
+    if (!imageUrl.trim()) {
+      message.warning('Vui lòng nhập đường dẫn hình ảnh hợp lệ.')
+      return;
+    }
+
+    editor.insertEmbed(savedRange.index, 'image', imageUrl.trim(), 'user')
+    setIsModalOpen(false)
+    setImageUrl("")
+    setSavedRange(null)
+  };
+
+  // Register custom handler on mount
+  useEffect(() => {
+    const quill = quillRef.current.getEditor();
+    quill.getModule('toolbar').addHandler('image', handleImageClick);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(formatDateTime(new Date()));
+    }, 1000); // update every second
+
+    return () => clearInterval(interval); // cleanup when unmounted
+  }, []);
+
+  useEffect(() => {
+    if (initialValues) {
+      setTitlePost(initialValues.title ? initialValues.title : '')
+      setContent(initialValues.content ? initialValues.content : '')
+      setCollectionName(collectionOrigin)
+    }
+  }, []);
+
+  const reactQuillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'indent': '-1' }, { 'indent': '+1' }],
+      [{ 'align': [] }],
+      ['blockquote'],
+      ['link', 'image', 'video'],
+      ['clean'],
+    ],
+  }
 
   const handleChange = (val) => {
     setContent(val)
   }
 
   const handleSave = async () => {
-    try {
-      const date = new Date().toLocaleString('vi-VN')
-      const postData = {
-        title: titlePost,
-        date,
-        content
+    if (type == "Add") {
+      try {
+        const date = new Date().toLocaleString('vi-VN')
+        const postData = {
+          title: titlePost,
+          date,
+          content
+        }
+        const colRef = collection(db, collectionName);
+        const docRef = await addDoc(colRef, postData);
+        message.success('Đã lưu bài viết')
+        setContent('')
+        onFinish()
       }
-      const colRef = collection(db, collectionName);
-      const docRef = await addDoc(colRef, postData);
-      console.log('📄 New doc ID:', docRef.id);
-      message.success('Đã thêm bài viết mới!')
-      setModalOpen(false)
-      form.resetFields()
-      setContent('')
-      navigate(routePath.adminPost)
-    } catch (err) {
-      message.error('Vui lòng nhập tiêu đề bài viết!')
+      catch (error) {
+        console.error('❌ Lỗi khi thêm bài viết mới:', error);
+        message.error('Thêm bài viết thất bại');
+      }
     }
+
+    if (type == "Update") {
+      const updatedData = {
+        title: titlePost,
+        date: currentTime,
+        content: content,
+      };
+      const id =  initialValues.id
+
+      try {
+        const docRef = doc(db, collectionName, id);
+        await updateDoc(docRef, updatedData);
+        message.success('📝 Đã cập nhật bài viết');
+        onFinish()
+      } catch (error) {
+        console.error('❌ Lỗi khi cập nhật:', error);
+        message.error('Cập nhật bài viết thất bại');
+      }
+    }
+
+    // try {
+    // const date = new Date().toLocaleString('vi-VN')
+    // const postData = {
+    //   title: titlePost,
+    //   date,
+    //   content
+    // }
+    // const colRef = collection(db, collectionName);
+    // const docRef = await addDoc(colRef, postData);
+    // console.log('📄 New doc ID:', docRef.id);
+    // message.success('Đã thêm bài viết mới!')
+    // form.resetFields()
+    // setContent('')
+    // navigate(routePath.adminPost)
+    // } catch (err) {
+    //   console.log('error', err)
+    //   message.error('Vui lòng nhập tiêu đề bài viết!')
+    // }
   }
 
   const handleClear = () => {
@@ -78,19 +177,16 @@ function PostForm() {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 24, gap: 16 }}>
 
       {/* Top Actions */}
-      <Space>
-        <Button type="primary" onClick={handleSave}>Lưu</Button>
-        <Button danger onClick={handleClear}>Xóa hết</Button>
-      </Space>
+
       <label style={{ fontWeight: 500 }}>Tên bài viết:</label>
       <Input value={titlePost} onChange={(e) => setTitlePost(e.target.value)} />
       <div style={{ marginTop: 16 }}>
         <b style={{ marginRight: 16 }}>Ngày viết:</b>
-        {new Date().toLocaleString('vi-VN')}
+        {currentTime}
       </div>
       {/* Post Type Selector */}
       <div>
-        <label style={{ fontWeight: 500 }}>Chọn loại bài viết:</label>
+        <label style={{ fontWeight: 500, marginRight: 10 }}>Chọn loại bài viết:</label>
         <Select
           options={postTypeOptions}
           value={collectionName}
@@ -103,6 +199,7 @@ function PostForm() {
       <div style={{ flex: 1, minHeight: 0 }}>
         <label style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Nội dung bài viết:</label>
         <ReactQuill
+          ref={quillRef}
           theme="snow"
           value={content}
           onChange={handleChange}
@@ -111,30 +208,24 @@ function PostForm() {
           style={{ height: '100%', minHeight: 300 }}
         />
       </div>
-
-      {/* Modal for Title Input */}
-      {/* <Modal
-      title="Nhập tiêu đề bài viết"
-      open={modalOpen}
-      onOk={handleModalOk}
-      onCancel={handleModalCancel}
-      okText="Lưu"
-      cancelText="Hủy"
-    >
-      <Form form={form} layout="vertical">
-        <Form.Item
-          label="Tiêu đề"
-          name="title"
-          rules={[{ required: true, message: 'Vui lòng nhập tiêu đề!' }]}
-        >
-          
-        </Form.Item>
-      </Form>
-      <div style={{ marginTop: 16 }}>
-        <b>Ngày viết:</b> {new Date().toLocaleString('vi-VN')}
+      <div style={{ textAlign: 'right' }}>
+        <Button danger onClick={handleClear}>Xóa hết</Button>
+        <Button style={{ marginLeft: 10 }} type="primary" onClick={handleSave}>Lưu</Button>
       </div>
-    </Modal> */}
-
+      <Modal
+        title="Thêm URL Hình ảnh"
+        open={isModalOpen}
+        onOk={insertImage}
+        onCancel={() => setIsModalOpen(false)}
+        okText="Thêm"
+        cancelText="Thoát"
+      >
+        <Input
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          placeholder="Nhập link hình ảnh"
+        />
+      </Modal>
     </div>
 
   )

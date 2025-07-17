@@ -3,7 +3,7 @@ import { Table, Input, Button, Space, Modal, Select, Row, Col, InputNumber, Date
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 
-function CTable({ dataSource, columns, onRowSelectionChange, actions = [] }) {
+function CTable({ dataSource, columns, action = {} }) {
   const [searchText, setSearchText] = useState('')
   const [filteredData, setFilteredData] = useState(dataSource)
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
@@ -274,25 +274,28 @@ function CTable({ dataSource, columns, onRowSelectionChange, actions = [] }) {
     return newCol
   })
 
-  // Thêm state để lưu các hàng đã chọn (nếu muốn)
-  const [selectedRowKeys, setSelectedRowKeys] = useState([])
-
-  // Xử lý khi chọn hàng
-  const onSelectChange = (selectedRowKeys, selectedRows) => {
-    setSelectedRowKeys(selectedRowKeys)
-    if (onRowSelectionChange) {
-      onRowSelectionChange(selectedRows)
-    }
-  }
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  }
 
   return (
     <div>
-      <div className="mb-4 flex justify-end">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        {/* Left side */}
+        <Button
+          key={action.key}
+          type={action.type}
+          icon={action.icon}
+          onClick={action.onClick}
+          danger={action.danger}
+          disabled={action.disabled}
+          loading={action.loading}
+          style={action.style}
+          variant={action.variant}
+          className={action.className}
+          size={action.size || 'middle'}
+        >
+          {action.label}
+        </Button>
+
+        {/* Right side */}
         <Space>
           <Button
             icon={<FilterOutlined />}
@@ -311,33 +314,12 @@ function CTable({ dataSource, columns, onRowSelectionChange, actions = [] }) {
         </Space>
       </div>
       {/* Row 2: Action buttons (ở dưới) */}
-      <div className="mb-2">
-        <Space>
-          {actions.map((btn, idx) => (
-            <Button
-              key={btn.key || idx}
-              type={btn.type}
-              icon={btn.icon}
-              onClick={btn.onClick}
-              danger={btn.danger}
-              disabled={btn.disabled}
-              loading={btn.loading}
-              style={btn.style}
-              variant={btn.variant}
-              className={btn.className}
-              size={btn.size || 'middle'}
-            >
-              {btn.label}
-            </Button>
-          ))}
-        </Space>
-      </div>
+
       <Table
         dataSource={filteredData}
         columns={enhancedColumns}
         pagination={{ pageSize: 25, showSizeChanger: true, pageSizeOptions: [25, 50] }}
         rowKey={record => record.id || record.key}
-        rowSelection={rowSelection}
         locale={{
           emptyText: 'Không có dữ liệu',
         }}
