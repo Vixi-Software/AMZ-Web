@@ -59,6 +59,7 @@ function PostManagement() {
       enableSort: true,
       enableFilter: true,
       filterType: 'text',
+      showSorterTooltip: false,
     },
     {
       title: 'Ngày đăng',
@@ -67,11 +68,13 @@ function PostManagement() {
       enableSort: true,
       enableFilter: true,
       filterType: 'dateRange',
+      showSorterTooltip: false,
     },
     {
       title: 'Sửa/Xoá',
       key: 'action',
       align: 'center',
+      showSorterTooltip: false,
       render: (text, record) => (
         <div style={{ display: "flex", gap: "5px", justifyContent: "center" }}>
           <button

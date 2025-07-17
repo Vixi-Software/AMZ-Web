@@ -12,10 +12,28 @@ import { parseStringToTableInfo } from '../../utils/tableInfoParse'
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from "@/utils/firebase";
 
+const getRelatedProducts = (targetProduct, allProducts, limit = 4) => {
+  if (!targetProduct || !targetProduct.collection || !targetProduct.priceForSale) return [];
+
+  const targetPrice = Number(targetProduct.priceForSale);
+
+  return allProducts
+    .filter(product =>
+      product.id !== targetProduct.id &&
+      product.collection === targetProduct.collection
+    )
+    .sort((a, b) => {
+      const priceA = Number(a.priceForSale);
+      const priceB = Number(b.priceForSale);
+      return Math.abs(priceA - targetPrice) - Math.abs(priceB - targetPrice);
+    })
+    .slice(0, limit);
+};
+
 function ProductDetail() {
   const product = useSelector(state => state.product.product)
   const [selectedImage, setSelectedImage] = useState(0)
-  const [relatedProducts, setRelatedProducts] = useState([])
+  // const [relatedProducts, setRelatedProducts] = useState([])
   const [posts, setPosts] = useState([])
   const [currentPost, setCurrentPost] = useState("")
   const { getRelatedProductsByCategory } = useProductService()
@@ -24,8 +42,10 @@ function ProductDetail() {
   const dispatch = useDispatch()
   const { md } = Grid.useBreakpoint()
   const isSmall = !md
-
-
+  const allProductsState = useSelector((state) => state.allProducts);
+  const allProductsArray = Object.values(allProductsState).flat();
+  const relatedProducts = getRelatedProducts(product, allProductsArray)
+  console.log("related", relatedProducts)
   const [selectedOptions, setSelectedOptions] = useState({
     color: null,
     condition: null,
@@ -309,7 +329,7 @@ function ProductDetail() {
           <div className="mb-3">
             <div className="font-semibold mb-1">Màu sắc</div>
             <div className="flex gap-2">
-         
+
               {loading
                 ? Array(2)
                   .fill(0)
