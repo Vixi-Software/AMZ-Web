@@ -1,36 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react'
-import CTable from '../../../components/ui/table'
-import { db } from '../../../utils/firebase'
-import { useFirestore } from '../../../hooks/useFirestore'
-import { message, Modal, Form, Input, Select } from 'antd' // Thêm dòng này
-import ReactQuill from 'react-quill'
+import CTable from '@/components/ui/table'
+import { db } from '@/utils/firebase'
+import { message, Modal, Form, Select, Popconfirm, Button } from 'antd' // Thêm dòng này
 import 'react-quill/dist/quill.snow.css'
 import PostForm from './PostForm'
 import { collection, deleteDoc, doc, getDocs, query } from 'firebase/firestore'
 
-
-const modules = {
-  toolbar: [
-    [{ 'header': [1, 2, 3, false] }],
-    ['bold', 'italic', 'underline', 'strike'],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-    [{ 'indent': '-1' }, { 'indent': '+1' }],
-    [{ 'align': [] }],
-    ['blockquote', 'code-block'],
-    ['link', 'image', 'video'],
-    ['clean']
-  ]
-}
-
-const formats = [
-  'header', 'bold', 'italic', 'underline', 'strike',
-  'color', 'background',
-  'list', 'bullet', 'indent',
-  'align', 'blockquote', 'code-block',
-  'link', 'image', 'video'
-]
 
 const postTypeOptions = [
   { label: 'Bài viết chung', value: 'postService' },
@@ -43,7 +19,6 @@ function PostManagement() {
   const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalContent, setModalContent] = useState('')
-  const [selectedRows, setSelectedRows] = useState([]) // Thêm state lưu hàng được chọn
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editRecord, setEditRecord] = useState(null)
   const [editTitle, setEditTitle] = useState('')
@@ -84,12 +59,22 @@ function PostManagement() {
               handleEdit(record, 'Update')
             }}
           >Sửa</button>
-          <button
+          <Popconfirm
+            title="Bạn chắc chắn muốn xóa?"
+            onConfirm={() => handleDelete(record)}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Button style={{ background: '#f44336', color: '#fff', border: 'none', borderRadius: '3px', padding: '4px 8px', cursor: 'pointer' }}>
+              Xóa
+            </Button>
+          </Popconfirm>
+          {/* <button
             style={{ background: '#f44336', color: '#fff', border: 'none', borderRadius: '3px', padding: '4px 8px', cursor: 'pointer' }}
             onClick={() => {
               handleDelete(record)
             }}
-          >Xóa</button>
+          >Xóa</button> */}
         </div>
       ),
     },
@@ -112,24 +97,15 @@ function PostManagement() {
 
   // Xử lý xóa bài viết với xác nhận của Ant Design
   const handleDelete = (record) => {
-    Modal.confirm({
-      title: 'Bạn có chắc muốn xóa bài viết này?',
-      content: `Tiêu đề: ${record.title}`,
-      okText: 'Xóa',
-      okType: 'danger',
-      cancelText: 'Hủy',
-      onOk: async () => {
-        try {
-          const docRef = doc(db, collectionName, record.id);
-          await deleteDoc(docRef);
-          message.success('🗑️ Đã xoá bài viết');
-          fetchData()
-        } catch (error) {
-          console.error('❌ Lỗi khi xoá:', error);
-          message.error('Xoá thất bại');
-        }
-      },
-    })
+    try {
+      const docRef = doc(db, collectionName, record.id);
+      deleteDoc(docRef);
+      message.success('🗑️ Đã xoá bài viết');
+      fetchData()
+    } catch (error) {
+      console.error('❌ Lỗi khi xoá:', error);
+      message.error('Xoá thất bại');
+    }
   }
 
   // Khi mở modal sửa, set giá trị cho form

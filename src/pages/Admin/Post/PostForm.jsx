@@ -16,6 +16,21 @@ const formatDateTime = (date) => {
   return `${hours}:${minutes} ${day}/${month}/${year}`;
 };
 
+const reactQuillModules = {
+  toolbar: [
+    [{ 'header': [1, 2, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'indent': '-1' }, { 'indent': '+1' }],
+    [{ 'align': [] }],
+    ['blockquote'],
+    ['link', 'image', 'video'],
+    ['clean'],
+  ],
+}
+
+
 const reactQuillFormats = [
   'header', 'bold', 'italic', 'underline', 'strike',
   'color', 'background',
@@ -89,20 +104,7 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
     }
   }, []);
 
-  const reactQuillModules = {
-    toolbar: [
-      [{ 'header': [1, 2, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'indent': '-1' }, { 'indent': '+1' }],
-      [{ 'align': [] }],
-      ['blockquote'],
-      ['link', 'image', 'video'],
-      ['clean'],
-    ],
-  }
-
+  
   const handleChange = (val) => {
     setContent(val)
   }

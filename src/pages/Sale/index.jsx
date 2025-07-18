@@ -7,30 +7,30 @@ import { db } from '../../utils/firebase'
 import { useFirestore } from '../../hooks/useFirestore'
 import { Flame, Clock } from 'lucide-react';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import fireGif from '../../assets/fire.gif';
-import clockGif from '../../assets/clock.gif';
+import fireGif from '@/assets/fire.gif';
+import clockGif from '@/assets/clock.gif';
 
 const CustomArrow = ({ className, style, onClick, direction }) => (
-  <div
-    className={`${className} custom-arrow`}
-    style={{
-      ...style,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'rgba(255, 255, 255, 0.9)',
-      borderRadius: '50%',
-      width: '40px',
-      height: '40px',
-      zIndex: 2,
-      opacity: 0,
-      transition: 'opacity 0.3s ease',
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-    }}
-    onClick={onClick}
-  >
-    {direction === 'prev' ? <LeftOutlined style={{ color: '#333' }} /> : <RightOutlined style={{ color: '#333' }} />}
-  </div>
+    <div
+        className={`${className} custom-arrow`}
+        style={{
+            ...style,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(255, 255, 255, 0.9)',
+            borderRadius: '50%',
+            width: '40px',
+            height: '40px',
+            zIndex: 2,
+            opacity: 0,
+            transition: 'opacity 0.3s ease',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+        }}
+        onClick={onClick}
+    >
+        {direction === 'prev' ? <LeftOutlined style={{ color: '#333' }} /> : <RightOutlined style={{ color: '#333' }} />}
+    </div>
 );
 
 function Sale() {
@@ -61,7 +61,7 @@ function Sale() {
                     </span>
                 </nav>
             </div>
-            
+
             <ConfigProvider
                 theme={{
                     components: {
@@ -73,10 +73,10 @@ function Sale() {
                 }}
             >
                 <div className="carousel-container group">
-                    <Carousel 
-                        dots={true} 
-                        autoplay 
-                        arrows={true}  
+                    <Carousel
+                        dots={true}
+                        autoplay
+                        arrows={true}
                         prevArrow={<CustomArrow direction="prev" />}
                         nextArrow={<CustomArrow direction="next" />}
                         className="main-carousel"
@@ -182,7 +182,7 @@ function Sale() {
 
             <div className="mt-8">
                 <h2 className="!text-base font-bold mb-[20px] mt-[34px] flex items-center gap-2">
-                    
+                    Sắp diễn ra <img src={clockGif} width={36} alt="" />
                 </h2>
                 <Row gutter={[16, 16]}>
                     {events
