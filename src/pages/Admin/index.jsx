@@ -6,7 +6,7 @@ import { getAllLoaDeBan } from "@/utils/loaDeBan.js"; // Thêm import
 import { getAllTaiNgheChupTai } from "@/utils/taiNgheChuptai.js";
 import { getAllLoaDiDong } from "@/utils/diDong.js";
 import ProductForm from './Product/ProductForm.jsx';
-import { Modal, message } from 'antd';
+import { Button, Modal, Popconfirm, message } from 'antd';
 import { db } from '@/utils/firebase.js';
 import { doc, setDoc, updateDoc, deleteField } from 'firebase/firestore';
 import { productToPipeString, pipeStringToProductObject } from '@/utils/convertFireBase.js'
@@ -68,19 +68,20 @@ function Admin() {
   ];
 
   // fields là mảng sau khi split từ value (bỏ code, page)
-  
+
 
   // Parse pipe string (full) to product object (dựa vào ProductForm)
   function parsePipeString(pipeString) {
     const arr = String(pipeString).split("|");
     // arr[0]: code, arr[1]: page, arr[2...]: fields
-    return {...pipeStringToProductObject(arr.slice(2), arr[0]),
+    return {
+      ...pipeStringToProductObject(arr.slice(2), arr[0]),
       _code: arr[0],
       _page: arr[1],
     };
   }
 
-  
+
 
   // Update product in Firestore
   async function handleUpdateProduct(updated, key, code, page) {
@@ -192,7 +193,7 @@ function Admin() {
                   .filter(([key, value]) => {
                     // Bỏ các hàng có key === 'id' và value === 'page1'
                     if (key === 'id') return false;
-                    
+
                     // Lọc theo searchText
                     if (searchText.trim() !== "") {
                       const arr = String(value).split("|");
@@ -328,13 +329,27 @@ function Admin() {
                                 setEditModal({ visible: true, key, value: obj, page: pageName, code });
                               }}
                             >Sửa</button>
-                            <button
+
+                            <Popconfirm
+                              title="Bạn chắc chắn muốn xóa?"
+                              onConfirm={() => {
+                                const obj = parsePipeString(value);
+                                handleDeleteProduct(key, code, pageName);
+                              }}
+                              okText="Xóa"
+                              cancelText="Hủy"
+                            >
+                              <Button style={{ background: '#f44336', color: '#fff', border: 'none', borderRadius: '3px', padding: '4px 8px', cursor: 'pointer' }}>
+                                Xóa
+                              </Button>
+                            </Popconfirm>
+                            {/* <button
                               style={{ background: '#f44336', color: '#fff', border: 'none', borderRadius: '3px', padding: '4px 8px', cursor: 'pointer' }}
                               onClick={() => {
                                 const obj = parsePipeString(value);
                                 handleDeleteProduct(key, code, pageName);
                               }}
-                            >Xóa</button>
+                            >Xóa</button> */}
                           </div>
                         </td>
                       </tr>

@@ -38,6 +38,10 @@ const createMenuItems = (collapsed) => [
     routePath.adminEvent
   ),
   getItem(
+    collapsed ? <Link to={routePath.adminWarranty}><CalendarOutlined /></Link> : <Link to={routePath.adminWarranty}><CalendarOutlined /> Quản lý bảo hành</Link>,
+    routePath.adminWarranty
+  ),
+  getItem(
     collapsed ? null : 'Quản lý sản phẩm',
     'sub-product',
     <AppstoreOutlined />,

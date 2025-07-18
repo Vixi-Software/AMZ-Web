@@ -34,15 +34,15 @@ export const useFirestore = (db, collectionName = "home") => {
     return docRef.id;
   }, [colRef]);
 
-  // const updateDocData = useCallback(async (id, data) => {
-  //   const docRef = doc(db, collectionName, id);
-  //   await updateDoc(docRef, data);
-  // }, [db, collectionName]);
+  const updateDocData = useCallback(async (id, data) => {
+    const docRef = doc(db, collectionName, id);
+    await updateDoc(docRef, data);
+  }, [db, collectionName]);
 
-  // const deleteDocData = useCallback(async (id) => {
-  //   const docRef = doc(db, collectionName, id);
-  //   await deleteDoc(docRef);
-  // }, [db, collectionName]);
+  const deleteDocData = useCallback(async (id) => {
+    const docRef = doc(db, collectionName, id);
+    await deleteDoc(docRef);
+  }, [db, collectionName]);
 
   // // Lấy tài liệu theo phân trang
   // const getDocsByPage = useCallback(
@@ -112,8 +112,8 @@ export const useFirestore = (db, collectionName = "home") => {
     getAllDocs,
     // getDocById,
     addDocData,
-    // updateDocData,
-    // deleteDocData,
+    updateDocData,
+    deleteDocData,
     // getDocsByPage, // Thêm hàm mới vào return
   };
 };

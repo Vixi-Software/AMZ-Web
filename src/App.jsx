@@ -9,9 +9,6 @@ import { useFirestore } from "./hooks/useFirestore";
 import { deleteAllProducts, importProductByType } from './store/features/allProducts/allProductsSlice';
 
 function AppContent() {
-  const location = useLocation();
-  const [loading, setLoading] = useState(false);
-  const isLoading = useSelector((state) => state.loading.isLoading);
   const { getAllDocsWithSubcollections } = useFirestore(db);
   const dispatch = useDispatch();
   const allProductsState = useSelector((state) => state.allProducts);

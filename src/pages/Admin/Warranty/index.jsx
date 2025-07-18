@@ -5,16 +5,8 @@ import { Button, message, Modal, Input, Select } from 'antd'
 import { db } from '@/utils/firebase'
 
 import { addDoc, collection, doc, updateDoc } from 'firebase/firestore'
+import { useFirestore } from '@/hooks/useFirestore'
 
-const formatDateTime = (date) => {
-  const d = new Date(date);
-  const hours = d.getHours().toString().padStart(2, '0');
-  const minutes = d.getMinutes().toString().padStart(2, '0');
-  const day = d.getDate().toString().padStart(2, '0');
-  const month = (d.getMonth() + 1).toString().padStart(2, '0');
-  const year = d.getFullYear();
-  return `${hours}:${minutes} ${day}/${month}/${year}`;
-};
 
 const reactQuillModules = {
   toolbar: [
@@ -39,22 +31,18 @@ const reactQuillFormats = [
   'link', 'image', 'video'
 ]
 
-const postTypeOptions = [
-  { label: 'Bài viết chung', value: 'postService' },
-  { label: 'Sản phẩm', value: 'productPosts' },
-]
+const collectionName = "warranty"
+const id = "warrantyPolicy"
 
-function PostForm({ initialValues = {}, collectionOrigin = "postService", type = "Add", onFinish }) {
+function Warranty() {
   const [content, setContent] = useState('')
-  const [collectionName, setCollectionName] = useState(collectionOrigin)
+  const { getAllDocs } = useFirestore(db, 'warranty')
   const [titlePost, setTitlePost] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('')
   const quillRef = useRef(null)
   const [savedRange, setSavedRange] = useState(null);
-  const [currentTime, setCurrentTime] = useState(
-    formatDateTime(new Date())
-  );
+  const [warrantyInfo, setWarrantyInfo] = useState({})
 
   const handleImageClick = () => {
     const editor = quillRef.current?.getEditor()
@@ -89,84 +77,40 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(formatDateTime(new Date()));
-    }, 1000); // update every second
-
-    return () => clearInterval(interval); // cleanup when unmounted
+    const fetchWaranty = async () => {
+      const docs = await getAllDocs()
+      if (docs.length > 0) {
+        setWarrantyInfo(docs[0])
+      }
+      
+    }
+    fetchWaranty()
   }, []);
 
   useEffect(() => {
-    if (initialValues) {
-      setTitlePost(initialValues.title ? initialValues.title : '')
-      setContent(initialValues.content ? initialValues.content : '')
-      setCollectionName(collectionOrigin)
-    }
-  }, []);
+    setTitlePost(warrantyInfo.title ? warrantyInfo.title : '')
+    setContent(warrantyInfo.content ? warrantyInfo.content : '')
+  }, [warrantyInfo]);
 
-  
+
   const handleChange = (val) => {
     setContent(val)
   }
 
   const handleSave = async () => {
-    if (type == "Add") {
-      try {
-        const date = new Date().toLocaleString('vi-VN')
-        const postData = {
-          title: titlePost,
-          date,
-          content
-        }
-        const colRef = collection(db, collectionName);
-        const docRef = await addDoc(colRef, postData);
-        message.success('Đã lưu bài viết')
-        setContent('')
-        onFinish()
-      }
-      catch (error) {
-        console.error('❌ Lỗi khi thêm bài viết mới:', error);
-        message.error('Thêm bài viết thất bại');
-      }
+    const updatedData = {
+      title: titlePost,
+      content: content,
+    };
+
+    try {
+      const docRef = doc(db, collectionName, id);
+      await updateDoc(docRef, updatedData);
+      message.success('📝 Đã cập nhật bài viết');
+    } catch (error) {
+      console.error('❌ Lỗi khi cập nhật:', error);
+      message.error('Cập nhật bài viết thất bại');
     }
-
-    if (type == "Update") {
-      const updatedData = {
-        title: titlePost,
-        date: currentTime,
-        content: content,
-      };
-      const id =  initialValues.id
-
-      try {
-        const docRef = doc(db, collectionName, id);
-        await updateDoc(docRef, updatedData);
-        message.success('📝 Đã cập nhật bài viết');
-        onFinish()
-      } catch (error) {
-        console.error('❌ Lỗi khi cập nhật:', error);
-        message.error('Cập nhật bài viết thất bại');
-      }
-    }
-
-    // try {
-    // const date = new Date().toLocaleString('vi-VN')
-    // const postData = {
-    //   title: titlePost,
-    //   date,
-    //   content
-    // }
-    // const colRef = collection(db, collectionName);
-    // const docRef = await addDoc(colRef, postData);
-    // console.log('📄 New doc ID:', docRef.id);
-    // message.success('Đã thêm bài viết mới!')
-    // form.resetFields()
-    // setContent('')
-    // navigate(routePath.adminPost)
-    // } catch (err) {
-    //   console.log('error', err)
-    //   message.error('Vui lòng nhập tiêu đề bài viết!')
-    // }
   }
 
   const handleClear = () => {
@@ -179,23 +123,9 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
 
       {/* Top Actions */}
 
+      <label style={{ fontWeight: 700, fontSize: 25 }}>Chỉnh sửa Chính sách bảo hành</label>
       <label style={{ fontWeight: 500 }}>Tên bài viết:</label>
       <Input value={titlePost} onChange={(e) => setTitlePost(e.target.value)} />
-      <div style={{ marginTop: 16 }}>
-        <b style={{ marginRight: 16 }}>Ngày viết:</b>
-        {currentTime}
-      </div>
-      {/* Post Type Selector */}
-      <div>
-        <label style={{ fontWeight: 500, marginRight: 10 }}>Chọn loại bài viết:</label>
-        <Select
-          options={postTypeOptions}
-          value={collectionName}
-          onChange={val => setCollectionName(val)}
-          style={{ width: 300, marginTop: 8 }}
-        />
-      </div>
-
       {/* Rich Text Editor */}
       <div style={{ flex: 1, minHeight: 0 }}>
         <label style={{ fontWeight: 500, display: 'block', marginBottom: 8 }}>Nội dung bài viết:</label>
@@ -232,4 +162,4 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
   )
 }
 
-export default PostForm
+export default Warranty

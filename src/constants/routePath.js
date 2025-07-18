@@ -20,6 +20,8 @@ const routePath = {
     adminPostAdd: "/admin/posts/add",
     adminPostEdit: "/admin/posts/edit",
 
+    // ======= Admin Warranty Pages =======
+    adminWarranty: "/admin/warranty",
     // ======= Admin Event Pages =======
     adminEvent: "/admin/events",
     adminEventAdd: "/admin/events/add",

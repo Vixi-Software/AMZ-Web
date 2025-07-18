@@ -1,28 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import routePath from "../../constants/routePath";
 import { useNavigate } from "react-router-dom";
-import { usePostService } from "../../services/postService";
+import { db } from '@/utils/firebase'
 import { Carousel, Grid } from "antd";
+import { useFirestore } from "@/hooks/useFirestore";
 
 const FixPage = () => {
   const navigate = useNavigate();
-  const { getPostsWithStore } = usePostService();
+
+  const { getAllDocs } = useFirestore(db, 'warranty')
   const screens = Grid.useBreakpoint();
-  const [posts, setPosts] = React.useState([]);
+  const [warrantyInfo, setWarrantyInfo] = useState({})
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        getPostsWithStore().then((posts) => {
-          if (posts) {
-            setPosts(posts);
-          }
-        });
-      } catch (error) {
+    const fetchWaranty = async () => {
+      const docs = await getAllDocs()
+      if (docs.length > 0) {
+        setWarrantyInfo(docs[0])
       }
-    };
-    fetchPosts();
+    }
+    fetchWaranty()
   }, []);
+
+
 
   return (
     <div>
@@ -71,17 +71,15 @@ const FixPage = () => {
         </nav>
       </div>
       <div className='mt-[30px]'>
-        {posts.length > 0 ? (
+        {warrantyInfo ? (
           <div className="grid grid-cols-1 gap-4">
-            {posts.map(post => (
-              <div key={post.id} className="rounded-lg">
-                <h1 className="text-[21px] be-vietnam-pro-medium  font-semibold">{post.title}</h1>
-                <div
-                  className="text-gray-600 be-vietnam-pro"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
-              </div>
-            ))}
+            <div className="rounded-lg">
+              <h1 className="text-[21px] be-vietnam-pro-medium  font-semibold">{warrantyInfo.title}</h1>
+              <div
+                className="text-gray-600 be-vietnam-pro"
+                dangerouslySetInnerHTML={{ __html: warrantyInfo.content }}
+              />
+            </div>
           </div>
         ) : (
           <div>Không có bài viết nào</div>
