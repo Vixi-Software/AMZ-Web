@@ -16,6 +16,7 @@ const Exchange = lazy(() => import("@/pages/Exchange"));
 const Sale = lazy(() => import("@/pages/Sale"));
 const PostForm = lazy(() => import("@/pages/Admin/Post/PostForm"));
 const PostManagement = lazy(() => import("@/pages/Admin/Post"));
+const Warranty = lazy(() => import("@/pages/Admin/Warranty"));
 const ProductForm = lazy(() => import("@/pages/Admin/Product/ProductForm"));
 const EventManagement = lazy(() => import("@/pages/Admin/Event"));
 const PageManagement = lazy(() => import("@/pages/Admin/Page"));
@@ -41,6 +42,9 @@ const AppRoute = [
     { path: routePath.adminPost, page: PostManagement, layout: AdminLayout, protect: true },
     { path: routePath.adminPostEdit, page: PostForm, layout: AdminLayout, protect: true },
     { path: routePath.adminPostAdd, page: PostForm, layout: AdminLayout, protect: true },
+
+    // ======= Admin Warranty Pages =======
+    { path: routePath.adminWarranty, page: Warranty, layout: AdminLayout, protect: true },
 
     // ======= Admin Event Pages =======
     { path: routePath.adminEvent, page: EventManagement, layout: AdminLayout, protect: true },
