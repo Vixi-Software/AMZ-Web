@@ -9,6 +9,7 @@ import { Flame, Clock } from 'lucide-react';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import fireGif from '@/assets/fire.gif';
 import clockGif from '@/assets/clock.gif';
+import moment from 'moment';
 
 const CustomArrow = ({ className, style, onClick, direction }) => (
     <div
@@ -36,12 +37,43 @@ const CustomArrow = ({ className, style, onClick, direction }) => (
 function Sale() {
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
+    const [currentEvents, setCurrentEvents] = useState([])
+    const [nextEvents, setNextEvents] = useState([])
     const { getAllDocs } = useFirestore(db, "eventAMZ");
 
     useEffect(() => {
         getAllDocs().then(setEvents);
     }, []);
 
+    useEffect(() => {
+        if (!events || events.length === 0) return;
+
+        const today = moment().startOf('day');
+
+        const current = [];
+        const next = [];
+
+        events.forEach(event => {
+            const start = moment(event.startDate, 'YYYY-MM-DD');
+            const end = moment(event.endDate, 'YYYY-MM-DD');
+
+            if (start.isSameOrBefore(today) && end.isSameOrAfter(today)) {
+                current.push(event); // Event is happening today
+            } else if (start.isAfter(today)) {
+                next.push(event); // Event is upcoming
+            }
+        });
+
+        setCurrentEvents(current);
+        setNextEvents(next);
+        console.log("Cur", currentEvents)
+        console.log("Next", nextEvents)
+    }, [events]);
+
+    useEffect(() => {
+        console.log("Cur", currentEvents)
+        console.log("Next", nextEvents)
+    }, [currentEvents, nextEvents]);
 
     return (
         <div>
@@ -138,11 +170,11 @@ function Sale() {
                 </h2>
                 <Row gutter={[16, 16]}>
                     <Col xs={24} md={16}>
-                        {events[0] && (
+                        {currentEvents[0] && (
                             <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
                                 <img
-                                    src={events[0].linkBanner}
-                                    alt={events[0].name}
+                                    src={currentEvents[0].linkBanner}
+                                    alt={currentEvents[0].name}
                                     className="transition-transform duration-500 ease-in-out hover:scale-110"
                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                 />
@@ -152,11 +184,11 @@ function Sale() {
                     <Col xs={24} md={8}>
                         <Row gutter={[0, 16]}>
                             <Col span={24}>
-                                {events[1] && (
+                                {currentEvents[1] && (
                                     <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
                                         <img
-                                            src={events[1].linkBanner}
-                                            alt={events[1].name}
+                                            src={currentEvents[1].linkBanner}
+                                            alt={currentEvents[1].name}
                                             className="transition-transform duration-500 ease-in-out hover:scale-110"
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
@@ -164,11 +196,11 @@ function Sale() {
                                 )}
                             </Col>
                             <Col span={24}>
-                                {events[2] && (
+                                {currentEvents[2] && (
                                     <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
                                         <img
-                                            src={events[2].linkBanner}
-                                            alt={events[2].name}
+                                            src={currentEvents[2].linkBanner}
+                                            alt={currentEvents[2].name}
                                             className="transition-transform duration-500 ease-in-out hover:scale-110"
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
@@ -185,27 +217,46 @@ function Sale() {
                     Sắp diễn ra <img src={clockGif} width={36} alt="" />
                 </h2>
                 <Row gutter={[16, 16]}>
-                    {events
-                        .filter(event => {
-                            // Lọc sự kiện có ngày bắt đầu >= hôm nay
-                            const today = new Date();
-                            const eventDate = new Date(event.date);
-                            return eventDate >= today;
-                        })
-                        .sort((a, b) => new Date(a.date) - new Date(b.date))
-                        .slice(0, 4)
-                        .map(event => (
-                            <Col xs={24} md={12} key={event.id}>
-                                <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
-                                    <img
-                                        alt={event.name}
-                                        src={event.linkBanner}
-                                        className="transition-transform duration-500 ease-in-out hover:scale-110"
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                    />
-                                </div>
+                    <Col xs={24} md={16}>
+                        {nextEvents[0] && (
+                            <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
+                                <img
+                                    src={nextEvents[0].linkBanner}
+                                    alt={nextEvents[0].name}
+                                    className="transition-transform duration-500 ease-in-out hover:scale-110"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                            </div>
+                        )}
+                    </Col>
+                    <Col xs={24} md={8}>
+                        <Row gutter={[0, 16]}>
+                            <Col span={24}>
+                                {nextEvents[1] && (
+                                    <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
+                                        <img
+                                            src={nextEvents[1].linkBanner}
+                                            alt={nextEvents[1].name}
+                                            className="transition-transform duration-500 ease-in-out hover:scale-110"
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                    </div>
+                                )}
                             </Col>
-                        ))}
+                            <Col span={24}>
+                                {nextEvents[2] && (
+                                    <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
+                                        <img
+                                            src={nextEvents[2].linkBanner}
+                                            alt={nextEvents[2].name}
+                                            className="transition-transform duration-500 ease-in-out hover:scale-110"
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                    </div>
+                                )}
+                            </Col>
+                        </Row>
+                    </Col>
                 </Row>
             </div>
 
