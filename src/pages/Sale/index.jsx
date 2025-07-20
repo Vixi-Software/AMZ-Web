@@ -37,7 +37,6 @@ const CustomArrow = ({ className, style, onClick, direction }) => (
 
 const CustomCarousel = ({ saleEvents, navigate, dispatch }) => {
     const handleSelectEvent = (event) =>{
-        console.log("Clicked", event)
         dispatch(setSale(event))
         navigate(routePath.saleDetail)
     }
