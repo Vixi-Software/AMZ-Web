@@ -53,7 +53,7 @@ const reactQuillModules = {
     [{ 'indent': '-1' }, { 'indent': '+1' }],
     [{ 'align': [] }],
     ['blockquote'],
-    ['link', 'image', 'video'],
+    ['link', 'image'],
     ['clean'],
   ],
 }
@@ -64,14 +64,17 @@ const reactQuillFormats = [
   'color', 'background',
   'list', 'bullet', 'indent',
   'align', 'blockquote', 'code-block',
-  'link', 'image', 'video'
+  'link', 'image'
 ]
 
 function EventManagement() {
   const [dataSource, setDataSource] = useState([])
   const [modal, setModal] = useState({ visible: false, type: '', record: null })
+  const [imageUrl, setImageUrl] = useState('')
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [form] = Form.useForm()
   const quillRef = useRef(null)
+  const [savedRange, setSavedRange] = useState(null);
   const [content, setContent] = useState('')
   const {
     getAllDocs,
@@ -80,6 +83,33 @@ function EventManagement() {
     deleteDocData,
   } = useFirestore(db, "eventAMZ")
 
+  const handleImageClick = () => {
+    const editor = quillRef.current?.getEditor()
+    const range = editor?.getSelection()
+    if (range) setSavedRange(range)
+    setIsImageModalOpen(true)
+  };
+  // Insert image when user clicks "Insert"
+  const insertImage = () => {
+    const editor = quillRef.current?.getEditor()
+
+    if (!savedRange) {
+      message.warning('Vui lòng chọn vị trí trong nội dung để chèn ảnh.')
+      return;
+    }
+
+    if (!imageUrl.trim()) {
+      message.warning('Vui lòng nhập đường dẫn hình ảnh hợp lệ.')
+      return;
+    }
+
+    editor.insertEmbed(savedRange.index, 'image', imageUrl.trim(), 'user')
+    setIsImageModalOpen(false)
+    setImageUrl("")
+    setSavedRange(null)
+  };
+
+
   const handleChange = (val) => {
     setContent(val)
   }
@@ -87,7 +117,6 @@ function EventManagement() {
   // Mở modal Thêm/Sửa
   const openModal = (type, record = null) => {
     setModal({ visible: true, type, record });
-
     if (type === 'edit' && record) {
       setContent(record.content || '');
       form.setFieldsValue({
@@ -131,6 +160,8 @@ function EventManagement() {
     fetchEvents()
   }, [])
 
+  
+
   // Xử lý submit form
   const handleOk = () => {
     form.validateFields().then(async values => {
@@ -166,14 +197,7 @@ function EventManagement() {
     message.success('Đã xóa sự kiện!')
   }
 
-  useEffect(() => {
-    // Access the Quill instance if needed
-    const editor = quillRef.current?.getEditor();
-    if (editor) {
-      // You can now safely use the Quill API here
-      console.log('Quill editor loaded:', editor);
-    }
-  }, []);
+ 
 
 
   // Thêm cột thao tác
@@ -204,13 +228,6 @@ function EventManagement() {
 
   return (
     <div>
-      {/* <Alert
-        message="Đang trong quá trình phát triển"
-        type="warning"
-        showIcon
-        style={{ marginBottom: 16 }}
-      /> */}
-
       <CTable
         columns={tableColumns}
         dataSource={dataSource}
@@ -230,6 +247,16 @@ function EventManagement() {
         onCancel={closeModal}
         onOk={handleOk}
         okText={modal.type === 'add' ? 'Thêm' : 'Lưu'}
+        afterOpenChange={(open) => {
+          if (open) {
+            setTimeout(() => {
+              if (quillRef.current) {
+                const quill = quillRef.current.getEditor();
+                quill.getModule('toolbar').addHandler('image', handleImageClick);
+              }
+            }, 0);
+          }
+        }}
         destroyOnHidden
       >
         <Form form={form} layout="vertical" initialValues={modal.record || {}}>
@@ -279,7 +306,7 @@ function EventManagement() {
           >
             <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} placeholder="" />
           </Form.Item>
-          {/* <Form.Item
+          <Form.Item
             label="Bài viết"
             name="content"
             rules={[{ required: true, message: 'Viết nội dung cho Sự kiện' }]}
@@ -292,8 +319,23 @@ function EventManagement() {
                 formats={reactQuillFormats}
                 style={{ height: '100%', minHeight: 200 }} 
               />
-          </Form.Item> */}
+          </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        title="Thêm URL Hình ảnh"
+        open={isImageModalOpen}
+        onOk={insertImage}
+        onCancel={() => setIsImageModalOpen(false)}
+        okText="Thêm"
+        cancelText="Thoát"
+        zIndex={2000}
+      >
+        <Input
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          placeholder="Nhập link hình ảnh"
+        />
       </Modal>
     </div>
   )

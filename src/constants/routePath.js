@@ -4,7 +4,6 @@ const routePath = {
     product: "/product",
     productDetail: "/product-detail",
     exchange: "/exchange",
-    sale: "/sale",
     login: "/login",
     newSeal: "/newSeal",
     fix: "/fix",
@@ -14,6 +13,11 @@ const routePath = {
     adminProduct: "/admin/products",
     adminProductAdd: "/admin/products/add",
     adminProductEdit: "/admin/products/edit",
+
+    // ======= Admin Sale Pages =======
+    sale: "/sale",
+    saleDetail: "/sale/detail",
+
 
     // ======= Admin Post Pages =======
     adminPost: "/admin/posts",

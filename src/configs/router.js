@@ -14,6 +14,7 @@ const Product = lazy(() => import("@/pages/Product"));
 const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
 const Exchange = lazy(() => import("@/pages/Exchange"));
 const Sale = lazy(() => import("@/pages/Sale"));
+const SaleDetail = lazy(() => import("@/pages/Sale/SaleDetail"));
 const PostForm = lazy(() => import("@/pages/Admin/Post/PostForm"));
 const PostManagement = lazy(() => import("@/pages/Admin/Post"));
 const Warranty = lazy(() => import("@/pages/Admin/Warranty"));
@@ -28,7 +29,6 @@ const AppRoute = [
     { path: routePath.product, page: Product, layout: ProductLayout },
     { path: routePath.productDetail, page: ProductDetail, layout: BasicLayout },
     { path: routePath.exchange, page: Exchange, layout: BasicLayout },
-    { path: routePath.sale, page: Sale, layout: BasicLayout },
     { path: routePath.login, page: Login, layout: EmptyLayout },
     { path: routePath.fix, page: FixPage, layout: BasicLayout },
 
@@ -38,6 +38,9 @@ const AppRoute = [
     { path: routePath.adminProductEdit, page: ProductForm, layout: AdminLayout, protect: true },
     { path: routePath.admin, page: Admin, layout: AdminLayout, protect: true },
 
+    // ======= Admin Sale Pages =======
+    { path: routePath.sale, page: Sale, layout: BasicLayout },
+    { path: routePath.saleDetail, page: SaleDetail, layout: BasicLayout },
     // ======= Admin Post Pages =======
     { path: routePath.adminPost, page: PostManagement, layout: AdminLayout, protect: true },
     { path: routePath.adminPostEdit, page: PostForm, layout: AdminLayout, protect: true },

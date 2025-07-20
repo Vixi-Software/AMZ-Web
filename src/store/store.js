@@ -13,16 +13,11 @@ import homeSettingReducer from '../store/features/homeSettingSlice/homeSettingSl
 import postServiceReducer from '../store/features/postServices/postServiceSlice'
 import newSealReducer from '../store/features/newSeal/newSealSlice'
 import allDataReducer from '../store/features/allData/allDataSlice'
+import saleReducer from '../store/features/sale/saleSlice'
 import allProductsReducer from '../store/features/allProducts/allProductsSlice'
 import {
   persistStore,
   persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER
 } from 'redux-persist'
 
 // ✨ Thay storage từ localStorage sang indexedDB
@@ -46,6 +41,7 @@ const rootReducer = combineReducers({
   postService: postServiceReducer,
   newSeal: newSealReducer,
   allData: allDataReducer,
+  sale: saleReducer,
   allProducts: allProductsReducer,
 })
 
@@ -66,6 +62,7 @@ const persistConfig = {
     'homeSetting',
     'postService',
     'newSeal',
+    "sale",
     'allData' // Thêm allData vào whitelist nếu cần
   ],
   transforms: [

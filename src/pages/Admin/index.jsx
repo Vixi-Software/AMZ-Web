@@ -12,8 +12,6 @@ import { doc, setDoc, updateDoc, deleteField } from 'firebase/firestore';
 import { productToPipeString, pipeStringToProductObject } from '@/utils/convertFireBase.js'
 
 
-
-
 function Admin() {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
