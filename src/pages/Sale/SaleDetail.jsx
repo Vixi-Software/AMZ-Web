@@ -20,13 +20,10 @@ const SaleDetailPage = () => {
             <span>Trang chủ</span>
           </span>
           <span className="mx-1 text-black">{'>'}</span>
-          <span className="flex items-center gap-1 text-black border-2 p-2 rounded-full border-black" onClick={() => navigate(routePath.sale)}>
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
-              <path d="M3 10.75L12 4l9 6.75" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M4.5 10.75V19a1 1 0 001 1h3.5v-4.25a1 1 0 011-1h2a1 1 0 011 1V20H18.5a1 1 0 001-1v-8.25" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <div className="flex items-center gap-1 text-black border-2 p-2 rounded-full border-black cursor-pointer" onClick={() => navigate(routePath.sale)}>
+          
             <span>Khuyến mãi hot</span>
-          </span>
+          </div>
           <span className="mx-1 text-black">{'>'}</span>
           <span className="flex items-center gap-1 bg-orange-500 text-white font-semibold p-2 rounded-full border-2 border-orange-500">
             {'Thông tin khuyến mãi'}
