@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import MainCarousel from '../Home/MainCarousel'
 import { Row, Col, Card, Carousel, ConfigProvider } from 'antd'
 import { useNavigate } from 'react-router-dom';
-import routePath from '../../constants/routePath';
 import { db } from '../../utils/firebase'
 import { useFirestore } from '../../hooks/useFirestore'
 import { Flame, Clock } from 'lucide-react';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import fireGif from '@/assets/fire.gif';
 import clockGif from '@/assets/clock.gif';
+import routePath from '../../constants/routePath'
 import moment from 'moment';
+import { useDispatch } from 'react-redux';
+import { setSale } from '../../store/features/sale/saleSlice';
 
 const CustomArrow = ({ className, style, onClick, direction }) => (
     <div
@@ -34,26 +35,126 @@ const CustomArrow = ({ className, style, onClick, direction }) => (
     </div>
 );
 
+const CustomCarousel = ({ saleEvents, navigate, dispatch }) => {
+    const handleSelectEvent = (event) =>{
+        console.log("Clicked", event)
+        dispatch(setSale(event))
+        navigate(routePath.saleDetail)
+    }
+
+    return (
+        <ConfigProvider
+            theme={{
+                components: {
+                    Carousel: {
+                        arrowSize: 0,
+                        arrowOffset: 24,
+                    },
+                },
+            }}
+        >
+            <div className="carousel-container group">
+                <Carousel
+                    dots={true}
+                    autoplay
+                    arrows={true}
+                    prevArrow={<CustomArrow direction="prev" />}
+                    nextArrow={<CustomArrow direction="next" />}
+                    className="main-carousel"
+                >
+                    {saleEvents.map(event => (
+                        <div key={event.id} className="carousel-image-container">
+                            <div
+                                key={event.id}
+                                className="carousel-image-container"
+                                onClick={() => handleSelectEvent(event)}
+                            >
+                                <img
+                                    alt={event.name}
+                                    src={event.linkBanner}
+                                    className="
+                                w-full object-cover
+                                h-[180px]
+                                md:h-[400px]
+                                lg:h-[560px]
+                                rounded-lg
+                                mt-2 md:mt-0
+                                carousel-image
+                            "
+                                />
+                            </div>
+
+                        </div>
+                    ))}
+                </Carousel>
+                <style jsx>{`
+                .carousel-container {
+                    position: relative;
+                }
+                
+                .carousel-container .custom-arrow {
+                    opacity: 0;
+                    transform: scale(0.8);
+                    transition: all 0.3s ease;
+                }
+                
+                .carousel-container:hover .custom-arrow {
+                    opacity: 1 !important;
+                    transform: scale(1);
+                }
+
+                .carousel-image-container {
+                    overflow: hidden;
+                    border-radius: 8px;
+                }
+
+                .carousel-image {
+                    transition: transform 0.5s ease-in-out;
+                    cursor: pointer;
+                }
+
+                .carousel-image:hover {
+                    transform: scale(1.05);
+                }
+            `}</style>
+            </div>
+        </ConfigProvider>
+    )
+}
+
+const parseEvent = (id, starDate, endDate, name, linkBanner, content) => {
+    return {
+        id: id ? id : "",
+        starDate: starDate ? starDate : "",
+        endDate: endDate ? endDate : "",
+        name: name ? name : "",
+        linkBanner: linkBanner ? linkBanner : "",
+        content: content ? content : "",
+
+    }
+}
+
 function Sale() {
     const navigate = useNavigate();
-    const [events, setEvents] = useState([]);
-    const [currentEvents, setCurrentEvents] = useState([])
-    const [nextEvents, setNextEvents] = useState([])
+    const [saleEvents, setEvents] = useState([]);
+    const [currentSaleEvents, setCurrentSaleEvents] = useState([])
+    const [nextSaleEvents, setNextSaleEvents] = useState([])
     const { getAllDocs } = useFirestore(db, "eventAMZ");
+    const dispatch = useDispatch();
 
     useEffect(() => {
         getAllDocs().then(setEvents);
     }, []);
 
     useEffect(() => {
-        if (!events || events.length === 0) return;
+        if (!saleEvents || saleEvents.length === 0) return;
 
         const today = moment().startOf('day');
 
         const current = [];
         const next = [];
 
-        events.forEach(event => {
+        saleEvents.forEach(event => {
             const start = moment(event.startDate, 'YYYY-MM-DD');
             const end = moment(event.endDate, 'YYYY-MM-DD');
 
@@ -64,16 +165,14 @@ function Sale() {
             }
         });
 
-        setCurrentEvents(current);
-        setNextEvents(next);
-        console.log("Cur", currentEvents)
-        console.log("Next", nextEvents)
-    }, [events]);
+        setCurrentSaleEvents(current);
+        setNextSaleEvents(next);
+
+    }, [saleEvents]);
 
     useEffect(() => {
-        console.log("Cur", currentEvents)
-        console.log("Next", nextEvents)
-    }, [currentEvents, nextEvents]);
+
+    }, [currentSaleEvents, nextSaleEvents]);
 
     return (
         <div>
@@ -94,170 +193,18 @@ function Sale() {
                 </nav>
             </div>
 
-            <ConfigProvider
-                theme={{
-                    components: {
-                        Carousel: {
-                            arrowSize: 0,
-                            arrowOffset: 24,
-                        },
-                    },
-                }}
-            >
-                <div className="carousel-container group">
-                    <Carousel
-                        dots={true}
-                        autoplay
-                        arrows={true}
-                        prevArrow={<CustomArrow direction="prev" />}
-                        nextArrow={<CustomArrow direction="next" />}
-                        className="main-carousel"
-                    >
-                        {events.map(event => (
-                            <div key={event.id} className="carousel-image-container">
-                                <img
-                                    alt={event.name}
-                                    src={event.linkBanner}
-                                    className="
-                                        w-full object-cover
-                                        h-[180px]
-                                        md:h-[400px]
-                                        lg:h-[560px]
-                                        rounded-lg
-                                        mt-2 md:mt-0
-                                        carousel-image
-                                    "
-                                />
-                            </div>
-                        ))}
-                    </Carousel>
-                    <style jsx>{`
-                        .carousel-container {
-                            position: relative;
-                        }
-                        
-                        .carousel-container .custom-arrow {
-                            opacity: 0;
-                            transform: scale(0.8);
-                            transition: all 0.3s ease;
-                        }
-                        
-                        .carousel-container:hover .custom-arrow {
-                            opacity: 1 !important;
-                            transform: scale(1);
-                        }
-
-                        .carousel-image-container {
-                            overflow: hidden;
-                            border-radius: 8px;
-                        }
-
-                        .carousel-image {
-                            transition: transform 0.5s ease-in-out;
-                            cursor: pointer;
-                        }
-
-                        .carousel-image:hover {
-                            transform: scale(1.05);
-                        }
-                    `}</style>
-                </div>
-            </ConfigProvider>
-
             <div className="mt-8">
                 <h2 className="!text-base font-bold mb-[20px] mt-[34px] flex items-center gap-2">
                     Khuyến mãi HOT <img src={fireGif} width={36} alt="" />
                 </h2>
-                <Row gutter={[16, 16]}>
-                    <Col xs={24} md={16}>
-                        {currentEvents[0] && (
-                            <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
-                                <img
-                                    src={currentEvents[0].linkBanner}
-                                    alt={currentEvents[0].name}
-                                    className="transition-transform duration-500 ease-in-out hover:scale-110"
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                />
-                            </div>
-                        )}
-                    </Col>
-                    <Col xs={24} md={8}>
-                        <Row gutter={[0, 16]}>
-                            <Col span={24}>
-                                {currentEvents[1] && (
-                                    <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
-                                        <img
-                                            src={currentEvents[1].linkBanner}
-                                            alt={currentEvents[1].name}
-                                            className="transition-transform duration-500 ease-in-out hover:scale-110"
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        />
-                                    </div>
-                                )}
-                            </Col>
-                            <Col span={24}>
-                                {currentEvents[2] && (
-                                    <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
-                                        <img
-                                            src={currentEvents[2].linkBanner}
-                                            alt={currentEvents[2].name}
-                                            className="transition-transform duration-500 ease-in-out hover:scale-110"
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        />
-                                    </div>
-                                )}
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row>
+                <CustomCarousel saleEvents={currentSaleEvents} navigate={navigate} dispatch={dispatch} ></CustomCarousel>
             </div>
 
             <div className="mt-8">
                 <h2 className="!text-base font-bold mb-[20px] mt-[34px] flex items-center gap-2">
                     Sắp diễn ra <img src={clockGif} width={36} alt="" />
                 </h2>
-                <Row gutter={[16, 16]}>
-                    <Col xs={24} md={16}>
-                        {nextEvents[0] && (
-                            <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
-                                <img
-                                    src={nextEvents[0].linkBanner}
-                                    alt={nextEvents[0].name}
-                                    className="transition-transform duration-500 ease-in-out hover:scale-110"
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                />
-                            </div>
-                        )}
-                    </Col>
-                    <Col xs={24} md={8}>
-                        <Row gutter={[0, 16]}>
-                            <Col span={24}>
-                                {nextEvents[1] && (
-                                    <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
-                                        <img
-                                            src={nextEvents[1].linkBanner}
-                                            alt={nextEvents[1].name}
-                                            className="transition-transform duration-500 ease-in-out hover:scale-110"
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        />
-                                    </div>
-                                )}
-                            </Col>
-                            <Col span={24}>
-                                {nextEvents[2] && (
-                                    <div className="cursor-pointer" style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/0.6551724137931034', width: '100%' }}>
-                                        <img
-                                            src={nextEvents[2].linkBanner}
-                                            alt={nextEvents[2].name}
-                                            className="transition-transform duration-500 ease-in-out hover:scale-110"
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        />
-                                    </div>
-                                )}
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row>
+                <CustomCarousel saleEvents={nextSaleEvents} navigate={navigate}  dispatch={dispatch} ></CustomCarousel>
             </div>
 
             {/* Hiển thị tất cả sự kiện bằng Carousel */}

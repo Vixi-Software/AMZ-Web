@@ -25,7 +25,7 @@ const reactQuillModules = {
     [{ 'indent': '-1' }, { 'indent': '+1' }],
     [{ 'align': [] }],
     ['blockquote'],
-    ['link', 'image', 'video'],
+    ['link', 'image'],
     ['clean'],
   ],
 }
@@ -36,7 +36,7 @@ const reactQuillFormats = [
   'color', 'background',
   'list', 'bullet', 'indent',
   'align', 'blockquote', 'code-block',
-  'link', 'image', 'video'
+  'link', 'image'
 ]
 
 const postTypeOptions = [
@@ -48,7 +48,7 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
   const [content, setContent] = useState('')
   const [collectionName, setCollectionName] = useState(collectionOrigin)
   const [titlePost, setTitlePost] = useState("")
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('')
   const quillRef = useRef(null)
   const [savedRange, setSavedRange] = useState(null);
@@ -60,7 +60,7 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
     const editor = quillRef.current?.getEditor()
     const range = editor?.getSelection()
     if (range) setSavedRange(range)
-    setIsModalOpen(true)
+    setIsImageModalOpen(true)
   };
   // Insert image when user clicks "Insert"
   const insertImage = () => {
@@ -77,15 +77,17 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
     }
 
     editor.insertEmbed(savedRange.index, 'image', imageUrl.trim(), 'user')
-    setIsModalOpen(false)
+    setIsImageModalOpen(false)
     setImageUrl("")
     setSavedRange(null)
   };
 
   // Register custom handler on mount
   useEffect(() => {
-    const quill = quillRef.current.getEditor();
-    quill.getModule('toolbar').addHandler('image', handleImageClick);
+    if (quillRef.current) {
+      const quill = quillRef.current.getEditor();
+      quill.getModule('toolbar').addHandler('image', handleImageClick);
+    }
   }, []);
 
   useEffect(() => {
@@ -215,9 +217,9 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
       </div>
       <Modal
         title="Thêm URL Hình ảnh"
-        open={isModalOpen}
+        open={isImageModalOpen}
         onOk={insertImage}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => setIsImageModalOpen(false)}
         okText="Thêm"
         cancelText="Thoát"
       >
