@@ -221,9 +221,9 @@ function ProductDetail() {
                 'linear-gradient(135deg, #FF8F2Ccc 0%, #FF9231b3 60%, #FFD8B0cc 100%)'
             }}
           >
-            <div className="w-full md:w-[300px] h-[250px] bg-gray-200 rounded-xl mb-4 lg:mb-0 flex items-center justify-center overflow-hidden">
+            <div className="w-full md:w-[300px] h-[300px] bg-gray-200 rounded-xl mb-4 lg:mb-0 flex items-center justify-center overflow-hidden">
               {loading ? (
-                <Skeleton.Image style={{ width: 300, height: 250 }} active />
+                <Skeleton.Image style={{ width: 300, height: 300 }} active />
               ) : Array.isArray(images) && images.length > 0 ? (
                 <img
                   src={images[selectedImage]}
