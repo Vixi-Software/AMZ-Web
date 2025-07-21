@@ -6,7 +6,7 @@ const routePath = {
     exchange: "/exchange",
     login: "/login",
     newSeal: "/newSeal",
-    fix: "/fix",
+    warranty: "/warranty",
 
     // ======= Admin Product Pages =======
     admin: "/admin",

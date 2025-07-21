@@ -30,7 +30,7 @@ const AppRoute = [
     { path: routePath.productDetail, page: ProductDetail, layout: BasicLayout },
     { path: routePath.exchange, page: Exchange, layout: BasicLayout },
     { path: routePath.login, page: Login, layout: EmptyLayout },
-    { path: routePath.fix, page: FixPage, layout: BasicLayout },
+    { path: routePath.warranty, page: FixPage, layout: BasicLayout },
 
     // ======= Admin Product Pages =======
     // { path: routePath.admin, page: ProductManagement, layout: AdminLayout, protect: true },

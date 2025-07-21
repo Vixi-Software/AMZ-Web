@@ -8,7 +8,7 @@ import { useFirestore } from "@/hooks/useFirestore";
 const FixPage = () => {
   const navigate = useNavigate();
 
-  const { getAllDocs } = useFirestore(db, 'warranty')
+  const { getAllDocs } = useFirestore(db, '07-warranty')
   const screens = Grid.useBreakpoint();
   const [warrantyInfo, setWarrantyInfo] = useState({})
 
@@ -26,35 +26,6 @@ const FixPage = () => {
 
   return (
     <div>
-      <Carousel autoplay arrows={true} dots={true} className="mb-4">
-        {[
-          {
-            src: "https://chauaudio.com/cdn/images/tin-tuc/loa-marshall-la-thuong-hieu-nuoc-nao-phu-hop-voi-nhung-ai-5.jpg",
-            alt: "carousel-1"
-          },
-          {
-            src: "https://th.bing.com/th/id/R.b1c51812c16cb5d4d84dabec2e75265d?rik=1t0PlY8a%2b649rA&pid=ImgRaw&r=0",
-            alt: "carousel-2"
-          },
-          {
-            src: "https://th.bing.com/th/id/OIP.skBzSDoI0713daeCX87n4QHaEK?rs=1&pid=ImgDetMain&cb=idpwebp1&o=7&rm=3",
-            alt: "carousel-3"
-          }
-        ].map((img, idx) => {
-          let height = '180px';
-          if (screens.lg) height = '350px';
-          else if (screens.md) height = '250px';
-          return (
-            <div key={idx}>
-              <img
-                src={img.src}
-                alt={img.alt}
-                style={{ width: '100%', height, objectFit: 'cover', borderRadius: '0.5rem' }}
-              />
-            </div>
-          );
-        })}
-      </Carousel>
       <div className="mb-4">
         <nav className="flex items-center gap-2 text-sm">
           <span className="flex items-center gap-1 text-black border-2 p-2 rounded-full border-black" onClick={() => navigate(routePath.home)}>

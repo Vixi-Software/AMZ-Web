@@ -31,7 +31,7 @@ const reactQuillFormats = [
   'link', 'image', 'video'
 ]
 
-const collectionName = "warranty"
+const collectionName = "07-warranty"
 const id = "warrantyPolicy"
 
 function Warranty() {

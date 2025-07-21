@@ -113,7 +113,7 @@ export default function Sidebar() {
                     dispatch(setCategory(item.value));
                     navigate(routePath.product);
                   } else if (item.label === "Bảo hành - sửa chữa") {
-                    navigate(routePath.fix);
+                    navigate(routePath.warranty);
                   }
                 }}
               >
