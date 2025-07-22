@@ -141,6 +141,7 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
       const id =  initialValues.id
 
       try {
+        console.log("Upda", collectionName, id)
         const docRef = doc(db, collectionName, id);
         await updateDoc(docRef, updatedData);
         message.success('📝 Đã cập nhật bài viết');
