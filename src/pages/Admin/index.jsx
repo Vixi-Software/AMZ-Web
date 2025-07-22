@@ -52,14 +52,14 @@ function Admin() {
 
   // Đặt tên cột cho bảng (rút gọn)
   const columns = [
-    "Brand",
-    "Tên",
-    "Màu",
-    "Bán",
-    "Gốc",
-    "Giảm",
-    "SL",
-    "TT",
+    "Thương hiệu",
+    "Sản phẩm",
+    "Màu sắc",
+    "Giá bán",
+    "Giá gốc",
+    "Giảm giá",
+    "Bán chạy",
+    "Tình trạng",
     "Ảnh",
     "Mô tả",
     "Sửa/Xóa",
