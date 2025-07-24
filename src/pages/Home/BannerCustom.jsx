@@ -57,7 +57,7 @@ function BannerCustom() {
     lg:!text-[21px] md:!text-[18px] sm:!text-[16px] 
     lg:px-[10px] sm:px-4 sm:py-1"
               onClick={() => {
-                dispatch(setCategory(""));
+                dispatch(setCategory("Tất cả sản phẩm"));
                 navigate(routePath.product);
               }}
             >
