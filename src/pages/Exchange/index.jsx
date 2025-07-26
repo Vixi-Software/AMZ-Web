@@ -44,36 +44,6 @@ function Exchange() {
         </nav>
       </div>
       <MainCarousel />
-      {/* Thông tin liên hệ và mô tả */}
-      {/* <Row gutter={16} className="mb-4 mt-4">
-        <Col xs={24} md={10}>
-          <Row gutter={[8, 8]}>
-            <Col xs={24} md={12}>
-              <Card
-                className="!bg-[#FFE8D3] !border-none !rounded-lg px-0 py-0 text-center"
-                style={{ height: 74, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-              >
-                <div className="text-[16px] font-semibold text-[#FF6A00]">Thu cũ tại Hà Nội:</div>
-                <div className="font-bold text-orange-500 text-[21px]">Zalo: 0333.571.236</div>
-              </Card>
-            </Col>
-            <Col xs={24} md={12}>
-              <Card
-                className="!bg-[#FFE8D3] !border-none !rounded-lg !p-[10px] text-center"
-                style={{ height: 74, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-              >
-                <div className="text-[16px] font-semibold text-[#FF6A00]">Thu cũ Đà Nẵng:</div>
-                <div className="font-bold text-orange-500 text-[21px]">Zalo: 0333.571.236</div>
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-        <Col xs={24} md={14}>
-          <div className="text-[16px] text-gray-700 leading-5 h-full flex items-center">
-            <span className='text-center text-[16px] be-vietnam-pro-medium'> Giải pháp <b>tiết kiệm và tiện lợi</b> cho khách hàng có nhu cầu nâng cấp thiết bị. AMZ TECH cam kết <b>thu mua với giá cao</b>, đảm bảo quyền lợi tốt nhất cho khách hàng. Quy trình diễn ra <b>nhanh chóng</b>, bạn sẽ nhận được chi trả ngay lập tức hoặc bù trừ trực tiếp vào sản phẩm mới.</span>
-          </div>
-        </Col>
-      </Row> */}
 
     <div className='mt-[20px]'>
         <CountSale  />

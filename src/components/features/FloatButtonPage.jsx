@@ -4,6 +4,7 @@ import '../../assets/css/FloatButton.css'
 import ZaloIcon from '../../assets/ic-zalo.svg'
 import FacebookIcon from '../../assets/ic-facebook.svg'
 import PhoneIcon from '../../assets/ic-phone.svg'
+import { PHONE_NUMBER } from '../../constants/phoneNumber'
 
 const BUTTON_STYLE = {
   width: 70,
@@ -100,7 +101,7 @@ function FloatButtonPage() {
             }
           }}
           onClick={() => {
-            window.open('https://zalo.me/0333571236', '_blank')
+            window.open('https://zalo.me/'+ PHONE_NUMBER.HA_NOI, '_blank')
           }}
           onMouseEnter={() => {
             setHoveredButton(prev => ({ ...prev, zalo: true }))
@@ -172,7 +173,7 @@ function FloatButtonPage() {
             setHoveredButton(prev => ({ ...prev, phone: false }))
           }}
           onClick={() => {
-            window.open('tel:0333571236')
+            window.open('tel:'+PHONE_NUMBER.GENERAL)
           }}
         />
       </FloatButton.Group>

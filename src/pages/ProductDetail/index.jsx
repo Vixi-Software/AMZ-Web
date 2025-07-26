@@ -11,6 +11,8 @@ import { usePostService } from '../../services/postService'
 import { parseStringToTableInfo } from '../../utils/tableInfoParse'
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from "@/utils/firebase";
+import formatVNPhoneNumber from '../../utils/phoneNumberHandle'
+import { PHONE_NUMBER } from '../../constants/phoneNumber'
 
 const getRelatedProducts = (targetProduct, allProducts, limit = 4) => {
   if (!targetProduct || !targetProduct.collection || !targetProduct.priceForSale) return [];
@@ -407,21 +409,29 @@ function ProductDetail() {
                         ? 'bg-orange-500 text-white border'
                         : 'border border-[#999999] bg-white'
                         }`}
-                      onClick={() => handleSelectOption('branch', 'HÀ NỘI')}
+                      onClick={
+                        () => window.open('https://zalo.me/' + PHONE_NUMBER.HA_NOI, '_blank')
+                      }
                     >
                       <div className="font-semibold">HÀ NỘI</div>
-                      <div className="font-semibold">Zalo: 0333.571.236</div>
+                      <div className="font-semibold">
+                        {"Zalo: " + formatVNPhoneNumber(PHONE_NUMBER.HA_NOI)}
+                      </div>
                     </div>
-                    <div
+                    <btn
                       className={`rounded-lg p-2 text-center cursor-pointer ${selectedOptions.branch === 'ĐÀ NẴNG'
                         ? 'bg-orange-500 text-white border'
                         : 'border border-[#999999] bg-white'
                         }`}
-                      onClick={() => handleSelectOption('branch', 'ĐÀ NẴNG')}
+                        onClick={
+                          () => window.open('https://zalo.me/' + PHONE_NUMBER.DA_NANG, '_blank')
+                        }
                     >
                       <div className="font-semibold">ĐÀ NẴNG</div>
-                      <div className="font-semibold">Zalo: 0935.241.243</div>
-                    </div>
+                      <div className="font-semibold">
+                        {"Zalo: " + formatVNPhoneNumber(PHONE_NUMBER.DA_NANG)}
+                      </div>
+                    </btn>
                   </>
                 )}
             </div>
@@ -458,28 +468,28 @@ function ProductDetail() {
               Đặc Điểm Nổi Bật
             </h3>
             <ul className="m-0 pl-4 pr-4 list-none text-justify">
-                {loading ? (
-                  Array(4)
-                    .fill(0)
-                    .map((_, idx) => (
-                      <li key={idx} className="mb-2">
-                        <Skeleton.Input
-                          active
-                          size="small"
-                          style={{ width: 200 }}
-                        />
-                      </li>
-                    ))
-                ) : product.description ? (
-                  <div className="text-[15px]">
-                    <div className="whitespace-pre-line p-2">
-                      {product.description}
-                    </div>
+              {loading ? (
+                Array(4)
+                  .fill(0)
+                  .map((_, idx) => (
+                    <li key={idx} className="mb-2">
+                      <Skeleton.Input
+                        active
+                        size="small"
+                        style={{ width: 200 }}
+                      />
+                    </li>
+                  ))
+              ) : product.description ? (
+                <div className="text-[15px]">
+                  <div className="whitespace-pre-line p-2">
+                    {product.description}
                   </div>
-                ) : (
-                  <li className="mb-2">Chưa cập nhật đặc điểm nổi bật...</li>
-                )}
-              </ul>
+                </div>
+              ) : (
+                <li className="mb-2">Chưa cập nhật đặc điểm nổi bật...</li>
+              )}
+            </ul>
           </div>
           <div className="text-black text-base mb-2 mx-4">
             <div dangerouslySetInnerHTML={{ __html: currentPost }} />

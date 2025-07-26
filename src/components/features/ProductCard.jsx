@@ -6,6 +6,7 @@ import { setProduct } from '../../store/features/product/productSlice'
 import { setLoading } from '../../store/features/loading/loadingSlice'
 import routePath from '../../constants/routePath'
 import BestSellerIcon from '../../assets/ic-bestseller.png'
+import { PHONE_NUMBER } from '../../constants/phoneNumber'
 
 function ProductCard({ product }) {
   const dispatch = useDispatch();
@@ -38,7 +39,7 @@ function ProductCard({ product }) {
 
   const handleGiaThamKhaoClick = (e) => {
     e.stopPropagation();
-    window.open('https://zalo.me/0333571236', '_blank');
+    window.open('https://zalo.me/' + PHONE_NUMBER.GENERAL, '_blank');
   };
 
   const colorMap = {

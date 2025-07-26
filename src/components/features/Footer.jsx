@@ -8,6 +8,7 @@ import tiktok from '../../assets/tiktok.svg'
 import whatsapp from '../../assets/whatup.svg'
 import youtube from '../../assets/youtube.svg'
 import { LINK_CONSTANT } from '../../constants/linkConstant'
+import { PHONE_NUMBER } from '../../constants/phoneNumber'
 
 function Footer() {
     const { getAllDocs } = useFirestore(db, 'events')
@@ -121,7 +122,7 @@ function Footer() {
                                     href={links.whatsapp || "#"}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    onClick={e => { if (!links.whatsapp) e.preventDefault(); }}
+                                    onClick={e => window.open('tel:'+ PHONE_NUMBER.GENERAL)}
                                     style={{
                                         color: '#25D366',
                                         fontSize: '2rem'

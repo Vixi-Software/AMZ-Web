@@ -11,6 +11,8 @@ import { setCategory } from '../../store/features/filterProduct/filterProductSli
 import SideBarProduct from './SideBarProduct'
 import { useProductService } from '../../services/productService'
 import Fuse from 'fuse.js'
+import { PHONE_NUMBER } from '../../constants/phoneNumber'
+import formatVNPhoneNumber from '../../utils/phoneNumberHandle'
 const { Text, Link } = Typography
 
 function Header() {
@@ -97,7 +99,7 @@ function Header() {
                   <span
                     style={{
                       fontSize: 12,
-                      color:'#ff4d4f',
+                      color: '#ff4d4f',
                       background: '#fff1f0',
                       borderRadius: 4,
                       padding: '2px 6px',
@@ -275,13 +277,13 @@ function Header() {
           <Space>
             <PhoneOutlined style={{ color: '#F37021', fontSize: '1.125rem' }} />
             <a
-              href="https://zalo.me/0333571236"
+              href={"https://zalo.me/" + PHONE_NUMBER.GENERAL}
               target="_blank"
               rel="noopener noreferrer"
               className="!text-[#F37021] inline-block"
               style={{ textDecoration: 'none' }}
             >
-              Zalo: 0333.571.236
+              {"Zalo: " + formatVNPhoneNumber(PHONE_NUMBER.GENERAL)}
             </a>
           </Space>
           <div className="mt-2">
@@ -315,7 +317,7 @@ function Header() {
                     if (item.value === "Thu cũ đổi mới") {
                       navigate(routePath.exchange)
                     } else {
-                      dispatch(setCategory(item.value))                      
+                      dispatch(setCategory(item.value))
                       navigate(routePath.product)
                     }
                   }}
@@ -464,13 +466,13 @@ function Header() {
             <Space className='ml-4'>
               <PhoneOutlined style={{ color: '#F37021', fontSize: '1.125rem' }} />
               <a
-                href="https://zalo.me/0333571236"
+                href={"https://zalo.me/" + PHONE_NUMBER.GENERAL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="!text-[#F37021] inline-block"
                 style={{ textDecoration: 'none' }}
               >
-                Zalo: 0333.571.236
+                {"Zalo: " + formatVNPhoneNumber(PHONE_NUMBER.GENERAL)}
               </a>
             </Space>
           </div>

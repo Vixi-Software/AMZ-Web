@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Card, Row, Col } from 'antd'
 import dayjs from 'dayjs'
 import { useSelector } from 'react-redux';
+import { PHONE_NUMBER } from '../../constants/phoneNumber';
+import formatVNPhoneNumber from '../../utils/phoneNumberHandle';
 
 function CountSale() {
   const [countdown, setCountdown] = useState('')
@@ -58,7 +60,7 @@ function CountSale() {
                     className={`text-[16px] md:text-[18px] lg:text-[${zaloFontSize}] font-bold text-[#D65312]`}
                     style={{ wordBreak: 'break-all' }}
                   >
-                    Zalo: 0333.571.236
+                    {"Zalo: " + formatVNPhoneNumber(PHONE_NUMBER.HA_NOI)}
                   </span>
                 </div>
               </Card>
@@ -76,7 +78,7 @@ function CountSale() {
                      className={`text-[16px] md:text-[18px] lg:text-[${zaloFontSize}] font-bold text-[#D65312]`}
                     style={{ wordBreak: 'break-all',  }}
                   >
-                    Zalo: 0333.571.236
+                    {"Zalo: "+ formatVNPhoneNumber(PHONE_NUMBER.DA_NANG)}
                   </span>
                 </div>
               </Card>
