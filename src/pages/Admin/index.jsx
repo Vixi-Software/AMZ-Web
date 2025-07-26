@@ -18,6 +18,8 @@ function Admin() {
   const [category, setCategory] = useState("01-nhet-tai-cu");
   const [editModal, setEditModal] = useState({ visible: false, key: '', value: '', page: '', code: '' });
   const [searchText, setSearchText] = useState(""); // Thêm state tìm kiếm
+  // State cho modal thêm sản phẩm
+  const [addModal, setAddModal] = useState(false);
 
   useEffect(() => {
     let unsubscribe;
@@ -117,48 +119,64 @@ function Admin() {
 
   return (
     <div>
-      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-        {/* Thanh tìm kiếm */}
+      <div className="flex gap-2 mb-5 items-center justify-between">
+        {/* Nút thêm sản phẩm */}
+        <div className="flex gap-2 items-center">
+          <Button
+          type="primary"
+          className="bg-green-500 border-none rounded-lg font-semibold text-xl py-4 px-10 min-w-[220px] min-h-[42px] shadow-md shadow-green-500/15"
+          onClick={() => setAddModal(true)}
+        >
+          Thêm sản phẩm
+        </Button>
         <input
-          type="text"
-          placeholder="Tìm kiếm sản phẩm..."
-          value={searchText}
-          onChange={e => setSearchText(e.target.value)}
-          style={{ padding: "10px", borderRadius: "5px", border: "1px solid #2196f3", minWidth: 200 }}
-        />
-        {items.map((_, idx) => (
-          <button
-            key={idx}
+            type="text"
+            placeholder="Tìm kiếm sản phẩm..."
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+            style={{ padding: "10px", borderRadius: "5px", border: "1px solid #2196f3", minWidth: 200 }}
+          />
+        </div>
+        <div className="flex gap-2 items-center">
+
+          {items.map((_, idx) => (
+            <button
+              key={idx}
+              style={{
+                backgroundColor: page === idx ? "#1976d2" : "#2196f3",
+                color: "#fff",
+                padding: "10px 20px",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => setPage(idx)}
+            >
+              {idx + 1}
+            </button>
+          ))}
+          
+          <select
+            value={category}
+            onChange={e => setCategory(e.target.value)}
             style={{
-              backgroundColor: page === idx ? "#1976d2" : "#2196f3",
-              color: "#fff",
               padding: "10px 20px",
-              border: "none",
               borderRadius: "5px",
+              border: "1px solid #2196f3",
               cursor: "pointer",
             }}
-            onClick={() => setPage(idx)}
           >
-            {idx + 1}
-          </button>
-        ))}
-        <select
-          value={category}
-          onChange={e => setCategory(e.target.value)}
-          style={{
-            padding: "10px 20px",
-            borderRadius: "5px",
-            border: "1px solid #2196f3",
-            cursor: "pointer",
-          }}
-        >
-          <option value={"01-nhet-tai-cu"}>Tai nghe nhét tai cũ</option>
-          <option value={"02-chup-tai-cu"}>Tai nghe chụp tai cũ</option>
-          <option value={"03-di-dong-cu"}>Loa di động cũ</option>
-          <option value={"04-de-ban-cu"}>Loa để bàn cũ</option>
-          <option value={"05-loa-karaoke"}>Loa karaoke cũ</option>
-          <option value={"06-hang-newseal"}>Hàng new seal</option>
-        </select>
+            <option value={"01-nhet-tai-cu"}>Tai nghe nhét tai cũ</option>
+            <option value={"02-chup-tai-cu"}>Tai nghe chụp tai cũ</option>
+            <option value={"03-di-dong-cu"}>Loa di động cũ</option>
+            <option value={"04-de-ban-cu"}>Loa để bàn cũ</option>
+            <option value={"05-loa-karaoke"}>Loa karaoke cũ</option>
+            <option value={"06-hang-newseal"}>Hàng new seal</option>
+          </select>
+
+          
+        </div>
+
       </div>
       {items.length > 0 ? (
         <div>
@@ -368,6 +386,18 @@ function Admin() {
             <ProductForm
               initialValues={editModal.value}
               onFinish={values => handleUpdateProduct(values, editModal.key, editModal.code, editModal.page)}
+            />
+          </Modal>
+          {/* Modal thêm sản phẩm mới */}
+          <Modal
+            open={addModal}
+            title="Thêm sản phẩm mới"
+            width="60vw"
+            footer={null}
+            onCancel={() => setAddModal(false)}
+            destroyOnHidden
+          >
+            <ProductForm
             />
           </Modal>
         </div>

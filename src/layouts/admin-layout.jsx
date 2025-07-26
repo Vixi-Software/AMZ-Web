@@ -42,22 +42,12 @@ const createMenuItems = (collapsed) => [
     routePath.adminWarranty
   ),
   getItem(
-    collapsed ? null : 'Quản lý sản phẩm',
-    'sub-product',
-    <AppstoreOutlined />,
-    collapsed ? null : [
-      getItem(<Link to={routePath.admin}><UnorderedListOutlined /> Danh sách sản phẩm</Link>, routePath.admin),
-      getItem(<Link to={routePath.adminProductAdd}><PlusSquareOutlined /> Thêm sản phẩm</Link>, routePath.adminProductAdd),
-    ]
+    <Link to={routePath.admin}><UnorderedListOutlined /> Danh sách sản phẩm</Link>,
+    routePath.admin
   ),
   getItem(
-    collapsed ? null : 'Quản lý bài viết',
-    'sub-post',
-    <FileTextOutlined />,
-    collapsed ? null : [
-      getItem(<Link to={routePath.adminPost}><UnorderedListOutlined /> Danh sách bài viết</Link>, routePath.adminPost),
-      // getItem(<Link to={routePath.adminPostAdd}><EditOutlined /> Thêm bài viết</Link>, routePath.adminPostAdd),
-    ]
+    <Link to={routePath.adminPost}><UnorderedListOutlined /> Danh sách bài viết</Link>,
+    routePath.adminPost
   ),
 ];
 
