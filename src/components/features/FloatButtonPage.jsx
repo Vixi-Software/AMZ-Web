@@ -56,12 +56,12 @@ function FloatButtonPage() {
     const interval = setInterval(() => {
       const tooltips = ['zalo', 'facebook', 'phone']
       const randomTooltip = tooltips[Math.floor(Math.random() * tooltips.length)]
-      
+
       setVisibleTooltips(prev => ({
         ...prev,
         [randomTooltip]: true
       }))
-      
+
       // Ẩn tooltip sau 3 giây
       setTimeout(() => {
         setVisibleTooltips(prev => ({
@@ -87,7 +87,9 @@ function FloatButtonPage() {
           tooltip={{
             title: (
               <div>
-                <div>Liên hệ ngay 0333.571.236</div>
+                <div>
+                  {"Liên hệ ngay " + formatVNPhoneNumber(PHONE_NUMBER.GENERAL)}
+                </div>
               </div>
             ),
             placement: 'left',
@@ -101,7 +103,7 @@ function FloatButtonPage() {
             }
           }}
           onClick={() => {
-            window.open('https://zalo.me/'+ PHONE_NUMBER.HA_NOI, '_blank')
+            window.open('https://zalo.me/' + PHONE_NUMBER.HA_NOI, '_blank')
           }}
           onMouseEnter={() => {
             setHoveredButton(prev => ({ ...prev, zalo: true }))
@@ -153,7 +155,9 @@ function FloatButtonPage() {
           tooltip={{
             title: (
               <div>
-                <div>Gọi ngay 0333.571.236</div>
+                <div>
+                  {"Gọi ngay " + formatVNPhoneNumber(PHONE_NUMBER.GENERAL)}
+                </div>
               </div>
             ),
             placement: 'left',
@@ -173,7 +177,7 @@ function FloatButtonPage() {
             setHoveredButton(prev => ({ ...prev, phone: false }))
           }}
           onClick={() => {
-            window.open('tel:'+PHONE_NUMBER.GENERAL)
+            window.open('tel:' + PHONE_NUMBER.GENERAL)
           }}
         />
       </FloatButton.Group>
