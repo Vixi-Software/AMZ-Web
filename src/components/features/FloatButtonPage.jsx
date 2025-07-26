@@ -5,6 +5,7 @@ import ZaloIcon from '../../assets/ic-zalo.svg'
 import FacebookIcon from '../../assets/ic-facebook.svg'
 import PhoneIcon from '../../assets/ic-phone.svg'
 import { PHONE_NUMBER } from '../../constants/phoneNumber'
+import formatVNPhoneNumber from '../../utils/phoneNumberHandle'
 
 const BUTTON_STYLE = {
   width: 70,
