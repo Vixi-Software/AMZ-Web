@@ -28,8 +28,8 @@ function Footer() {
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <h6 className="font-normal text-lg mb-[10px]">Thông tin và chính sách</h6>
-                        <ul className="space-y-2 text-sm text-gray-600 pl-[10px]">
+                        <h6 className="font-normal text-lg mb-2">Thông tin và chính sách</h6>
+                        <ul className="space-y-2 text-sm text-gray-600 pl-2">
                             <li>Mua hàng và thanh toán</li>
                             <li>Mua hàng trả góp</li>
                             <li>Chính sách giao hàng</li>
@@ -42,8 +42,8 @@ function Footer() {
                     </div>
 
                     <div>
-                        <h6 className="font-normal text-lg mb-[10px]">Loa</h6>
-                        <ul className="space-y-2 text-sm text-gray-600 pl-[10px]">
+                        <h6 className="font-normal text-lg mb-2">Loa</h6>
+                        <ul className="space-y-2 text-sm text-gray-600 pl-2">
                             <li>Loa mini</li>
                             <li>Loa bluetooth cầm tay</li>
                             <li>Loa cắm điện</li>
@@ -56,8 +56,8 @@ function Footer() {
                     </div>
 
                     <div>
-                        <h6 className="font-normal text-lg mb-[10px]">Tai nghe</h6>
-                        <ul className="space-y-2 text-sm text-gray-600 pl-[10px]">
+                        <h6 className="font-normal text-lg mb-2">Tai nghe</h6>
+                        <ul className="space-y-2 text-sm text-gray-600 pl-2">
                             <li>Tai nghe true wireless</li>
                             <li>Tai nghe nhét tai</li>
                             <li>Tai nghe chụp tai</li>
@@ -67,18 +67,18 @@ function Footer() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt5">
                     <div className='mt-8'>
-                        <h6 className="font-normal text-lg mb-[10px]">Kết nối với AMZ TECH</h6>
-                        <p className="text-sm pl-4">
+                        <h6 className="font-normal text-lg mb-2">Kết nối với AMZ TECH</h6>
+                        <p className="text-sm pl-2">
                             Đà Nẵng: <span className="font-bold">0935.241.243</span><br />
                             Địa chỉ: 14 Nguyễn Thông - An Hải Tây - Sơn Trà - Đà Nẵng
                         </p>
-                        <p className="text-sm mt-4 pl-4">
+                        <p className="text-sm mt-4 pl-2">
                             Hà Nội: <span className="font-bold">0333.571.236</span><br />
                             Địa chỉ: Số 2, Ngõ 92 Láng Hạ - Đống Đa - Hà Nội
                         </p>
-                        <div className='mt-4 pl-4'>
+                        <div className='mt-4 pl-2'>
                             <h6 className="font-normal text-lg">Liên kiết mạng xã hội</h6>
                             <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
                                 <a

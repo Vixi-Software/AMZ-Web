@@ -39,7 +39,7 @@ const CustomArrow = ({ className, style, onClick, direction }) => (
 function ProductLayout({ children }) {
   const screens = Grid.useBreakpoint()
   const category = useSelector(selectCategory);
-  const allProductsState = useSelector((state) => state.allProducts[getCollectionByCategory(category)]);
+  const allProductsState = useSelector((state) => state.allProducts);
   const allProductsArray = Object.values(allProductsState).flat();
 
   const defaultBrands = [

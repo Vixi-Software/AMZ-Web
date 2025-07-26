@@ -155,7 +155,6 @@ function EventManagement() {
     const fetchEvents = async () => {
       const events = await getAllDocs()
       setDataSource(events)
-      console.log("Event", events)
     }
     fetchEvents()
   }, [])

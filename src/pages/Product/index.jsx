@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import ProductGrid from '../../components/features/ProductGrid'
-import Loading from '../../components/features/Loading'
 import { Grid } from 'antd'
-import { useProductService } from '../../services/productService'
 import { usePostService } from '../../services/postService'
 
 import { selectBrands, selectCategory, selectPriceRanges } from '../../store/features/filterProduct/filterProductSlice'
@@ -18,21 +16,24 @@ const sortOptions = [
 ]
 
 function Product() {
-  // const { filterProduct } = useProductService() 
   const { getPostsWithStore } = usePostService();
   const [products, setProducts] = useState([])
   const [selectedSort, setSelectedSort] = useState('bestseller')
   const [posts, setPosts] = useState([])
-  const filteredProducts = useSelector(state => state.filterProduct)
   const screens = useBreakpoint()
   const isSmall = !screens.md
   const isMedium = screens.md && !screens.lg
   const allProductsState = useSelector((state) => state.allProducts);
   const allProductsArray = Object.values(allProductsState).flat();
   const category = useSelector(selectCategory);
-  const filteredProduct = allProductsArray.filter(
-    (product) => product.category === category
-  );
+  let filteredProduct = allProductsArray
+  if (category != "Tất cả sản phẩm") {
+    filteredProduct = allProductsArray.filter(
+      (product) => product.category === category
+    );
+  }
+ 
+
   const brands = useSelector(selectBrands);
   const priceRanges = useSelector(selectPriceRanges);
   const [loading, setLoading] = useState(false);

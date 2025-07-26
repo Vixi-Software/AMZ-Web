@@ -164,7 +164,11 @@ function PostManagement() {
         <Select
           options={postTypeOptions}
           value={collectionName}
-          onChange={val => setCollectionName(val)}
+          onChange={
+            val => {
+              setCollectionName(val)
+            }
+          }
           style={{ width: 300, marginTop: 8 }}
         />
       </div>
@@ -207,7 +211,7 @@ function PostManagement() {
         destroyOnHidden
         width={800} // Cho rộng hơn để dễ sửa nội dung
       >
-        <PostForm initialValues={editRecord} type={formType} collection={collectionName} onFinish={handleFinishPostForm}>
+        <PostForm initialValues={editRecord} type={formType} collectionOrigin={collectionName} onFinish={handleFinishPostForm}>
 
         </PostForm>
         {/* <Form form={editForm} layout="vertical">
