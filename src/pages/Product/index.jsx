@@ -27,6 +27,7 @@ function Product() {
   const allProductsArray = Object.values(allProductsState).flat();
   const category = useSelector(selectCategory);
   let filteredProduct = allProductsArray
+  
   if (category != "Tất cả sản phẩm") {
     filteredProduct = allProductsArray.filter(
       (product) => product.category === category

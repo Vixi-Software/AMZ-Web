@@ -27,16 +27,13 @@ function BannerCustom2() {
       <div className="flex-1 flex flex-col justify-center pl-8 pr-8 py-6 z-10 animate-fade-in">
         <div>
           <h2 className="!font-extrabold text-3xl md:text-6xl leading-tight mb-2 text-white drop-shadow-lg transition-all duration-300">
-            <span className="block transition-transform duration-300 hover:translate-x-6 hover:scale-110 cursor-pointer">
+            <span className="block transition-transform duration-300 hover:translate-x-6 hover:scale-105 cursor-pointer">
               THU CŨ
-            </span>
-            <span className="block transition-transform duration-300 hover:translate-x-6 hover:scale-110 cursor-pointer">
+              <br />
               ĐỔI MỚI
-            </span>
-            <span className="block transition-transform duration-300 hover:translate-x-6 hover:scale-110 cursor-pointer">
+              <br />
               GIÁ TỐT NHẤT
-            </span>
-            <span className="block transition-transform duration-300 hover:translate-x-6 hover:scale-110 cursor-pointer">
+              <br />
               THỊ TRƯỜNG
             </span>
           </h2>
