@@ -457,7 +457,29 @@ function ProductDetail() {
             <h3 className="text-lg text-orange-400 text-center font-semibold mb-2">
               Đặc Điểm Nổi Bật
             </h3>
-            {product.description}
+            <ul className="m-0 pl-4 pr-4 list-none text-justify">
+                {loading ? (
+                  Array(4)
+                    .fill(0)
+                    .map((_, idx) => (
+                      <li key={idx} className="mb-2">
+                        <Skeleton.Input
+                          active
+                          size="small"
+                          style={{ width: 200 }}
+                        />
+                      </li>
+                    ))
+                ) : product.description ? (
+                  <div className="text-[15px]">
+                    <div className="whitespace-pre-line p-2">
+                      {product.description}
+                    </div>
+                  </div>
+                ) : (
+                  <li className="mb-2">Chưa cập nhật đặc điểm nổi bật...</li>
+                )}
+              </ul>
           </div>
           <div className="text-black text-base mb-2 mx-4">
             <div dangerouslySetInnerHTML={{ __html: currentPost }} />
