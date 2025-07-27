@@ -388,6 +388,7 @@ function Admin() {
             <ProductForm
               initialValues={editModal.value}
               onFinish={values => handleUpdateProduct(values, editModal.key, editModal.code, editModal.page)}
+              type = "edit"
             />
           </Modal>
           {/* Modal thêm sản phẩm mới */}

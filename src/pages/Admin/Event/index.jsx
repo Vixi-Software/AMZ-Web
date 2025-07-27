@@ -159,7 +159,19 @@ function EventManagement() {
     fetchEvents()
   }, [])
 
-  
+  useEffect(() => {
+    if (modal.visible) {
+      if (modal.type === 'edit' && modal.record) {
+        setTimeout(() => {
+          setContent(modal.record.content || '')
+        }, 0)
+      } else {
+        setContent('')
+      }
+    }
+  }, [modal])
+
+
 
   // Xử lý submit form
   const handleOk = () => {
@@ -176,7 +188,7 @@ function EventManagement() {
           { ...data, id },
         ])
         message.success('Đã thêm sự kiện!')
-              } else if (modal.type == 'edit') {
+      } else if (modal.type == 'edit') {
         await updateDocData(modal.record.id, data)
         setDataSource(dataSource.map(item =>
           item.id === modal.record.id
@@ -196,7 +208,7 @@ function EventManagement() {
     message.success('Đã xóa sự kiện!')
   }
 
- 
+
 
 
   // Thêm cột thao tác
@@ -291,13 +303,13 @@ function EventManagement() {
                   const startDate = getFieldValue('startDate');
                   const isMoment = (d) => moment.isMoment(d) && d.isValid();
                   if (!isMoment(value) || !isMoment(startDate)) {
-                    return Promise.resolve(); 
+                    return Promise.resolve();
                   }
-              
+
                   if (value.isAfter(startDate, 'day')) {
                     return Promise.resolve();
                   }
-              
+
                   return Promise.reject(new Error('Ngày kết thúc phải sau ngày bắt đầu!'));
                 },
               })
@@ -307,17 +319,17 @@ function EventManagement() {
           </Form.Item>
           <Form.Item
             label="Bài viết"
-            name="content"
-            rules={[{ required: true, message: 'Viết nội dung cho Sự kiện' }]}
+            // name="content"
+            // rules={[{ required: true, message: 'Viết nội dung cho Sự kiện' }]}
           >
-              <ReactQuill
-                ref={quillRef}
-                value={content}
-                onChange={handleChange}
-                modules={reactQuillModules}
-                formats={reactQuillFormats}
-                style={{ height: '100%', minHeight: 200 }} 
-              />
+            <ReactQuill
+              ref={quillRef}
+              value={content}
+              onChange={handleChange}
+              modules={reactQuillModules}
+              formats={reactQuillFormats}
+              style={{ height: '100%', minHeight: 200 }}
+            />
           </Form.Item>
         </Form>
       </Modal>

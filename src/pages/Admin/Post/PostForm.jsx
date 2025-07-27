@@ -45,6 +45,7 @@ const postTypeOptions = [
 ]
 
 function PostForm({ initialValues = {}, collectionOrigin = "postService", type = "Add", onFinish }) {
+  console.log("intiPost: ", initialValues.content)
   const [content, setContent] = useState('')
   const [collectionName, setCollectionName] = useState(collectionOrigin)
   const [titlePost, setTitlePost] = useState("")
