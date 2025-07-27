@@ -268,7 +268,7 @@ function Header() {
         <SideBarProduct brands={brands} priceRanges={priceRanges} needs={needs} forceShow={true} />
       ) : (
         <Space size="large" direction="vertical" className="w-full">
-          <Space className="ml-4">
+          <Space>
             <Dropdown overlay={storeMenu} trigger={['click']}>
               <a onClick={(e) => e.preventDefault()} className="!text-[#F37021] inline-block cursor-pointer">
                 <EnvironmentOutlined style={{ color: '#F37021', fontSize: '1.125rem' }} /> Tìm cửa hàng
@@ -287,7 +287,7 @@ function Header() {
               {"Zalo: " + formatVNPhoneNumber(PHONE_NUMBER.GENERAL)}
             </a>
           </Space>
-          <div className="mt-2">
+          {/* <div className="mt-2">
             <h3 className='mb-2 font-bold'>Từ khoá xu hướng&nbsp;</h3>
             <span className="text-gray-500 text-xs flex flex-col gap-1">
               {home[0]?.keywords && home[0].keywords.map((keyword, idx) => (
@@ -303,7 +303,7 @@ function Header() {
                 </a>
               ))}
             </span>
-          </div>
+          </div> */}
           <div className="rounded-lg mb-4">
             <div className="font-semibold text-[16px] text-gray-700 mb-2 tracking-wide">
               Hàng cũ giá tốt - Sản phẩm chính
