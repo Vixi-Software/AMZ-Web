@@ -116,7 +116,7 @@ function getCollectionNameByCategory(category) {
 }
 
 
-function ProductForm({ initialValues = {}, onFinish, onCloseForm }) {
+function ProductForm({ initialValues = {}, onFinish, onCloseForm, type = "add" }) {
   // Nếu có initialValues.tableInfo thì parse ra tableRows, nếu không thì 1 dòng rỗng
   const [tableRows, setTableRows] = useState(
     initialValues.tableInfo ? parseStringToTableInfo(initialValues.tableInfo) : [{ key: '', value: '' }]
@@ -209,6 +209,18 @@ function ProductForm({ initialValues = {}, onFinish, onCloseForm }) {
       highlightsQuillRef.current.getEditor().getModule('toolbar').addHandler('image', handleHighlightsImageClick);
     }
   }, []);
+
+  useEffect(() => {
+    if (type === 'edit' && initialValues) {
+      setTimeout(() => {
+        setHighlights(initialValues.highlights || '')
+        setDescription(initialValues.description || '')
+      }, 0)
+    } else {
+      setHighlights('')
+      setDescription('')
+    }
+  }, [])
 
 
   // Cập nhật colectionName khi category thay đổi
@@ -617,7 +629,7 @@ function ProductForm({ initialValues = {}, onFinish, onCloseForm }) {
 
         <Row gutter={14}>
           <Col span={12}>
-            <Form.Item label="Đặc điểm nổi bật" name="description">
+            <Form.Item label="Đặc điểm nổi bật">
               <ReactQuill
                 ref={descriptionQuillRef}
                 theme="snow"
@@ -630,7 +642,7 @@ function ProductForm({ initialValues = {}, onFinish, onCloseForm }) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Tính năng nổi bật" name="highlights">
+            <Form.Item label="Tính năng nổi bật">
               <ReactQuill
                 ref={highlightsQuillRef}
                 theme="snow"

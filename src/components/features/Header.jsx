@@ -13,6 +13,7 @@ import { useProductService } from '../../services/productService'
 import Fuse from 'fuse.js'
 import { PHONE_NUMBER } from '../../constants/phoneNumber'
 import formatVNPhoneNumber from '../../utils/phoneNumberHandle'
+import { MAP_URL } from '../../constants/mapsUrl'
 const { Text, Link } = Typography
 
 function Header() {
@@ -154,7 +155,7 @@ function Header() {
     <Menu>
       <Menu.Item key="danang">
         <a
-          href="https://www.google.com/maps/place/C%E1%BB%ADa+h%C3%A0ng+Loa,+Tai+nghe,+Ph%E1%BB%A5+ki%E1%BB%87n+c%C3%B4ng+ngh%E1%BB%87+ch%C3%ADnh+h%C3%A3ng+t%E1%BA%A1i+%C4%90%C3%A0+N%E1%BA%B5ng+-+AMZ+TECH/@16.0659671,108.2281222,1044m/data=!3m1!1e3!4m6!3m5!1s0x3142192ac74d5237:0x84d4e7e69dfa4254!8m2!3d16.0659379!4d108.2307203!16s%2Fg%2F11s66cyymc?entry=tts&g_ep=EgoyMDI1MDYxMC4xIPu8ASoASAFQAw%3D%3D&skid=7260499d-3c77-4e0e-9874-2b3580162dd1"
+          href={MAP_URL.DA_NANG}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -163,7 +164,7 @@ function Header() {
       </Menu.Item>
       <Menu.Item key="hanoi">
         <a
-          href="https://www.google.com/maps/place/AMZ+TECH+H%C3%A0+N%E1%BB%99i+-+C%E1%BB%ADa+h%C3%A0ng+Loa,+Tai+nghe,+ph%E1%BB%A5+ki%E1%BB%87n+%C4%91i%E1%BB%87n+t%E1%BB%AD+ch%C3%ADnh+h%C3%A3ng/@21.0116923,105.8087566,1015m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3135ab0177a9de8d:0xe820380dfd55f75e!8m2!3d21.0116873!4d105.8113315!16s%2Fg%2F11y7d2ybyn?entry=tts&g_ep=EgoyMDI1MDYxMC4xIPu8ASoASAFQAw%3D%3D&skid=2e1bc059-883e-4ffc-a81c-c3534459e4f5"
+          href={MAP_URL.HA_NOI}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -267,11 +268,11 @@ function Header() {
         <SideBarProduct brands={brands} priceRanges={priceRanges} needs={needs} forceShow={true} />
       ) : (
         <Space size="large" direction="vertical" className="w-full">
-          <Space>
-            <Dropdown menu={storeMenu} trigger={['click']}>
-              <span className="text-[#F37021] cursor-pointer">
+          <Space className="ml-4">
+            <Dropdown overlay={storeMenu} trigger={['click']}>
+              <a onClick={(e) => e.preventDefault()} className="!text-[#F37021] inline-block cursor-pointer">
                 <EnvironmentOutlined style={{ color: '#F37021', fontSize: '1.125rem' }} /> Tìm cửa hàng
-              </span>
+              </a>
             </Dropdown>
           </Space>
           <Space>
@@ -456,11 +457,11 @@ function Header() {
         {/* Contact: chỉ hiện trên md trở lên */}
         <Col xs={0} sm={0} md={0} lg={6} className="hidden lg:block">
           <div className='!mt-[-25px]  hidden lg:block'>
-            <Space>
-              <Dropdown menu={storeMenu} trigger={['click']}>
-                <span className="text-[#F37021] inline-block cursor-pointer">
+            <Space className="ml-4">
+              <Dropdown overlay={storeMenu} trigger={['click']}>
+                <a onClick={(e) => e.preventDefault()} className="!text-[#F37021] inline-block cursor-pointer">
                   <EnvironmentOutlined style={{ color: '#F37021', fontSize: '1.125rem' }} /> Tìm cửa hàng
-                </span>
+                </a>
               </Dropdown>
             </Space>
             <Space className='ml-4'>
