@@ -104,7 +104,7 @@ function FloatButtonPage() {
             }
           }}
           onClick={() => {
-            window.open('https://zalo.me/' + PHONE_NUMBER.HA_NOI, '_blank')
+            window.open('https://zalo.me/' + PHONE_NUMBER.GENERAL, '_blank')
           }}
           onMouseEnter={() => {
             setHoveredButton(prev => ({ ...prev, zalo: true }))
