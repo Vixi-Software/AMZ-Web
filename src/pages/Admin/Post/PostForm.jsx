@@ -151,25 +151,6 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
         message.error('Cập nhật bài viết thất bại');
       }
     }
-
-    // try {
-    // const date = new Date().toLocaleString('vi-VN')
-    // const postData = {
-    //   title: titlePost,
-    //   date,
-    //   content
-    // }
-    // const colRef = collection(db, collectionName);
-    // const docRef = await addDoc(colRef, postData);
-    // console.log('📄 New doc ID:', docRef.id);
-    // message.success('Đã thêm bài viết mới!')
-    // form.resetFields()
-    // setContent('')
-    // navigate(routePath.adminPost)
-    // } catch (err) {
-    //   console.log('error', err)
-    //   message.error('Vui lòng nhập tiêu đề bài viết!')
-    // }
   }
 
   const handleClear = () => {

@@ -36,7 +36,7 @@ function ProductDetail() {
   const product = useSelector(state => state.product.product)
   const [selectedImage, setSelectedImage] = useState(0)
   // const [relatedProducts, setRelatedProducts] = useState([])
-  const [posts, setPosts] = useState([])
+  // const [posts, setPosts] = useState([])
   const [currentPost, setCurrentPost] = useState("")
   const { getRelatedProductsByCategory } = useProductService()
   const { getPostsWithStore } = usePostService()
@@ -116,13 +116,13 @@ function ProductDetail() {
     fetchRelated()
   }, [product])
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const allPosts = await getPostsWithStore()
-      setPosts(allPosts)
-    }
-    fetchPosts()
-  }, [])
+  // useEffect(() => {
+  //   const fetchPosts = async () => {
+  //     const allPosts = await getPostsWithStore()
+  //     setPosts(allPosts)
+  //   }
+  //   fetchPosts()
+  // }, [])
 
   const handleSelectOption = (type, value) => {
     setSelectedOptions(prev => {
@@ -256,7 +256,7 @@ function ProductDetail() {
                 ) : product.features ? (
                   <div className="text-[15px]">
                     <div className="whitespace-pre-line p-2">
-                      {product.features}
+                    <div dangerouslySetInnerHTML={{ __html: product.features }} />
                     </div>
                   </div>
                 ) : (
@@ -423,9 +423,9 @@ function ProductDetail() {
                         ? 'bg-orange-500 text-white border'
                         : 'border border-[#999999] bg-white'
                         }`}
-                        onClick={
-                          () => window.open('https://zalo.me/' + PHONE_NUMBER.DA_NANG, '_blank')
-                        }
+                      onClick={
+                        () => window.open('https://zalo.me/' + PHONE_NUMBER.DA_NANG, '_blank')
+                      }
                     >
                       <div className="font-semibold">ĐÀ NẴNG</div>
                       <div className="font-semibold">
@@ -483,7 +483,7 @@ function ProductDetail() {
               ) : product.description ? (
                 <div className="text-[15px]">
                   <div className="whitespace-pre-line p-2">
-                    {product.description}
+                    <div dangerouslySetInnerHTML={{ __html: product.description }} />
                   </div>
                 </div>
               ) : (

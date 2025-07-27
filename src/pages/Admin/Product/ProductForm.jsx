@@ -1,10 +1,34 @@
-import React, { useEffect, useState } from 'react'
-import { Form, Input, InputNumber, Select, Button, Row, Col, message, Switch } from 'antd'
+import React, { useEffect, useRef, useState } from 'react'
+import { Form, Input, InputNumber, Select, Button, Row, Col, message, Switch, Modal } from 'antd'
 import { db } from '@/utils/firebase'
-import { collection, doc, getDocs, query, setDoc} from 'firebase/firestore'
+import { collection, doc, getDocs, query, setDoc } from 'firebase/firestore'
 import { productToPipeString } from '@/utils/convertFireBase.js'
 import { parseStringToTableInfo, parseTableInfoToString } from '@/utils/tableInfoParse.js'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 
+const reactQuillModules = {
+  toolbar: [
+    [{ 'header': [1, 2, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'indent': '-1' }, { 'indent': '+1' }],
+    [{ 'align': [] }],
+    ['blockquote'],
+    ['link', 'image'],
+    ['clean'],
+  ],
+}
+
+
+const reactQuillFormats = [
+  'header', 'bold', 'italic', 'underline', 'strike',
+  'color', 'background',
+  'list', 'bullet', 'indent',
+  'align', 'blockquote', 'code-block',
+  'link', 'image'
+]
 
 const productTypeOptions = [
   { label: 'Loa di động cũ', value: 'Loa di động cũ' },
@@ -16,6 +40,7 @@ const productTypeOptions = [
 ]
 
 const brandOptions = [
+  { label: 'Apple', value: 'Apple' },
   { label: 'Acnos', value: 'Acnos' },
   { label: 'Alpha Works', value: 'Alpha Works' },
   { label: 'Anker', value: 'Anker' },
@@ -91,15 +116,101 @@ function getCollectionNameByCategory(category) {
 }
 
 
-function ProductForm({ initialValues = {}, onFinish }) {
+function ProductForm({ initialValues = {}, onFinish, onCloseForm }) {
   // Nếu có initialValues.tableInfo thì parse ra tableRows, nếu không thì 1 dòng rỗng
   const [tableRows, setTableRows] = useState(
     initialValues.tableInfo ? parseStringToTableInfo(initialValues.tableInfo) : [{ key: '', value: '' }]
   );
   const [category, setCategory] = useState(initialValues.category || '');
   const [colectionName, setColectionName] = useState(getCollectionNameByCategory(initialValues.category || ''));
-  const [postOptions, setPostOptions] = useState({lable:"", value:""})
-  
+  const [postOptions, setPostOptions] = useState({ lable: "", value: "" })
+
+  //Setup Quill for "Đặc điểm nổi bật"
+  const descriptionQuillRef = useRef(null)
+  const [description, setDescription] = useState(initialValues.description)
+  const [descriptionSavedRange, setDescriptionSavedRange] = useState(null);
+  const [imageDescriptionUrl, setImageDescriptionUrl] = useState('')
+  const [isImageDescriptionModalOpen, setIsImageDescriptionModalOpen] = useState(false);
+
+  const handleDescriptionImageClick = () => {
+    const editor = descriptionQuillRef.current?.getEditor()
+    const range = editor?.getSelection()
+    if (range) setDescriptionSavedRange(range)
+    setIsImageDescriptionModalOpen(true)
+  };
+  // Insert image when user clicks "Insert"
+  const insertDescriptionImage = () => {
+    const editor = descriptionQuillRef.current?.getEditor()
+
+    if (!descriptionSavedRange) {
+      message.warning('Vui lòng chọn vị trí trong nội dung để chèn ảnh.')
+      return;
+    }
+
+    if (!imageDescriptionUrl.trim()) {
+      message.warning('Vui lòng nhập đường dẫn hình ảnh hợp lệ.')
+      return;
+    }
+
+    editor.insertEmbed(descriptionSavedRange.index, 'image', imageDescriptionUrl.trim(), 'user')
+    setIsImageDescriptionModalOpen(false)
+    setImageDescriptionUrl("")
+    setDescriptionSavedRange(null)
+  };
+
+  const handleDescriptionChange = (val) => {
+    setDescription(val)
+  }
+  useEffect(() => {
+    if (descriptionQuillRef.current) {
+      descriptionQuillRef.current.getEditor().getModule('toolbar').addHandler('image', handleDescriptionImageClick);
+    }
+  }, []);
+
+
+  //Setup Quill for "Tính năng nổi bật"
+  const highlightsQuillRef = useRef(null)
+  const [highlights, setHighlights] = useState(initialValues.highlights)
+  const [highlightsSavedRange, setHighlightsSavedRange] = useState(null);
+  const [isImageHighlightsModalOpen, setIsImageHighlightsModalOpen] = useState(false);
+  const [imageHighlightsUrl, setImageHighlightsUrl] = useState('')
+
+  const handleHighlightsImageClick = () => {
+    const editor = highlightsQuillRef.current?.getEditor()
+    const range = editor?.getSelection()
+    if (range) setHighlightsSavedRange(range)
+    setIsImageHighlightsModalOpen(true)
+  };
+  // Insert image when user clicks "Insert"
+  const insertHighlightsImage = () => {
+    const editor = highlightsQuillRef.current?.getEditor()
+
+    if (!highlightsSavedRange) {
+      message.warning('Vui lòng chọn vị trí trong nội dung để chèn ảnh.')
+      return;
+    }
+
+    if (!imageHighlightsUrl.trim()) {
+      message.warning('Vui lòng nhập đường dẫn hình ảnh hợp lệ.')
+      return;
+    }
+
+    editor.insertEmbed(highlightsSavedRange.index, 'image', imageHighlightsUrl.trim(), 'user')
+    setIsImageHighlightsModalOpen(false)
+    setImageHighlightsUrl("")
+    setHighlightsSavedRange(null)
+  };
+
+  const handleHighlightsChange = (val) => {
+    setHighlights(val)
+  }
+  useEffect(() => {
+    if (highlightsQuillRef.current) {
+      highlightsQuillRef.current.getEditor().getModule('toolbar').addHandler('image', handleHighlightsImageClick);
+    }
+  }, []);
+
+
   // Cập nhật colectionName khi category thay đổi
   useEffect(() => {
     setColectionName(getCollectionNameByCategory(category));
@@ -180,14 +291,14 @@ function ProductForm({ initialValues = {}, onFinish }) {
 
   const getAllPostTitles = async () => {
     const colRef = collection(db, "productPosts");
-  
+
     const q = query(colRef);
     const snapshot = await getDocs(q);
     const result = snapshot.docs.map(doc => ({
       value: doc.id,
       label: doc.data().title || '(Không có tiêu đề)',
     }));
-  
+
     setPostOptions(result);
   };
 
@@ -208,6 +319,8 @@ function ProductForm({ initialValues = {}, onFinish }) {
       isbestSeller: values.isbestSeller, // Thêm dòng này
       videoUrl: values.videoUrl || '', // Thêm dòng này
       post: values.post || '',
+      hightlights: highlights || '',
+      description: description || '',
     }
     try {
       const page = await getNextAvailablePage();
@@ -234,6 +347,7 @@ function ProductForm({ initialValues = {}, onFinish }) {
     } else {
       // Nếu là thêm mới, dùng logic cũ
       await handleFinish(values);
+      onCloseForm()
     }
   }
   //Vĩ: 11/07/2022 00:59 - Tự động correct giá bán & giá gốc & sale
@@ -310,249 +424,288 @@ function ProductForm({ initialValues = {}, onFinish }) {
 
   return (
     //Vĩ: 11/07/2022 00:13 - Form được sử dụng khi chỉnh sửa sản phẩm
-    <Form
-      layout="vertical"
-      initialValues={initialValues}
-      style={{ maxWidth: '100%', width: '100%' }}
-      onFinish={handleFormFinish}
-      form={form}
-      onValuesChange={handleAutoCalculate}
-    >
-      <Row gutter={16}>
-        <Col span={8}>
-          <Form.Item label="Danh mục" name="category" rules={[{ required: true, message: 'Vui lòng chọn loại sản phẩm' }]}>
-            <Select options={productTypeOptions} value={category} onChange={val => setCategory(val)} />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="Thương hiệu" name="brand" rules={[{ required: true, message: 'Vui lòng chọn thương hiệu' }]}>
-            <Select options={brandOptions} showSearch placeholder="Chọn thương hiệu" />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="Tên sản phẩm" name="name" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm' }]}>
-            <Input />
-          </Form.Item>
-        </Col>
-      </Row>
+    <div>
+      <Form
+        layout="vertical"
+        initialValues={initialValues}
+        style={{ maxWidth: '100%', width: '100%' }}
+        onFinish={handleFormFinish}
+        form={form}
+        onValuesChange={handleAutoCalculate}
+      >
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item label="Danh mục" name="category" rules={[{ required: true, message: 'Vui lòng chọn loại sản phẩm' }]}>
+              <Select options={productTypeOptions} value={category} onChange={val => setCategory(val)} />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Thương hiệu" name="brand" rules={[{ required: true, message: 'Vui lòng chọn thương hiệu' }]}>
+              <Select options={brandOptions} showSearch placeholder="Chọn thương hiệu" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Tên sản phẩm" name="name" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm' }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+        </Row>
 
-      <Row gutter={16}>
-        <Col span={8}>
-          <Form.Item label="Màu sắc" name="colors" rules={[{ required: true, message: 'Vui lòng nhập màu sắc' }]}>
-            <Select
-              mode="single"
-              placeholder="Chọn màu sắc"
-              optionLabelProp="label"
-              options={colorOptions.map(opt => ({
-                ...opt,
-                label: (
-                  <span>
-                    <span style={{
-                      display: 'inline-block',
-                      width: 16,
-                      height: 16,
-                      borderRadius: '50%',
-                      background: opt.color,
-                      border: '1px solid #ccc',
-                      marginRight: 8,
-                      verticalAlign: 'middle'
-                    }} />
-                    {opt.label}
-                  </span>
-                )
-              }))}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="Tình trạng bán" name="condition" rules={[{ required: true, message: 'Vui lòng nhập tình trạng bán' }]}>
-            <Select
-              mode="single"
-              placeholder="Chọn tình trạng bán"
-              options={conditionOptions}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item label="Bán chạy" name="isbestSeller" valuePropName="checked">
-            <Switch checkedChildren="Có" unCheckedChildren="Không" />
-          </Form.Item>
-        </Col>
-      </Row>
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item label="Màu sắc" name="colors" rules={[{ required: true, message: 'Vui lòng nhập màu sắc' }]}>
+              <Select
+                mode="single"
+                placeholder="Chọn màu sắc"
+                optionLabelProp="label"
+                options={colorOptions.map(opt => ({
+                  ...opt,
+                  label: (
+                    <span>
+                      <span style={{
+                        display: 'inline-block',
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        background: opt.color,
+                        border: '1px solid #ccc',
+                        marginRight: 8,
+                        verticalAlign: 'middle'
+                      }} />
+                      {opt.label}
+                    </span>
+                  )
+                }))}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Tình trạng bán" name="condition" rules={[{ required: true, message: 'Vui lòng nhập tình trạng bán' }]}>
+              <Select
+                mode="single"
+                placeholder="Chọn tình trạng bán"
+                options={conditionOptions}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Bán chạy" name="isbestSeller" valuePropName="checked">
+              <Switch checkedChildren="Có" unCheckedChildren="Không" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-      <Row gutter={16}>
-        <Col span={8}>
-          <Form.Item
-            label="Giá gốc (VNĐ)"
-            name="priceDefault"
-            rules={[
-              { required: true, message: 'Vui lòng nhập giá bán buôn' },
-              { type: 'number', min: 0, message: 'Chỉ nhập số lớn hơn hoặc bằng 0' }
-            ]}
-          >
-            <InputNumber
-              min={0}
-              style={{ width: '100%' }}
-              formatter={value => value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' vnđ' : ''}
-              parser={value => value.replace(/[vnđ,]/g, '').trim()}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item
-            label="Giá bán (VNĐ)"
-            name="priceForSale"
-            rules={[
-              { required: true, message: 'Vui lòng nhập giá bán lẻ' },
-              { type: 'number', min: 0, message: 'Chỉ nhập số lớn hơn hoặc bằng 0' }
-            ]}
-          >
-            <InputNumber
-              min={0}
-              style={{ width: '100%' }}
-              formatter={value => value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' vnđ' : ''}
-              parser={value => value.replace(/[vnđ,]/g, '').trim()}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item
-            label="Phần trăm giảm (%)"
-            name="salePercent"
-            rules={[
-              { required: false, message: 'Vui lòng nhập phần trăm giảm giá (nếu có)' },
-              { type: 'number', min: 0, message: 'Chỉ nhập số lớn hơn hoặc bằng 0' }
-            ]}
-          >
-            <InputNumber
-              min={0}
-              style={{ width: '100%' }}
-              formatter={value => value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' %' : ''}
-              parser={value => value.replace(/[\s,%]/g, '')}
-              placeholder="Nhập giá sale (nếu có)"
-            />
-          </Form.Item>
-        </Col>
-      </Row>
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item
+              label="Giá gốc (VNĐ)"
+              name="priceDefault"
+              rules={[
+                { required: true, message: 'Vui lòng nhập giá bán buôn' },
+                { type: 'number', min: 0, message: 'Chỉ nhập số lớn hơn hoặc bằng 0' }
+              ]}
+            >
+              <InputNumber
+                min={0}
+                style={{ width: '100%' }}
+                formatter={value => value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' vnđ' : ''}
+                parser={value => value.replace(/[vnđ,]/g, '').trim()}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="Giá bán (VNĐ)"
+              name="priceForSale"
+              rules={[
+                { required: true, message: 'Vui lòng nhập giá bán lẻ' },
+                { type: 'number', min: 0, message: 'Chỉ nhập số lớn hơn hoặc bằng 0' }
+              ]}
+            >
+              <InputNumber
+                min={0}
+                style={{ width: '100%' }}
+                formatter={value => value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' vnđ' : ''}
+                parser={value => value.replace(/[vnđ,]/g, '').trim()}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="Phần trăm giảm (%)"
+              name="salePercent"
+              rules={[
+                { required: false, message: 'Vui lòng nhập phần trăm giảm giá (nếu có)' },
+                { type: 'number', min: 0, message: 'Chỉ nhập số lớn hơn hoặc bằng 0' }
+              ]}
+            >
+              <InputNumber
+                min={0}
+                style={{ width: '100%' }}
+                formatter={value => value ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' %' : ''}
+                parser={value => value.replace(/[\s,%]/g, '')}
+                placeholder="Nhập giá sale (nếu có)"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label="Video sản phẩm (YouTube)" name="videoUrl">
-            <Input placeholder="Dán link video YouTube sản phẩm (nếu có)" />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item label="Hình ảnh" name="images">
-            <Select
-              mode="tags"
-              style={{ width: '100%' }}
-              placeholder="Nhập link hình ảnh, Enter để thêm"
-              tokenSeparators={[',', ' ']}
-              open={false} // ⛔ Tắt dropdown
-              styles={{
-                popup: {
-                  root: {
-                    display: 'none',
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Video sản phẩm (YouTube)" name="videoUrl">
+              <Input placeholder="Dán link video YouTube sản phẩm (nếu có)" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Hình ảnh" name="images">
+              <Select
+                mode="tags"
+                style={{ width: '100%' }}
+                placeholder="Nhập link hình ảnh, Enter để thêm"
+                tokenSeparators={[',', ' ']}
+                open={false} // ⛔ Tắt dropdown
+                styles={{
+                  popup: {
+                    root: {
+                      display: 'none',
+                    },
                   },
-                },
-              }} // Cách ẩn cứng nếu cần
-              tagRender={({ label, closable, onClose }) => (
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    padding: '2px 8px',
-                    background: '#e6f7ff',
-                    borderRadius: '4px',
-                    margin: '2px',
-                    fontSize: 13,
-                    maxWidth: '100%',
-                    overflowWrap: 'break-word',
-                    wordBreak: 'break-all',
-                  }}
-                >
-                  <a
-                    href={label}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                }} // Cách ẩn cứng nếu cần
+                tagRender={({ label, closable, onClose }) => (
+                  <div
                     style={{
-                      color: '#1890ff',
-                      textDecoration: 'underline',
-                      maxWidth: 'calc(100% - 20px)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      padding: '2px 8px',
+                      background: '#e6f7ff',
+                      borderRadius: '4px',
+                      margin: '2px',
+                      fontSize: 13,
+                      maxWidth: '100%',
                       overflowWrap: 'break-word',
                       wordBreak: 'break-all',
                     }}
                   >
-                    {label}
-                  </a>
-                  {closable && (
-                    <span
-                      onClick={onClose}
-                      style={{ marginLeft: 8, cursor: 'pointer', color: '#f5222d' }}
+                    <a
+                      href={label}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: '#1890ff',
+                        textDecoration: 'underline',
+                        maxWidth: 'calc(100% - 20px)',
+                        overflowWrap: 'break-word',
+                        wordBreak: 'break-all',
+                      }}
                     >
-                      ×
-                    </span>
-                  )}
-                </div>
-              )}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
+                      {label}
+                    </a>
+                    {closable && (
+                      <span
+                        onClick={onClose}
+                        style={{ marginLeft: 8, cursor: 'pointer', color: '#f5222d' }}
+                      >
+                        ×
+                      </span>
+                    )}
+                  </div>
+                )}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label="Đặc điểm nổi bật" name="description">
-            <Input.TextArea
-              rows={5}
-              style={{ width: '100%', padding: '8px' }}
-              placeholder="Nhập Đặc điểm nổi bật"
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item label="Tính năng nổi bật" name="highlights">
-            <Input.TextArea
-              rows={5}
-              style={{ width: '100%', padding: '8px' }}
-              placeholder="Nhập Tính năng nổi bật"
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row gutter={16}>
-          <Form.Item
-            label="Bài viết sản phẩm"
-            name="post"
-            style={{ width: '100%' }} // mở rộng form item ra toàn bộ
-          >
-            <Select
-              mode="single"
-              placeholder="Chọn bài viết đính kèm"
-              options={postOptions}
-            />
-          </Form.Item>
-      </Row>
+        <Row gutter={14}>
+          <Col span={12}>
+            <Form.Item label="Đặc điểm nổi bật" name="description">
+              <ReactQuill
+                ref={descriptionQuillRef}
+                theme="snow"
+                value={description}
+                onChange={handleDescriptionChange}
+                modules={reactQuillModules}
+                formats={reactQuillFormats}
+                style={{ height: '100%', minHeight: 100 }}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Tính năng nổi bật" name="highlights">
+              <ReactQuill
+                ref={highlightsQuillRef}
+                theme="snow"
+                value={highlights}
+                onChange={handleHighlightsChange}
+                modules={reactQuillModules}
+                formats={reactQuillFormats}
+                style={{ height: '50%', minHeight: 100 }}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        {/* <Row gutter={14}> */}
+        <Form.Item
+          label="Bài viết sản phẩm"
+          name="post"
+          style={{ width: '100%' }} // mở rộng form item ra toàn bộ
+        >
+          <Select
+            mode="single"
+            placeholder="Chọn bài viết đính kèm"
+            options={postOptions}
+          />
+        </Form.Item>
+        {/* </Row> */}
 
-      {/* Thông số kỹ thuật dạng bảng 2 cột */}
-      <Form.Item label="Thông số kỹ thuật">
-        {renderTableRows()}
-        <Button type="primary" onClick={handleAddRow} style={{ marginTop: 8, color: '#1890ff', border: '1px solid #1890ff', backgroundColor: 'white', borderRadius: '8px', fontWeight: '500' }}>
-          Thêm thuộc tính
-        </Button>
-      </Form.Item>
+        {/* Thông số kỹ thuật dạng bảng 2 cột */}
+        <Form.Item label="Thông số kỹ thuật">
+          {renderTableRows()}
+          <Button type="primary" onClick={handleAddRow} style={{ marginTop: 8, color: '#1890ff', border: '1px solid #1890ff', backgroundColor: 'white', borderRadius: '8px', fontWeight: '500' }}>
+            Thêm thuộc tính
+          </Button>
+        </Form.Item>
 
-      <Form.Item>
-        <div style={{ textAlign: 'right', marginRight: 20 }}>
-          {/* <Button type="default" style={{ marginRight: 16 }} onClick={() => {setEditModal(prev => ({ ...prev, visible: false }))}}>
+        <Form.Item>
+          <div style={{ textAlign: 'right', marginRight: 20 }}>
+            {/* <Button type="default" style={{ marginRight: 16 }} onClick={() => {setEditModal(prev => ({ ...prev, visible: false }))}}>
             Huỷ
           </Button> */}
-          <Button type="primary" htmlType="submit">
-            Lưu
-          </Button>
-        </div>
-      </Form.Item>
-    </Form>
+            <Button type="primary" htmlType="submit">
+              Lưu
+            </Button>
+          </div>
+        </Form.Item>
+      </Form>
+      <Modal
+        title="Thêm URL Hình ảnh"
+        open={isImageHighlightsModalOpen}
+        onOk={insertHighlightsImage}
+        onCancel={() => setIsImageHighlightsModalOpen(false)}
+        okText="Thêm"
+        cancelText="Thoát"
+      >
+        <Input
+          value={imageHighlightsUrl}
+          onChange={(e) => setImageHighlightsUrl(e.target.value)}
+          placeholder="Nhập link hình ảnh"
+        />
+      </Modal>
+      <Modal
+        title="Thêm URL Hình ảnh"
+        open={isImageDescriptionModalOpen}
+        onOk={insertDescriptionImage}
+        onCancel={() => setIsImageDescriptionModalOpen(false)}
+        okText="Thêm"
+        cancelText="Thoát"
+      >
+        <Input
+          value={imageDescriptionUrl}
+          onChange={(e) => setImageDescriptionUrl(e.target.value)}
+          placeholder="Nhập link hình ảnh"
+        />
+      </Modal>
+    </div>
+
   )
 }
 
