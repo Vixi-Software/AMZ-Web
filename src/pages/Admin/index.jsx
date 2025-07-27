@@ -91,11 +91,13 @@ function Admin() {
       const pipeString = productToPipeString(updated, code, page);
       await setDoc(docRef, { [key]: pipeString }, { merge: true });
       message.success('Cập nhật sản phẩm thành công!');
-      setEditModal({ visible: false, key: '', value: '', page: '', code: '' });
+      setEditModal(false);
     } catch (err) {
       message.error('Cập nhật sản phẩm thất bại!');
     }
   }
+
+
 
   // Xóa sản phẩm trong Firestore (chỉ xóa 1 key-value trong document)
   async function handleDeleteProduct(key, code, page) {
@@ -398,6 +400,7 @@ function Admin() {
             destroyOnHidden
           >
             <ProductForm
+            onCloseForm={()=>setAddModal(false)}
             />
           </Modal>
         </div>
