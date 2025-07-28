@@ -287,23 +287,7 @@ function Header() {
               {"Zalo: " + formatVNPhoneNumber(PHONE_NUMBER.GENERAL)}
             </a>
           </Space>
-          <div className="mt-2">
-            <h3 className='mb-2 font-bold'>Từ khoá xu hướng&nbsp;</h3>
-            <span className="text-gray-500 text-xs flex flex-col gap-1">
-              {home[0]?.keywords && home[0].keywords.map((keyword, idx) => (
-                <a
-                  key={`${keyword}-${idx}`}
-                  className="hover:underline !text-black cursor-pointer mx-1 !text-[12px]"
-                  onClick={() => {
-                    setSearchValue(keyword)
-                    handleSearch(keyword)
-                  }}
-                >
-                  {keyword}
-                </a>
-              ))}
-            </span>
-          </div>
+          {/* Đã bỏ phần từ khoá xu hướng trong drawer */}
           <div className="rounded-lg mb-4">
             <div className="font-semibold text-[16px] text-gray-700 mb-2 tracking-wide">
               Hàng cũ giá tốt - Sản phẩm chính
