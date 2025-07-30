@@ -6,7 +6,16 @@ import FloatButtonPage from '../components/features/FloatButtonPage'
 function BasicLayout({ children }) {
   return (
     <div>
-      <Header />
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+          background: '#F3F3F3'
+        }}
+      >
+        <Header />
+      </div>
       <div className="max-w-[1400px] mx-auto px-2 md:px-3 lg:px-0">
         {children}
         <Footer />
