@@ -5,7 +5,7 @@ import ProductLayout from "../layouts/product-layout";
 import AdminLayout from "../layouts/admin-layout";
 import BasicLayout from "../layouts/basic-layout";
 import EmptyLayout from "../layouts/empty-layout";
-import FixPage from "../pages/Fix";
+import PolicyPage from "../pages/Policy";
 import Admin from "../pages/Admin";
 
 // Sử dụng lazy cho tất cả các page
@@ -17,7 +17,7 @@ const Sale = lazy(() => import("@/pages/Sale"));
 const SaleDetail = lazy(() => import("@/pages/Sale/SaleDetail"));
 const PostForm = lazy(() => import("@/pages/Admin/Post/PostForm"));
 const PostManagement = lazy(() => import("@/pages/Admin/Post"));
-const Warranty = lazy(() => import("@/pages/Admin/Warranty"));
+const AdminPolicy = lazy(() => import("@/pages/Admin/Policy"));
 const ProductForm = lazy(() => import("@/pages/Admin/Product/ProductForm"));
 const EventManagement = lazy(() => import("@/pages/Admin/Event"));
 const PageManagement = lazy(() => import("@/pages/Admin/Page"));
@@ -30,7 +30,7 @@ const AppRoute = [
     { path: routePath.productDetail, page: ProductDetail, layout: BasicLayout },
     { path: routePath.exchange, page: Exchange, layout: BasicLayout },
     { path: routePath.login, page: Login, layout: EmptyLayout },
-    { path: routePath.warranty, page: FixPage, layout: BasicLayout },
+    { path: routePath.warranty, page: PolicyPage, layout: BasicLayout },
 
     // ======= Admin Product Pages =======
     // { path: routePath.admin, page: ProductManagement, layout: AdminLayout, protect: true },
@@ -47,7 +47,14 @@ const AppRoute = [
     { path: routePath.adminPostAdd, page: PostForm, layout: AdminLayout, protect: true },
 
     // ======= Admin Warranty Pages =======
-    { path: routePath.adminWarranty, page: Warranty, layout: AdminLayout, protect: true },
+    { path: routePath.adminPolicyWarranty, page: AdminPolicy, layout: AdminLayout, protect: true },
+    { path: routePath.adminPolicyPrivacy, page: AdminPolicy, layout: AdminLayout, protect: true },
+    { path: routePath.adminPolicyPurchase, page: AdminPolicy, layout: AdminLayout, protect: true },
+
+    // ======= Admin Warranty Pages =======
+    { path: routePath.policyWarranty, page: PolicyPage, layout: BasicLayout, protect: true },
+    { path: routePath.policyPrivacy, page: PolicyPage, layout: BasicLayout, protect: true },
+    { path: routePath.policyPurchase, page: PolicyPage, layout: BasicLayout, protect: true },
 
     // ======= Admin Event Pages =======
     { path: routePath.adminEvent, page: EventManagement, layout: AdminLayout, protect: true },

@@ -7,7 +7,7 @@ const routePath = {
     login: "/login",
     newSeal: "/newSeal",
     warranty: "/warranty",
-
+    
     // ======= Admin Product Pages =======
     admin: "/admin",
     adminProduct: "/admin/products",
@@ -24,10 +24,18 @@ const routePath = {
     adminPostAdd: "/admin/posts/add",
     adminPostEdit: "/admin/posts/edit",
 
-    // ======= Admin Warranty Pages =======
-    adminWarranty: "/admin/warranty",
+    // ======= Admin Policy Pages =======
+    adminPolicyWarranty: "/admin/policy/warranty",
+    adminPolicyPrivacy: "/admin/policy/privacy",
+    adminPolicyPurchase: "/admin/policy/purchase",
+
+    // ======= Policy Pages =======
+    policyWarranty: "/policy/warranty",
+    policyPrivacy: "/policy/privacy",
+    policyPurchase: "/policy/purchase",
+
     // ======= Admin Event Pages =======
-    adminEvent: "/admin/events",
+    adminEvent: "/events",
     adminEventAdd: "/admin/events/add",
     adminEventEdit: "/admin/events/edit",
 

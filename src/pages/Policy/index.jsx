@@ -4,23 +4,73 @@ import { useNavigate } from "react-router-dom";
 import { db } from '@/utils/firebase'
 import { Carousel, Grid } from "antd";
 import { useFirestore } from "@/hooks/useFirestore";
+import { useSelector } from "react-redux";
+import { selectCategory } from "../../store/features/filterProduct/filterProductSlice";
 
-const FixPage = () => {
+const PolicyPage = () => {
+  const [content, setContent] = useState('')
+  const category = useSelector(selectCategory);
+  const [id, setId] = useState("warranty")
   const navigate = useNavigate();
-
-  const { getAllDocs } = useFirestore(db, '07-warranty')
-  const screens = Grid.useBreakpoint();
-  const [warrantyInfo, setWarrantyInfo] = useState({})
+  const { getAllDocs } = useFirestore(db, '07-policy')
+  const [policyInfo, setPolicyInfo] = useState({})
 
   useEffect(() => {
-    const fetchWaranty = async () => {
+    switch (category) {
+      case "Chính sách mua hàng":
+        setId("purchase");
+        break;
+
+      case "Chính sách bảo hành":
+        setId("warranty");
+        break;
+
+      case "Chính sách bảo mật":
+        setId("privacy");
+        break;
+    }
+  }, [category]);
+
+  useEffect(() => {
+    const fetchPolicy = async () => {
       const docs = await getAllDocs()
       if (docs.length > 0) {
-        setWarrantyInfo(docs[0])
+        const policy = docs.find(item => item.id === id)
+        console.log("Poli:",id)
+        setPolicyInfo(policy)
       }
     }
-    fetchWaranty()
-  }, []);
+    fetchPolicy()
+  }, [id]);
+  
+  useEffect(() => {
+    switch (category) {
+      case "Chính sách mua hàng":
+        setId("purchase");
+        break;
+
+      case "Chính sách bảo hành":
+        setId("warranty");
+        break;
+
+      case "Chính sách bảo mật":
+        setId("privacy");
+        break;
+    }
+  }, [category]);
+
+  useEffect(() => {
+    const fetchPolicy = async () => {
+      const docs = await getAllDocs()
+      if (docs.length > 0) {
+        const policy = docs.find(item => item.id === id)
+        console.log("Poli:",id)
+        setPolicyInfo(policy)
+      }
+    }
+    fetchPolicy()
+  }, [id]);
+  
 
 
 
@@ -42,13 +92,13 @@ const FixPage = () => {
         </nav>
       </div>
       <div className='mt-[30px]'>
-        {warrantyInfo ? (
+        {policyInfo ? (
           <div className="grid grid-cols-1 gap-4">
             <div className="rounded-lg">
-              <h1 className="text-[21px] be-vietnam-pro-medium  font-semibold">{warrantyInfo.title}</h1>
+              <h1 className="text-[21px] be-vietnam-pro-medium  font-semibold">{policyInfo.title}</h1>
               <div
                 className="text-gray-600 be-vietnam-pro"
-                dangerouslySetInnerHTML={{ __html: warrantyInfo.content }}
+                dangerouslySetInnerHTML={{ __html: policyInfo.content }}
               />
             </div>
           </div>
@@ -60,4 +110,4 @@ const FixPage = () => {
   );
 };
 
-export default FixPage;
+export default PolicyPage;

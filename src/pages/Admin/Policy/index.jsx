@@ -4,8 +4,10 @@ import 'react-quill/dist/quill.snow.css'
 import { Button, message, Modal, Input, Select } from 'antd'
 import { db } from '@/utils/firebase'
 
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import { useFirestore } from '@/hooks/useFirestore'
+import { useSelector } from 'react-redux'
+import { selectCategory } from '@/store/features/filterProduct/filterProductSlice'
 
 
 const reactQuillModules = {
@@ -31,18 +33,23 @@ const reactQuillFormats = [
   'link', 'image', 'video'
 ]
 
-const collectionName = "07-warranty"
-const id = "warrantyPolicy"
+const collectionName = "07-policy"
 
-function Warranty() {
+function Policy() {
   const [content, setContent] = useState('')
-  const { getAllDocs } = useFirestore(db, 'warranty')
+  const category = useSelector(selectCategory);
+  const [id, setId] = useState("warranty")
+  const { getAllDocs } = useFirestore(db, '07-policy')
   const [titlePost, setTitlePost] = useState("")
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('')
   const quillRef = useRef(null)
   const [savedRange, setSavedRange] = useState(null);
-  const [warrantyInfo, setWarrantyInfo] = useState({})
+  console.log("cate", category)
+  const [policyInfo, setPolicyInfo] = useState({})
+
+
+
 
   const handleImageClick = () => {
     const editor = quillRef.current?.getEditor()
@@ -77,20 +84,40 @@ function Warranty() {
   }, []);
 
   useEffect(() => {
-    const fetchWaranty = async () => {
-      const docs = await getAllDocs()
-      if (docs.length > 0) {
-        setWarrantyInfo(docs[0])
-      }
-      
+    switch (category) {
+      case "Chính sách mua hàng":
+        setId("purchase");
+        break;
+
+      case "Chính sách bảo hành":
+        setId("warranty");
+        break;
+
+      case "Chính sách bảo mật":
+        setId("privacy");
+        break;
     }
-    fetchWaranty()
-  }, []);
+  }, [category]);
 
   useEffect(() => {
-    setTitlePost(warrantyInfo.title ? warrantyInfo.title : '')
-    setContent(warrantyInfo.content ? warrantyInfo.content : '')
-  }, [warrantyInfo]);
+    const fetchPolicy = async () => {
+      const docs = await getAllDocs()
+      if (docs.length > 0) {
+        const policy = docs.find(item => item.id === id)
+        console.log("Poli:",id)
+        setPolicyInfo(policy)
+      }
+    }
+    fetchPolicy()
+  }, [id]);
+  
+
+  useEffect(() => {
+    if (policyInfo) {
+      setTitlePost(policyInfo.title ?? '');   
+      setContent(policyInfo.content ?? '');
+    }
+  }, [policyInfo]);
 
 
   const handleChange = (val) => {
@@ -102,7 +129,6 @@ function Warranty() {
       title: titlePost,
       content: content,
     };
-
     try {
       const docRef = doc(db, collectionName, id);
       await updateDoc(docRef, updatedData);
@@ -123,7 +149,7 @@ function Warranty() {
 
       {/* Top Actions */}
 
-      <label style={{ fontWeight: 700, fontSize: 25 }}>Chỉnh sửa Chính sách bảo hành</label>
+      <label style={{ fontWeight: 700, fontSize: 25 }}>{"Chỉnh sửa " + category}</label>
       <label style={{ fontWeight: 500 }}>Tên bài viết:</label>
       <Input value={titlePost} onChange={(e) => setTitlePost(e.target.value)} />
       {/* Rich Text Editor */}
@@ -162,4 +188,4 @@ function Warranty() {
   )
 }
 
-export default Warranty
+export default Policy

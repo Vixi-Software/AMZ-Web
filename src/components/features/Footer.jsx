@@ -9,10 +9,15 @@ import whatsapp from '../../assets/whatup.svg'
 import youtube from '../../assets/youtube.svg'
 import { LINK_CONSTANT } from '../../constants/linkConstant'
 import { PHONE_NUMBER } from '../../constants/phoneNumber'
+import { useDispatch } from 'react-redux'
+import routePath from '../../constants/routePath'
+import { setCategory } from '../../store/features/filterProduct/filterProductSlice'
+import { Link } from 'react-router-dom'
 
 function Footer() {
     const { getAllDocs } = useFirestore(db, 'events')
     const [links, setLinks] = useState({})
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchLinks = async () => {
@@ -30,15 +35,49 @@ function Footer() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <h6 className="font-normal text-lg mb-2">Thông tin và chính sách</h6>
-                        <ul className="space-y-2 text-sm text-gray-600">
-                            <li>Mua hàng và thanh toán</li>
-                            <li>Mua hàng trả góp</li>
-                            <li>Chính sách giao hàng</li>
-                            <li>Chính sách vận chuyển</li>
-                            <li>Chính sách kiểm hàng</li>
-                            <li>Chính sách đổi trả</li>
-                            <li>Chính sách bảo hành</li>
-                            <li>Chính sách bảo mật</li>
+                        <ul className="space-y-2 text-sm">
+                            <li>
+                                <Link
+                                    to={routePath.policyWarranty}
+                                    onClick={() => dispatch(setCategory("Chính sách mua hàng"))}
+                                    style={{
+                                        color: "#4B5563", // gray-600
+                                        textDecoration: "none",
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.color = "#000")}
+                                    onMouseLeave={(e) => (e.currentTarget.style.color = "#4B5563")}
+                                >
+                                    Chính sách mua hàng
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    to={routePath.policyWarranty}
+                                    onClick={() => dispatch(setCategory("Chính sách bảo hành"))}
+                                    style={{
+                                        color: "#4B5563",
+                                        textDecoration: "none",
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.color = "#000")}
+                                    onMouseLeave={(e) => (e.currentTarget.style.color = "#4B5563")}
+                                >
+                                    Chính sách bảo hành
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    to={routePath.policyWarranty}
+                                    onClick={() => dispatch(setCategory("Chính sách bảo mật"))}
+                                    style={{
+                                        color: "#4B5563",
+                                        textDecoration: "none",
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.color = "#000")}
+                                    onMouseLeave={(e) => (e.currentTarget.style.color = "#4B5563")}
+                                >
+                                    Chính sách bảo mật
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 
@@ -122,7 +161,7 @@ function Footer() {
                                     href={links.whatsapp || "#"}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    onClick={e => window.open('tel:'+ PHONE_NUMBER.GENERAL)}
+                                    onClick={e => window.open('tel:' + PHONE_NUMBER.GENERAL)}
                                     style={{
                                         color: '#25D366',
                                         fontSize: '2rem'
