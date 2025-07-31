@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 import { selectCategory } from "../../store/features/filterProduct/filterProductSlice";
 
 const PolicyPage = () => {
-  const [content, setContent] = useState('')
   const category = useSelector(selectCategory);
   const [id, setId] = useState("warranty")
   const navigate = useNavigate();
@@ -87,7 +86,7 @@ const PolicyPage = () => {
           </span>
           <span className="mx-1 text-black">{'>'}</span>
           <span className="flex items-center gap-1 bg-orange-500 text-white font-semibold p-2 rounded-full border-2 border-orange-500">
-            {'Bảo hành - sửa chữa'}
+            {category}
           </span>
         </nav>
       </div>
