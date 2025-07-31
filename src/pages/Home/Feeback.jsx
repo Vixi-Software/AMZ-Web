@@ -14,7 +14,7 @@ const feedbacks = [
   {
     name: 'Quang Huy',
     date: '05/11/2023',
-    location: 'AMZ TECH Hồ Chí Minh',
+    location: 'AMZ TECH Đà Nẵng',
     rating: 4,
     content:
       'Giao hàng nhanh, đóng gói cẩn thận. Giá cả hợp lý, nhiều chương trình khuyến mãi hấp dẫn.',
