@@ -41,10 +41,11 @@ const PolicyPage = () => {
     }
     fetchPolicy()
   }, [id]);
-  
+  console.log("poli", category)
   useEffect(() => {
     switch (category) {
       case "Chính sách mua hàng":
+      case "Bảo hành - sửa chữa":
         setId("purchase");
         break;
 
