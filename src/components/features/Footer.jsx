@@ -119,7 +119,7 @@ function Footer() {
                             Địa chỉ: Số 2, Ngõ 92 Láng Hạ - Đống Đa - Hà Nội
                         </p>
                         <div className='mt-4'>
-                            <h6 className="font-normal text-lg">Liên kiết mạng xã hội</h6>
+                            <h6 className="font-normal text-lg">Liên kết mạng xã hội</h6>
                             <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
                                 <a
                                     href={links.facebook || "#"}
