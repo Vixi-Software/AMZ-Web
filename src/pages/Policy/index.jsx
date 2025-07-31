@@ -63,7 +63,6 @@ const PolicyPage = () => {
       const docs = await getAllDocs()
       if (docs.length > 0) {
         const policy = docs.find(item => item.id === id)
-        console.log("Poli:",id)
         setPolicyInfo(policy)
       }
     }

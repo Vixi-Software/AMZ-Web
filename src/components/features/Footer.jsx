@@ -38,7 +38,7 @@ function Footer() {
                         <ul className="space-y-2 text-sm">
                             <li>
                                 <Link
-                                    to={routePath.policyWarranty}
+                                    to={routePath.policyPurchase}
                                     onClick={() => dispatch(setCategory("Chính sách mua hàng"))}
                                     style={{
                                         color: "#4B5563", // gray-600
@@ -66,7 +66,7 @@ function Footer() {
                             </li>
                             <li>
                                 <Link
-                                    to={routePath.policyWarranty}
+                                    to={routePath.policyPrivacy}
                                     onClick={() => dispatch(setCategory("Chính sách bảo mật"))}
                                     style={{
                                         color: "#4B5563",
