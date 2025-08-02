@@ -49,7 +49,7 @@ function Home() {
         (product) => product.isBestSeller === "1"
       );
       
-      setAllBestSellerProducts(allProductsArray);
+      setAllBestSellerProducts(bestSellerProducts);
       setProductsBestSeller(bestSellerProducts);
       // Lọc sản phẩm đang sale
       const priceSaleProducts = allProductsArray.filter((product) => {

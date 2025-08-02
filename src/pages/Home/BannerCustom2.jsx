@@ -47,7 +47,7 @@ function BannerCustom2() {
               className="!bg-[#FFE8D3] !text-[#D65312] border-none !text-[21px] !font-semibold rounded-full px-6 py-2 hover:bg-orange-500 transition-all duration-300 shadow-lg whitespace-nowrap btn-shake mt-3"
               onClick={() => {
                 dispatch(setCategory(""));
-                navigate(routePath.product);
+                navigate(routePath.exchange);
               }}
             >
               Đổi mới ngay
