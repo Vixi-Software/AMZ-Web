@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Row, Col, Grid, Skeleton } from 'antd'
+import { Row, Col, Grid, Skeleton, Empty } from 'antd'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import routePath from '../../constants/routePath'
 import Breadcum from '../../components/features/Breadcum'
@@ -39,8 +39,7 @@ function ProductDetail() {
   const id = queryParams.get("id");
   const [product, setProduct] = useState({});
   const [selectedImage, setSelectedImage] = useState(0)
-  // const [relatedProducts, setRelatedProducts] = useState([])
-  // const [posts, setPosts] = useState([])
+  const [isProduct, setIsProduct] = useState(true)
   const [currentPost, setCurrentPost] = useState("")
   const [youtubeVideoId, setYoutubeVideoId] = useState("")
   const { getRelatedProductsByCategory } = useProductService()
@@ -61,7 +60,9 @@ function ProductDetail() {
 
   useEffect(() => {
     const product = allProductsArray.find(item => String(item.id) === String(id));
-setProduct(product || null);
+    if (product)
+      setIsProduct(false)
+    setProduct(product || null);
   }, [id]);
 
   function extractYoutubeVideoId(url) {
@@ -118,14 +119,6 @@ setProduct(product || null);
     fetchRelated()
   }, [product])
 
-  // useEffect(() => {
-  //   const fetchPosts = async () => {
-  //     const allPosts = await getPostsWithStore()
-  //     setPosts(allPosts)
-  //   }
-  //   fetchPosts()
-  // }, [])
-
   const handleSelectOption = (type, value) => {
     setSelectedOptions(prev => {
       const isSame = prev[type] === value
@@ -162,18 +155,18 @@ setProduct(product || null);
     setPriceForSale(
       product.priceForSale
         ? Number(product.priceForSale).toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          })
+          style: "currency",
+          currency: "VND",
+        })
         : ""
     );
 
     setPriceDefault(
       product.priceDefault
         ? Number(product.priceDefault).toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          })
+          style: "currency",
+          currency: "VND",
+        })
         : ""
     );
 
@@ -185,14 +178,13 @@ setProduct(product || null);
     setYtbVideoId(extractYoutubeVideoId(url));
   }, [product]);
 
-  // if (!product) {
-  //   return (
-  //     <div>
-  //       <h2>Product Detail</h2>
-  //       <p>Không có sản phẩm nào được chọn.</p>
-  //     </div>
-  //   )
-  // }
+  if (isProduct) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        <Empty description="Sản phẩm không tồn tại" />
+      </div>
+    )
+  }
 
   return (
     <div>
