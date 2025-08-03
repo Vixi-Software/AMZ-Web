@@ -50,7 +50,7 @@ function ProductDetail() {
   const isSmall = !md
   const allProductsState = useSelector((state) => state.allProducts);
   const allProductsArray = Object.values(allProductsState).flat();
-  const [youtubeTitle, setYoutubeTitle] = useState('Video đánh giá loa')
+  const [youtubeTitle, setYoutubeTitle] = useState('')
   const relatedProducts = getRelatedProducts(product, allProductsArray)
   const [selectedOptions, setSelectedOptions] = useState({
     color: null,
@@ -89,16 +89,16 @@ setProduct(product || null);
   useEffect(() => {
     async function fetchYoutubeTitle() {
       if (!youtubeVideoId) {
-        setYoutubeTitle('Video đánh giá loa')
+        setYoutubeTitle('')
         return
       }
       try {
         const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${youtubeVideoId}&format=json`)
         if (!res.ok) throw new Error('Failed to fetch')
         const data = await res.json()
-        setYoutubeTitle(data.title || 'Video đánh giá loa')
+        setYoutubeTitle(data.title || '')
       } catch {
-        setYoutubeTitle('Video đánh giá loa')
+        setYoutubeTitle('')
       }
     }
     fetchYoutubeTitle()
