@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Row, Col, Grid, Skeleton } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import routePath from '../../constants/routePath'
 import Breadcum from '../../components/features/Breadcum'
 import { setCategory, resetFilter } from '../../store/features/filterProduct/filterProductSlice'
@@ -13,6 +13,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from "@/utils/firebase";
 import formatVNPhoneNumber from '../../utils/phoneNumberHandle'
 import { PHONE_NUMBER } from '../../constants/phoneNumber'
+import { handleProduct } from '../../utils/productHandle'
 
 const getRelatedProducts = (targetProduct, allProducts, limit = 4) => {
   if (!targetProduct || !targetProduct.collection || !targetProduct.priceForSale) return [];
@@ -33,21 +34,26 @@ const getRelatedProducts = (targetProduct, allProducts, limit = 4) => {
 };
 
 function ProductDetail() {
-  const product = useSelector(state => state.product.product)
+  const { search } = useLocation(); // get the query string like ?id=123&collection=abc
+  const queryParams = new URLSearchParams(search);
+  const id = queryParams.get("id");
+  const collection = queryParams.get("collection");
+  const document = queryParams.get("document");
+  const [product, setProduct] = useState({});
   const [selectedImage, setSelectedImage] = useState(0)
   // const [relatedProducts, setRelatedProducts] = useState([])
   // const [posts, setPosts] = useState([])
   const [currentPost, setCurrentPost] = useState("")
+  const [youtubeVideoId, setYoutubeVideoId] = useState("")
   const { getRelatedProductsByCategory } = useProductService()
-  const { getPostsWithStore } = usePostService()
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { md } = Grid.useBreakpoint()
   const isSmall = !md
   const allProductsState = useSelector((state) => state.allProducts);
   const allProductsArray = Object.values(allProductsState).flat();
+  const [youtubeTitle, setYoutubeTitle] = useState('Video đánh giá loa')
   const relatedProducts = getRelatedProducts(product, allProductsArray)
-  console.log("related", relatedProducts)
   const [selectedOptions, setSelectedOptions] = useState({
     color: null,
     condition: null,
@@ -55,17 +61,36 @@ function ProductDetail() {
   })
   const [loading, setLoading] = useState(true)
 
-  // Thêm hook để lấy tiêu đề YouTube động
-  const [youtubeTitle, setYoutubeTitle] = useState('Video đánh giá loa')
-  // Lấy videoUrl từ product, fallback nếu không có
-  const videoUrl = product.youtubeUrl || 'https://www.youtube.com/watch?v=hwsKMrkCalE'
-  // Hàm lấy videoId từ url
-  // console.log("video", videoUrl)
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!id || !collection || !document) return;
+      try {
+        // 🔹 get Firestore document
+        const docRef = doc(db, collection, document); 
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const rawData = docSnap.data();
+          const data = rawData[id].split("|").map((item) => (item === "null" ? "" : item.trim()));
+          data.unshift(id);
+          // 🔹 find product by id inside array
+          const foundProduct = handleProduct(data)
+          console.log("found", data,foundProduct)
+          setProduct(foundProduct || null);
+        } else {
+          console.log("No such document!");
+          setProduct(null);
+        }
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      }
+    };
+    fetchProduct();
+  }, [id, collection]);
+
   function extractYoutubeVideoId(url) {
     const match = url.match(/(?:[?&]v=|youtu\.be\/|embed\/)([\w-]{11})/)
     return match ? match[1] : null
   }
-  const youtubeVideoId = extractYoutubeVideoId(videoUrl)
 
   const getPostById = async (id) => {
     const docRef = doc(db, 'productPosts', id); // collection name + doc id
@@ -138,16 +163,50 @@ function ProductDetail() {
   }
 
   // --- SỬA ĐỔI DỮ LIỆU ĐẦU VÀO CHO PHÙ HỢP ---
-  console.log('product', product)
-  const productName = product.name;
-  const rawImages = product.images
-  const imageArray = rawImages.split(";;")
-  const images = imageArray
-  const productColor = product.color || []
-  // const productColor = product?.colors || product?.color || []
-  const priceForSale = Number(product.priceForSale).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-  const priceDefault = Number(product.priceDefault).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-  const condition = product.condition;
+  const [productName, setProductName] = useState("");
+  const [images, setImages] = useState([]);
+  const [productColor, setProductColor] = useState([]);
+  const [priceForSale, setPriceForSale] = useState("");
+  const [priceDefault, setPriceDefault] = useState("");
+  const [condition, setCondition] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [ytbVideoId, setYtbVideoId] = useState("");
+
+  useEffect(() => {
+    if (!product) return;
+
+    setProductName(product.name || "");
+
+    const rawImages = product.images || "";
+    setImages(rawImages.split(";;"));
+
+    setProductColor(product.colors || product.color || []);
+
+    setPriceForSale(
+      product.priceForSale
+        ? Number(product.priceForSale).toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })
+        : ""
+    );
+
+    setPriceDefault(
+      product.priceDefault
+        ? Number(product.priceDefault).toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })
+        : ""
+    );
+
+    setCondition(product.condition || "");
+
+    // 🔹 YouTube
+    const url = product.youtubeUrl || "https://www.youtube.com/watch?v=hwsKMrkCalE";
+    setVideoUrl(url);
+    setYtbVideoId(extractYoutubeVideoId(url));
+  }, [product]);
 
   if (!product) {
     return (
@@ -256,7 +315,7 @@ function ProductDetail() {
                 ) : product.features ? (
                   <div className="text-[15px]">
                     <div className="whitespace-pre-line p-2">
-                    <div dangerouslySetInnerHTML={{ __html: product.features }} />
+                      <div dangerouslySetInnerHTML={{ __html: product.features }} />
                     </div>
                   </div>
                 ) : (

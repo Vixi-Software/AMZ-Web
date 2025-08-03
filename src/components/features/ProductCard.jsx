@@ -33,8 +33,15 @@ function ProductCard({ product }) {
   }, []);
 
   const handleCardClick = () => {
-    dispatch(setProduct({ ...product }));
-    navigate(routePath.productDetail);
+    const params = new URLSearchParams(location.search);
+      params.set("id", product.id);
+      params.set("name", product.name);
+      params.set("collection", product.collection);
+      params.set("document", product.document);
+      navigate({
+        pathname: routePath.productDetail,
+        search: params.toString(),
+      });
   };
 
   const handleGiaThamKhaoClick = (e) => {

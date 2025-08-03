@@ -144,8 +144,15 @@ function Header() {
 
     const product = productSearchMapRef.current.get(value)
     if (product) {
-      dispatch(setProduct(product))
-      navigate(routePath.productDetail)
+      const params = new URLSearchParams(location.search);
+      params.set("id", product.id);
+      params.set("name", product.name);
+      params.set("collection", product.collection);
+      params.set("document", product.document);
+      navigate({
+        pathname: routePath.productDetail,
+        search: params.toString(),
+      });
     } else {
       console.warn('Product not found for ID:', value)
     }
