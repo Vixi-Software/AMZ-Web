@@ -74,7 +74,6 @@ function ProductDetail() {
           data.unshift(id);
           // 🔹 find product by id inside array
           const foundProduct = handleProduct(data)
-          console.log("found", data,foundProduct)
           setProduct(foundProduct || null);
         } else {
           console.log("No such document!");
