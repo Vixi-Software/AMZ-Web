@@ -185,14 +185,14 @@ setProduct(product || null);
     setYtbVideoId(extractYoutubeVideoId(url));
   }, [product]);
 
-  if (!product) {
-    return (
-      <div>
-        <h2>Product Detail</h2>
-        <p>Không có sản phẩm nào được chọn.</p>
-      </div>
-    )
-  }
+  // if (!product) {
+  //   return (
+  //     <div>
+  //       <h2>Product Detail</h2>
+  //       <p>Không có sản phẩm nào được chọn.</p>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div>
