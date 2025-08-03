@@ -96,6 +96,9 @@ function Policy() {
       case "Chính sách bảo mật":
         setId("privacy");
         break;
+      case "Thu cũ đổi mới":
+        setId("exchange")
+        break;
     }
   }, [category]);
 
@@ -104,17 +107,17 @@ function Policy() {
       const docs = await getAllDocs()
       if (docs.length > 0) {
         const policy = docs.find(item => item.id === id)
-        console.log("Poli:",id)
+        console.log("Poli:", id)
         setPolicyInfo(policy)
       }
     }
     fetchPolicy()
   }, [id]);
-  
+
 
   useEffect(() => {
     if (policyInfo) {
-      setTitlePost(policyInfo.title ?? '');   
+      setTitlePost(policyInfo.title ?? '');
       setContent(policyInfo.content ?? '');
     }
   }, [policyInfo]);

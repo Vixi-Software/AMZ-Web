@@ -12,7 +12,6 @@ import Admin from "../pages/Admin";
 const Home = lazy(() => import("@/pages/Home"));
 const Product = lazy(() => import("@/pages/Product"));
 const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
-const Exchange = lazy(() => import("@/pages/Exchange"));
 const Sale = lazy(() => import("@/pages/Sale"));
 const SaleDetail = lazy(() => import("@/pages/Sale/SaleDetail"));
 const PostForm = lazy(() => import("@/pages/Admin/Post/PostForm"));
@@ -28,7 +27,6 @@ const AppRoute = [
     { path: routePath.home, page: Home, layout: MainLayout },
     { path: routePath.product, page: Product, layout: ProductLayout },
     { path: routePath.productDetail, page: ProductDetail, layout: BasicLayout },
-    { path: routePath.exchange, page: Exchange, layout: BasicLayout },
     { path: routePath.login, page: Login, layout: EmptyLayout },
     { path: routePath.warranty, page: PolicyPage, layout: BasicLayout },
 
@@ -50,11 +48,13 @@ const AppRoute = [
     { path: routePath.adminPolicyWarranty, page: AdminPolicy, layout: AdminLayout, protect: true },
     { path: routePath.adminPolicyPrivacy, page: AdminPolicy, layout: AdminLayout, protect: true },
     { path: routePath.adminPolicyPurchase, page: AdminPolicy, layout: AdminLayout, protect: true },
+    { path: routePath.adminPolicyExchange, page: AdminPolicy, layout: AdminLayout, protect: true },
 
     // ======= Admin Warranty Pages =======
     { path: routePath.policyWarranty, page: PolicyPage, layout: BasicLayout, protect: true },
     { path: routePath.policyPrivacy, page: PolicyPage, layout: BasicLayout, protect: true },
     { path: routePath.policyPurchase, page: PolicyPage, layout: BasicLayout, protect: true },
+    { path: routePath.policyExchange, page: PolicyPage, layout: BasicLayout, protect: true },
 
     // ======= Admin Event Pages =======
     { path: routePath.adminEvent, page: EventManagement, layout: AdminLayout, protect: true },

@@ -7,7 +7,8 @@ import {
   HomeOutlined,
   ShoppingCartOutlined,
   ToolOutlined,
-  SafetyCertificateOutlined
+  SafetyCertificateOutlined,
+  SwapOutlined
 } from '@ant-design/icons';
 import { Layout, Menu, Avatar, Typography, Button, theme } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
@@ -122,6 +123,21 @@ function AdminLayout({ children }) {
           <SafetyCertificateOutlined /> Chính sách bảo mật
         </Link>,
       routePath.adminPolicyPrivacy
+    ),
+     getItem(
+      collapsed ?
+        <Link to={routePath.adminPolicyPrivacy}
+          onClick={() => dispatch(setCategory("Thu cũ đổi mới"))}
+        >
+          <SwapOutlined />
+        </Link>
+        :
+        <Link to={routePath.adminPolicyExchange}
+          onClick={() => dispatch(setCategory("Thu cũ đổi mới"))}
+        >
+          <SwapOutlined /> Thu cũ đổi mới
+        </Link>,
+      routePath.adminPolicyExchange
     ),
   ];
 

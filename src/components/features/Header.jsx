@@ -300,7 +300,8 @@ function Header() {
                   onClick={() => {
                     setOpen(false)
                     if (item.value === "Thu cũ đổi mới") {
-                      navigate(routePath.exchange)
+                      dispatch(setCategory("Thu cũ đổi mới"))
+                      navigate(routePath.policyExchange)
                     } else {
                       dispatch(setCategory(item.value))
                       navigate(routePath.product)

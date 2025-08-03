@@ -27,6 +27,9 @@ const PolicyPage = () => {
       case "Chính sách bảo mật":
         setId("privacy");
         break;
+      case "Thu cũ đổi mới":
+        setId("exchange")
+        break;
     }
   }, [category]);
 
@@ -35,7 +38,7 @@ const PolicyPage = () => {
       const docs = await getAllDocs()
       if (docs.length > 0) {
         const policy = docs.find(item => item.id === id)
-        console.log("Poli:",id)
+        console.log("Poli:", id)
         setPolicyInfo(policy)
       }
     }
@@ -68,7 +71,7 @@ const PolicyPage = () => {
     }
     fetchPolicy()
   }, [id]);
-  
+
 
 
 

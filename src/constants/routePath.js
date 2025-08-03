@@ -28,11 +28,13 @@ const routePath = {
     adminPolicyWarranty: "/admin/policy/warranty",
     adminPolicyPrivacy: "/admin/policy/privacy",
     adminPolicyPurchase: "/admin/policy/purchase",
+    adminPolicyExchange: "/admin/policy/exchange",
 
     // ======= Policy Pages =======
     policyWarranty: "/policy/warranty",
     policyPrivacy: "/policy/privacy",
     policyPurchase: "/policy/purchase",
+    policyExchange: "/policy/exchange",
 
     // ======= Admin Event Pages =======
     adminEvent: "/events",
