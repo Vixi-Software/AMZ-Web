@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Row, Col, Grid, Skeleton } from 'antd'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useUrlParams } from '../../hooks/useUrlParams'
 import routePath from '../../constants/routePath'
 import Breadcum from '../../components/features/Breadcum'
 import { setCategory, resetFilter } from '../../store/features/filterProduct/filterProductSlice'
 import ProductCard from '../../components/features/ProductCard'
-import { useProductService } from '../../services/productService'
-import { usePostService } from '../../services/postService'
+// import { useProductService } from '../../services/productService'
+// import { usePostService } from '../../services/postService'
 import { parseStringToTableInfo } from '../../utils/tableInfoParse'
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from "@/utils/firebase";
 import formatVNPhoneNumber from '../../utils/phoneNumberHandle'
 import { PHONE_NUMBER } from '../../constants/phoneNumber'
-import { handleProduct } from '../../utils/productHandle'
+// import { handleProduct } from '../../utils/productHandle'
 
 const getRelatedProducts = (targetProduct, allProducts, limit = 4) => {
   if (!targetProduct || !targetProduct.collection || !targetProduct.priceForSale) return [];
@@ -34,24 +35,31 @@ const getRelatedProducts = (targetProduct, allProducts, limit = 4) => {
 };
 
 function ProductDetail() {
-  const { search } = useLocation(); // get the query string like ?id=123&collection=abc
-  const queryParams = new URLSearchParams(search);
-  const id = queryParams.get("id");
+  const { urlParams } = useUrlParams();
+  const { id, collection: collectionFromUrl } = urlParams;
   const [product, setProduct] = useState({});
   const [selectedImage, setSelectedImage] = useState(0)
   // const [relatedProducts, setRelatedProducts] = useState([])
   // const [posts, setPosts] = useState([])
   const [currentPost, setCurrentPost] = useState("")
-  const [youtubeVideoId, setYoutubeVideoId] = useState("")
-  const { getRelatedProductsByCategory } = useProductService()
+  const [youtubeVideoId] = useState("")
+  // const { getRelatedProductsByCategory } = useProductService()
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { md } = Grid.useBreakpoint()
   const isSmall = !md
   const allProductsState = useSelector((state) => state.allProducts);
-  const allProductsArray = Object.values(allProductsState).flat();
+  // Tối ưu hóa allProductsArray với useMemo
+  const allProductsArray = useMemo(() => {
+    return Object.values(allProductsState).flat();
+  }, [allProductsState]);
+
   const [youtubeTitle, setYoutubeTitle] = useState('Video đánh giá loa')
-  const relatedProducts = getRelatedProducts(product, allProductsArray)
+
+  // Tối ưu hóa relatedProducts với useMemo
+  const relatedProducts = useMemo(() => {
+    return getRelatedProducts(product, allProductsArray);
+  }, [product, allProductsArray]);
   const [selectedOptions, setSelectedOptions] = useState({
     color: null,
     condition: null,
@@ -59,18 +67,23 @@ function ProductDetail() {
   })
   const [loading, setLoading] = useState(true)
 
+  // Tối ưu hóa việc tìm kiếm sản phẩm với useMemo
+  const foundProduct = useMemo(() => {
+    return allProductsArray.find(item => String(item.id) === String(id));
+  }, [allProductsArray, id]);
+
   useEffect(() => {
-    const product = allProductsArray.find(item => String(item.id) === String(id));
-setProduct(product || null);
-  }, [id]);
+    setProduct(foundProduct || null);
+  }, [foundProduct]);
 
   function extractYoutubeVideoId(url) {
     const match = url.match(/(?:[?&]v=|youtu\.be\/|embed\/)([\w-]{11})/)
     return match ? match[1] : null
   }
 
-  const getPostById = async (id) => {
-    const docRef = doc(db, 'productPosts', id); // collection name + doc id
+  // Tối ưu hóa getPostById với useCallback
+  const getPostById = useCallback(async (id) => {
+    const docRef = doc(db, 'productPosts', id);
     const snapshot = await getDoc(docRef);
     console.log("snapshot", snapshot)
     if (snapshot.exists()) {
@@ -79,11 +92,13 @@ setProduct(product || null);
     } else {
       setCurrentPost("")
     }
-  };
+  }, []);
 
   useEffect(() => {
-    getPostById(product.post)
-  }, []);
+    if (product && product.post) {
+      getPostById(product.post)
+    }
+  }, [product, getPostById]);
 
 
   useEffect(() => {
@@ -110,13 +125,13 @@ setProduct(product || null);
     return () => clearTimeout(timer)
   }, [product])
 
-  useEffect(() => {
-    const fetchRelated = async () => {
-      const related = await getRelatedProductsByCategory()
-      setRelatedProducts(related)
-    }
-    fetchRelated()
-  }, [product])
+  // useEffect(() => {
+  //   const fetchRelated = async () => {
+  //     const related = await getRelatedProductsByCategory()
+  //     setRelatedProducts(related)
+  //   }
+  //   fetchRelated()
+  // }, [product])
 
   // useEffect(() => {
   //   const fetchPosts = async () => {
@@ -146,8 +161,6 @@ setProduct(product || null);
   const [priceForSale, setPriceForSale] = useState("");
   const [priceDefault, setPriceDefault] = useState("");
   const [condition, setCondition] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
-  const [ytbVideoId, setYtbVideoId] = useState("");
 
   useEffect(() => {
     if (!product) return;
@@ -179,10 +192,10 @@ setProduct(product || null);
 
     setCondition(product.condition || "");
 
-    // 🔹 YouTube
-    const url = product.youtubeUrl || "https://www.youtube.com/watch?v=hwsKMrkCalE";
-    setVideoUrl(url);
-    setYtbVideoId(extractYoutubeVideoId(url));
+    // Tối ưu: chỉ tính toán khi cần
+    if (product.youtubeUrl) {
+      extractYoutubeVideoId(product.youtubeUrl);
+    }
   }, [product]);
 
   // if (!product) {
@@ -233,7 +246,10 @@ setProduct(product || null);
             onClick: () => {
               dispatch(resetFilter())
               dispatch(setCategory(product.category))
-              navigate(routePath.product)
+              // Create search params without double encoding
+              const params = new URLSearchParams();
+              params.set('category', product.category);
+              navigate(`${routePath.product}?${params.toString()}`);
             }
           },
           {

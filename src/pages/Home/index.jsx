@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useMemo, useCallback } from 'react'
 import CountSale from './CountSale'
 import ProductGrid from '../../components/features/ProductGrid'
 import iconPopular from '../../assets/iconPopular.png'
@@ -26,6 +26,7 @@ import { getAllNewSealTaiNghe } from '../../utils/newSeal';
 import { getAllTaiNgheChupTai } from '../../utils/taiNgheChuptai';
 import { getAllLoaDiDong } from '../../utils/diDong';
 
+
 function Home() {
   const { getHomeSettingsWithStore } = useHomeSettingService();
   const dispatch = useDispatch();
@@ -39,7 +40,10 @@ function Home() {
   const home = useSelector(state => state.homeSetting.homeSettings);
   const hasLoaded = React.useRef(false);
   const allProductsState = useSelector((state) => state.allProducts);
-  const allProductsArray = Object.values(allProductsState).flat();
+  // Tối ưu hóa allProductsArray với useMemo
+  const allProductsArray = useMemo(() => {
+    return Object.values(allProductsState).flat();
+  }, [allProductsState]);
 
   React.useEffect(() => {
     const fetchProducts = async () => {
@@ -78,8 +82,8 @@ function Home() {
     }
   }
  
-  // Hàm lọc cho từng ProductGrid
-  const handleFilterBestSeller = async (category) => {
+  // Tối ưu hóa hàm filter với useCallback
+  const handleFilterBestSeller = useCallback((category) => {
     if (activeBestSeller === category) {
       setActiveBestSeller(""); // Bỏ chọn
       setProductsBestSeller(allBestSellerProducts); // Hiện tất cả
@@ -90,9 +94,9 @@ function Home() {
       );
       setProductsBestSeller(filtered);
     }
-  };
+  }, [activeBestSeller, allBestSellerProducts]);
 
-  const handleFilterOnSale = async (category) => {
+  const handleFilterOnSale = useCallback((category) => {
     if (activeOnSale === category) {
       setActiveOnSale(""); // Bỏ chọn
       setProductsOnSale(allSaleProducts); // Hiện tất cả
@@ -103,7 +107,7 @@ function Home() {
       );
       setProductsOnSale(filtered);
     }
-  };
+  }, [activeOnSale, allSaleProducts]);
   React.useEffect(() => {
     if (hasLoaded.current) return; // chỉ chạy 1 lần duy nhất
     hasLoaded.current = true;
