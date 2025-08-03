@@ -147,8 +147,8 @@ function Header() {
       const params = new URLSearchParams(location.search);
       params.set("id", product.id);
       params.set("name", product.name);
-      params.set("collection", product.collection);
-      params.set("document", product.document);
+      params.set("condtion", product.condition);
+      params.set("color", product.color);
       navigate({
         pathname: routePath.productDetail,
         search: params.toString(),

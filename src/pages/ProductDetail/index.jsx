@@ -37,8 +37,6 @@ function ProductDetail() {
   const { search } = useLocation(); // get the query string like ?id=123&collection=abc
   const queryParams = new URLSearchParams(search);
   const id = queryParams.get("id");
-  const collection = queryParams.get("collection");
-  const document = queryParams.get("document");
   const [product, setProduct] = useState({});
   const [selectedImage, setSelectedImage] = useState(0)
   // const [relatedProducts, setRelatedProducts] = useState([])
@@ -62,29 +60,9 @@ function ProductDetail() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      if (!id || !collection || !document) return;
-      try {
-        // 🔹 get Firestore document
-        const docRef = doc(db, collection, document); 
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const rawData = docSnap.data();
-          const data = rawData[id].split("|").map((item) => (item === "null" ? "" : item.trim()));
-          data.unshift(id);
-          // 🔹 find product by id inside array
-          const foundProduct = handleProduct(data)
-          setProduct(foundProduct || null);
-        } else {
-          console.log("No such document!");
-          setProduct(null);
-        }
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      }
-    };
-    fetchProduct();
-  }, [id, collection]);
+    const product = allProductsArray.find(item => String(item.id) === String(id));
+setProduct(product || null);
+  }, [id]);
 
   function extractYoutubeVideoId(url) {
     const match = url.match(/(?:[?&]v=|youtu\.be\/|embed\/)([\w-]{11})/)

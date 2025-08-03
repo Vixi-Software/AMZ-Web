@@ -34,14 +34,14 @@ function ProductCard({ product }) {
 
   const handleCardClick = () => {
     const params = new URLSearchParams(location.search);
-      params.set("id", product.id);
-      params.set("name", product.name);
-      params.set("collection", product.collection);
-      params.set("document", product.document);
-      navigate({
-        pathname: routePath.productDetail,
-        search: params.toString(),
-      });
+    params.set("id", product.id);
+    params.set("name", product.name);
+    params.set("condtion", product.condition);
+    params.set("color", product.color);
+    navigate({
+      pathname: routePath.productDetail,
+      search: params.toString(),
+    });
   };
 
   const handleGiaThamKhaoClick = (e) => {
@@ -257,7 +257,7 @@ function ProductCard({ product }) {
                     }}
                   />
                 ))}
-              
+
               {/* Hiển thị indicator nếu có nhiều hơn 3 màu */}
               {(Array.isArray(productColor) ? productColor : [productColor]).filter(Boolean).length > 3 && (
                 <span className="text-xs text-[#888] group-hover:hidden">
@@ -268,8 +268,8 @@ function ProductCard({ product }) {
 
             {/* Hiển thị tất cả dots khi hover */}
             {(Array.isArray(productColor) ? productColor : [productColor]).filter(Boolean).length > 3 && (
-              <div className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-xl p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col gap-1 items-center border border-gray-200 min-w-[60px]" 
-                style={{ 
+              <div className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-xl p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col gap-1 items-center border border-gray-200 min-w-[60px]"
+                style={{
                   zIndex: 9999,
                   boxShadow: '0 10px 25px rgba(0,0,0,0.15)'
                 }}>
