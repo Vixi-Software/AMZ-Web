@@ -1,7 +1,8 @@
 import React, { useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setBrands, setPriceRanges, resetFilter, selectCategory } from '../../store/features/filterProduct/filterProductSlice';
+import { setBrands, setPriceRanges, resetFilter } from '../../store/features/filterProduct/filterProductSlice';
 import { Grid } from 'antd';
+import { useUrlParams } from '../../hooks/useUrlParams';
 function SideBarProduct({
   brands = [],
   priceRanges = [],
@@ -10,16 +11,17 @@ function SideBarProduct({
 }) {
   const screens = Grid.useBreakpoint()
   const dispatch = useDispatch();
+  const { urlParams, updateUrlParams } = useUrlParams();
   const { brands: selectedBrands, priceRanges: selectedPrices } = useSelector(
     (state) => state.filterProduct
   );
 
-  const allProductsState = useSelector((state) => state.allProducts);
-  const allProductsArray = Object.values(allProductsState).flat();
-  const category = useSelector(selectCategory);
-  const filteredProduct = allProductsArray.filter(
-    (product) => product.collection === category
-  );
+  // const allProductsState = useSelector((state) => state.allProducts);
+  // const allProductsArray = Object.values(allProductsState).flat();
+  // const category = useSelector(selectCategory);
+  // const filteredProduct = allProductsArray.filter(
+  //   (product) => product.collection === category
+  // );
   // const brands = [
   //   ...new Set(filteredProduct.map((product) => product.brand).filter(Boolean))
   // ];
@@ -28,24 +30,51 @@ function SideBarProduct({
   const memoBrands = useMemo(() => brands, [brands]);
 
   const handleBrandClick = (brand) => {
+    let newBrands;
     if (selectedBrands.includes(brand)) {
-      dispatch(setBrands(selectedBrands.filter((b) => b !== brand)));
+      newBrands = selectedBrands.filter((b) => b !== brand);
     } else {
-      dispatch(setBrands([...selectedBrands, brand]));
+      newBrands = [...selectedBrands, brand];
     }
+    
+    dispatch(setBrands(newBrands));
+    updateUrlParams({ brands: newBrands });
   };
 
   const handleReset = () => {
     dispatch(resetFilter());
+    updateUrlParams({ 
+      brands: [], 
+      priceRanges: [],
+      sort: 'bestseller'
+    });
   };
 
   const handlePriceChange = (value) => {
+    let newPriceRanges;
     // Kiểm tra nếu đã chọn thì bỏ chọn, chưa chọn thì thêm vào
-    if (selectedPrices.some((v) => v[0] === value[0] && v[1] === value[1])) {
-      dispatch(setPriceRanges(selectedPrices.filter((v) => !(v[0] === value[0] && v[1] === value[1]))));
+    const isAlreadySelected = selectedPrices.some((v) => {
+      const currentMin = Number(v[0]);
+      const currentMax = v[1] === null || v[1] === Infinity ? Infinity : Number(v[1]);
+      const newMin = Number(value[0]);
+      const newMax = value[1] === null || value[1] === Infinity ? Infinity : Number(value[1]);
+      return currentMin === newMin && currentMax === newMax;
+    });
+    
+    if (isAlreadySelected) {
+      newPriceRanges = selectedPrices.filter((v) => {
+        const currentMin = Number(v[0]);
+        const currentMax = v[1] === null || v[1] === Infinity ? Infinity : Number(v[1]);
+        const newMin = Number(value[0]);
+        const newMax = value[1] === null || value[1] === Infinity ? Infinity : Number(value[1]);
+        return !(currentMin === newMin && currentMax === newMax);
+      });
     } else {
-      dispatch(setPriceRanges([...selectedPrices, value]));
+      newPriceRanges = [...selectedPrices, value];
     }
+    
+    dispatch(setPriceRanges(newPriceRanges));
+    updateUrlParams({ priceRanges: newPriceRanges });
   };
 
   // const handleNeedChange = (value) => {
@@ -55,6 +84,17 @@ function SideBarProduct({
   //     dispatch(setNeeds([...selectedNeeds, value]));
   //   }
   // };
+
+  // Đồng bộ URL params với Redux store khi component mount
+  useEffect(() => {
+    if (urlParams.brands && urlParams.brands.length > 0 && selectedBrands.length === 0) {
+      dispatch(setBrands(urlParams.brands));
+    }
+    if (urlParams.priceRanges && urlParams.priceRanges.length > 0 && selectedPrices.length === 0) {
+      dispatch(setPriceRanges(urlParams.priceRanges));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Chỉ chạy khi component mount
 
   useEffect(() => {
     // Cleanup khi component unmount
@@ -126,16 +166,24 @@ function SideBarProduct({
             <label className="cursor-pointer flex items-center group transition-all duration-200">
               <input
                 type="checkbox"
-                checked={selectedPrices.some(
-                  (v) => v[0] === range.value[0] && v[1] === range.value[1]
-                )}
+                checked={selectedPrices.some((v) => {
+                  const currentMin = Number(v[0]);
+                  const currentMax = v[1] === null || v[1] === Infinity ? Infinity : Number(v[1]);
+                  const rangeMin = Number(range.value[0]);
+                  const rangeMax = range.value[1] === null || range.value[1] === Infinity ? Infinity : Number(range.value[1]);
+                  return currentMin === rangeMin && currentMax === rangeMax;
+                })}
                 onChange={() => handlePriceChange(range.value)}
                 className="accent-orange-500 !mr-1.5 scale-110 transition-transform duration-200 group-hover:scale-125"
               />
               <span className={`transition-colors duration-200 ${
-                selectedPrices.some(
-                  (v) => v[0] === range.value[0] && v[1] === range.value[1]
-                )
+                selectedPrices.some((v) => {
+                  const currentMin = Number(v[0]);
+                  const currentMax = v[1] === null || v[1] === Infinity ? Infinity : Number(v[1]);
+                  const rangeMin = Number(range.value[0]);
+                  const rangeMax = range.value[1] === null || range.value[1] === Infinity ? Infinity : Number(range.value[1]);
+                  return currentMin === rangeMin && currentMax === rangeMax;
+                })
                   ? 'text-orange-500 font-semibold'
                   : 'group-hover:text-orange-400'
               }`}>

@@ -78,7 +78,10 @@ export default function Sidebar() {
                     navigate(routePath.policyExchange);
                   } else {
                     dispatch(setCategory(item.value));
-                    navigate(routePath.product);
+                    // Create search params without double encoding
+                    const params = new URLSearchParams();
+                    params.set('category', item.value);
+                    navigate(`${routePath.product}?${params.toString()}`);
                   }
                 }}
               >
@@ -112,7 +115,10 @@ export default function Sidebar() {
                     navigate(routePath.sale);
                   } else if (item.label === "Hàng newseal") {
                     dispatch(setCategory(item.value));
-                    navigate(routePath.product);
+                    // Create search params without double encoding
+                    const params = new URLSearchParams();
+                    params.set('category', item.value);
+                    navigate(`${routePath.product}?${params.toString()}`);
                   } else if (item.label === "Bảo hành - sửa chữa") {
                     dispatch(setCategory("Bảo hành - sửa chữa"));
                     navigate(routePath.policyWarranty);
