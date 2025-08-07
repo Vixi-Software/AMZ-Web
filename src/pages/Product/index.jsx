@@ -27,13 +27,13 @@ function Product() {
   const allProductsArray = Object.values(allProductsState).flat();
   const category = useSelector(selectCategory);
   let filteredProduct = allProductsArray
-  
+
   if (category != "Tất cả sản phẩm") {
     filteredProduct = allProductsArray.filter(
       (product) => product.category === category
     );
   }
- 
+
 
   const brands = useSelector(selectBrands);
   const priceRanges = useSelector(selectPriceRanges);
@@ -158,17 +158,20 @@ function Product() {
       <div className='mt-[30px]'>
         {/* HIển thị bài viết */}
         {posts.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4">
-            {posts.map(post => (
-              <div key={post.id} className="rounded-lg">
-                <h1 className="text-[21px] be-vietnam-pro-medium  font-semibold">{post.title}</h1>
-                <div
-                  className="text-gray-600 be-vietnam-pro"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+          (() => {
+            const randomPost = posts[Math.floor(Math.random() * posts.length)];
+            return (
+              <div className="grid grid-cols-1 gap-4">
+                <div key={randomPost.id} className="rounded-lg">
+                  <h1 className="text-[21px] be-vietnam-pro-medium font-semibold">{randomPost.title}</h1>
+                  <div
+                    className="text-gray-600 be-vietnam-pro"
+                    dangerouslySetInnerHTML={{ __html: randomPost.content }}
+                  />
+                </div>
               </div>
-            ))}
-          </div>
+            );
+          })()
         ) : (
           <div>Không có bài viết nào</div>
         )}
