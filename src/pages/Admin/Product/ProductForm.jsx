@@ -175,6 +175,7 @@ function ProductForm({ initialValues = {}, onFinish, onCloseForm, type = "add" }
   const [isImageHighlightsModalOpen, setIsImageHighlightsModalOpen] = useState(false);
   const [imageHighlightsUrl, setImageHighlightsUrl] = useState('')
 
+
   const handleHighlightsImageClick = () => {
     const editor = highlightsQuillRef.current?.getEditor()
     const range = editor?.getSelection()
@@ -353,6 +354,8 @@ function ProductForm({ initialValues = {}, onFinish, onCloseForm, type = "add" }
   const handleFormFinish = async (values) => {
     // // Đảm bảo tableInfo luôn được cập nhật từ tableRows khi submit
     values.tableInfo = parseTableInfoToString(tableRows);
+    values.highlights = highlights
+    values.description = description
     if (onFinish) {
       // Nếu là sửa, gọi prop onFinish (truyền lên từ Admin)
       await onFinish(values);

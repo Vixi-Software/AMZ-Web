@@ -282,7 +282,7 @@ function Admin() {
                                           src={img}
                                           alt="Ảnh sản phẩm"
                                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                          onError={e => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/40x40?text=No+Image'; }}
+                                          // onError={e => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/40x40?text=No+Image'; }}
                                         />
                                         {isLastVisible && (
                                           <div

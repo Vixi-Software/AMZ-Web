@@ -73,7 +73,6 @@ function ProductDetail() {
   const getPostById = async (id) => {
     const docRef = doc(db, 'productPosts', id); // collection name + doc id
     const snapshot = await getDoc(docRef);
-    console.log("snapshot", snapshot)
     if (snapshot.exists()) {
       const data = snapshot.data();
       setCurrentPost(data.content)
@@ -84,7 +83,7 @@ function ProductDetail() {
 
   useEffect(() => {
     getPostById(product.post)
-  }, []);
+  }, [product]);
 
 
   useEffect(() => {
