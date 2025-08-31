@@ -222,7 +222,7 @@ function AdminLayout({ children }) {
           {user && (
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Text style={{ marginRight: 12 }}>{user.email}</Text>
-              <Avatar src="https://i.pravatar.cc/40" />
+              {/* <Avatar src="https://i.pravatar.cc/40" /> */}
               <Button type="link" onClick={handleLogout} style={{ marginLeft: 16 }}>
                 Đăng xuất
               </Button>

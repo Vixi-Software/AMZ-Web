@@ -8,6 +8,7 @@ import { doc, updateDoc } from 'firebase/firestore'
 import { useFirestore } from '@/hooks/useFirestore'
 import { useSelector } from 'react-redux'
 import { selectCategory } from '@/store/features/filterProduct/filterProductSlice'
+import { getGoogleDriveThumbnail } from '../../../utils/convertFireBase'
 
 
 const reactQuillModules = {
@@ -70,8 +71,8 @@ function Policy() {
       message.warning('Vui lòng nhập đường dẫn hình ảnh hợp lệ.')
       return;
     }
-
-    editor.insertEmbed(savedRange.index, 'image', imageUrl.trim(), 'user')
+    
+    editor.insertEmbed(savedRange.index, 'image', getGoogleDriveThumbnail(imageUrl.trim()), 'user')
     setIsModalOpen(false)
     setImageUrl("")
     setSavedRange(null)

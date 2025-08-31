@@ -59,26 +59,27 @@ import {getCategoryByCollection} from '../utils/getKeyFirebase.js'
     return product
   }
 
-  function getGoogleDriveThumbnail(urlOrArray) {
-    const extractId = (url) => {
-      if (!url || typeof url !== 'string' || !url.includes('drive.google.com')) return url;
-      const match = url.match(/(?:\/d\/|id=|\/file\/d\/|open\?id=)([a-zA-Z0-9_-]{10,})/);
-      const id = match ? match[1] : null;
-      return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1000` : url;
-    };
+    function getGoogleDriveThumbnail(urlOrArray) {
+      const extractId = (url) => {
+        if (!url || typeof url !== 'string' || !url.includes('drive.google.com')) return url;
+        const match = url.match(/(?:\/d\/|id=|\/file\/d\/|open\?id=)([a-zA-Z0-9_-]{10,})/);
+        const id = match ? match[1] : null;
+        return id ? `https://lh3.googleusercontent.com/d/${id}` : url;
 
-    if (Array.isArray(urlOrArray)) {
-      return urlOrArray.map(extractId);
-    } else if (typeof urlOrArray === 'string') {
-      return extractId(urlOrArray);
-    } else {
-      return urlOrArray;
+      };
+
+      if (Array.isArray(urlOrArray)) {
+        return urlOrArray.map(extractId);
+      } else if (typeof urlOrArray === 'string') {
+        return extractId(urlOrArray);
+      } else {
+        return urlOrArray;
+      }
     }
-  }
 
   
 
 
 
 
-  export {productToPipeString, pipeStringToProductObject}
+  export {productToPipeString, pipeStringToProductObject, getGoogleDriveThumbnail}

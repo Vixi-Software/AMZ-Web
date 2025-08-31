@@ -11,6 +11,12 @@ import { db } from '@/utils/firebase.js';
 import { doc, setDoc, updateDoc, deleteField } from 'firebase/firestore';
 import { productToPipeString, pipeStringToProductObject } from '@/utils/convertFireBase.js'
 
+function isHtmlBlank(html) {
+  if (!html) return true; // null, undefined, empty string
+  // Remove HTML tags & trim spaces
+  const text = html.replace(/<[^>]*>/g, "").trim();
+  return text === "";
+}
 
 function Admin() {
   const [items, setItems] = useState([]);
@@ -72,14 +78,17 @@ function Admin() {
 
   // Parse pipe string (full) to product object (dựa vào ProductForm)
   function parsePipeString(pipeString) {
-    const arr = String(pipeString).split("|");
-    // arr[0]: code, arr[1]: page, arr[2...]: fields
+    const arr = String(pipeString)
+      .split("|")
+      .map(v => (v === "null" ? "" : v)); // replace "null" with ""
+
     return {
       ...pipeStringToProductObject(arr.slice(2), arr[0]),
       _code: arr[0],
       _page: arr[1],
     };
   }
+
 
 
 
@@ -125,13 +134,13 @@ function Admin() {
         {/* Nút thêm sản phẩm */}
         <div className="flex gap-2 items-center">
           <Button
-          type="primary"
-          className="bg-green-500 border-none rounded-lg font-semibold text-xl py-4 px-10 min-w-[220px] min-h-[42px] shadow-md shadow-green-500/15"
-          onClick={() => setAddModal(true)}
-        >
-          Thêm sản phẩm
-        </Button>
-        <input
+            type="primary"
+            className="bg-green-500 border-none rounded-lg font-semibold text-xl py-4 px-10 min-w-[220px] min-h-[42px] shadow-md shadow-green-500/15"
+            onClick={() => setAddModal(true)}
+          >
+            Thêm sản phẩm
+          </Button>
+          <input
             type="text"
             placeholder="Tìm kiếm sản phẩm..."
             value={searchText}
@@ -157,7 +166,7 @@ function Admin() {
               {idx + 1}
             </button>
           ))}
-          
+
           <select
             value={category}
             onChange={e => setCategory(e.target.value)}
@@ -176,7 +185,7 @@ function Admin() {
             <option value={"06-hang-newseal"}>Hàng new seal</option>
           </select>
 
-          
+
         </div>
 
       </div>
@@ -228,110 +237,139 @@ function Admin() {
                     const fields = arr.slice(2, 2 + columns.length - 1);
                     return (
                       <tr key={key}>
-                        {fields.map((field, idx) => (
-                          columns[idx] === "Ảnh" ? (
-                            <td
-                              key={idx}
-                              style={{
-                                border: "1px solid #2196f3",
-                                padding: "8px",
-                                background: "#fff",
-                                maxWidth: "120px",
-                                whiteSpace: "normal",
-                                textAlign: "center"
-                              }}
-                              title={field === null || field === "null" || field === "" ? "Chưa cập nhật" : field}
-                            >
-                              {field && field !== "null" && field !== "" ? (
-                                <div style={{
-                                  display: 'flex',
-                                  flexWrap: 'wrap',
-                                  gap: 2,
-                                  maxWidth: 90,
-                                  justifyContent: 'center',
-                                }}>
-                                  {/* {field.split(";;").map((img, i) =>
-                                    img ? (
-                                      <img
-                                        key={i}
-                                        src={img}
-                                        alt="Ảnh sản phẩm"
-                                        style={{ width: 40, height: 40, objectFit: 'cover', margin: 1, borderRadius: 4, border: '1px solid #eee' }}
-                                        onError={e => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/40x40?text=No+Image'; }}
-                                      />
-                                    ) : null
-                                  )} */}
-                                  {field.split(";;").filter(Boolean).slice(0, 2).map((img, i, arr) => {
-                                    const totalImages = field.split(";;").filter(Boolean).length;
-                                    const isLastVisible = i === 1 && totalImages > 2;
+                        {fields.map((field, idx) => {
+                          if (columns[idx] === "Ảnh") {
+                            // === CASE 1: Ảnh ===
+                            return (
+                              <td
+                                key={idx}
+                                style={{
+                                  border: "1px solid #2196f3",
+                                  padding: "8px",
+                                  background: "#fff",
+                                  maxWidth: "120px",
+                                  whiteSpace: "normal",
+                                  textAlign: "center",
+                                }}
+                                title={field === null || field === "null" || field === "" ? "Chưa cập nhật" : field}
+                              >
+                                {field && field !== "null" && field !== "" ? (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexWrap: "wrap",
+                                      gap: 2,
+                                      maxWidth: 90,
+                                      justifyContent: "center",
+                                    }}
+                                  >
+                                    {field
+                                      .split(";;")
+                                      .filter(Boolean)
+                                      .slice(0, 2)
+                                      .map((img, i) => {
+                                        const totalImages = field.split(";;").filter(Boolean).length;
+                                        const isLastVisible = i === 1 && totalImages > 2;
 
-                                    return (
-                                      <div
-                                        key={i}
-                                        style={{
-                                          position: 'relative',
-                                          width: 40,
-                                          height: 40,
-                                          margin: 1,
-                                          borderRadius: 4,
-                                          overflow: 'hidden',
-                                          border: '1px solid #eee'
-                                        }}
-                                      >
-                                        <img
-                                          src={img}
-                                          alt="Ảnh sản phẩm"
-                                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                          // onError={e => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/40x40?text=No+Image'; }}
-                                        />
-                                        {isLastVisible && (
+                                        return (
                                           <div
+                                            key={i}
                                             style={{
-                                              position: 'absolute',
-                                              top: 0,
-                                              left: 0,
-                                              width: '100%',
-                                              height: '100%',
-                                              backgroundColor: 'rgba(0,0,0,0.5)',
-                                              color: 'white',
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              justifyContent: 'center',
-                                              fontSize: 12,
-                                              fontWeight: 'bold'
+                                              position: "relative",
+                                              width: 40,
+                                              height: 40,
+                                              margin: 1,
+                                              borderRadius: 4,
+                                              overflow: "hidden",
+                                              border: "1px solid #eee",
                                             }}
                                           >
-                                            +{totalImages - 1}
+                                            <img
+                                              src={img}
+                                              alt="Ảnh sản phẩm"
+                                              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                            />
+                                            {isLastVisible && (
+                                              <div
+                                                style={{
+                                                  position: "absolute",
+                                                  top: 0,
+                                                  left: 0,
+                                                  width: "100%",
+                                                  height: "100%",
+                                                  backgroundColor: "rgba(0,0,0,0.5)",
+                                                  color: "white",
+                                                  display: "flex",
+                                                  alignItems: "center",
+                                                  justifyContent: "center",
+                                                  fontSize: 12,
+                                                  fontWeight: "bold",
+                                                }}
+                                              >
+                                                +{totalImages - 1}
+                                              </div>
+                                            )}
                                           </div>
-                                        )}
-                                      </div>
-                                    );
-                                  })}
+                                        );
+                                      })}
+                                  </div>
+                                ) : (
+                                  <span>Chưa cập nhật</span>
+                                )}
+                              </td>
+                            );
+                          } else if (columns[idx] === "Mô tả") {
+                            // === CASE 2: Mô tả ===
+                            return (
+                              <td
+                                key={idx}
+                                style={{
+                                  border: "1px solid #2196f3",
+                                  padding: "8px",
+                                  background: "#fff",
+                                  maxWidth: "250px",
+                                  whiteSpace: "nowrap",       // prevent wrapping
+                                  overflow: "hidden",         // hide overflow
+                                  textOverflow: "ellipsis",   // add "..."
+                                }}
+                                title={isHtmlBlank(field) || field === "null" ? "Chưa cập nhật" : field}
+                              >
+                                {isHtmlBlank(field) || field === "null" ? (
+                                  "Chưa cập nhật"
+                                ) : (
+                                  <div
+                                    style={{
+                                      maxWidth: "250px",
+                                      overflow: "hidden",         // hide overflow
+                                      textOverflow: "ellipsis",
+                                    }}
+                                    dangerouslySetInnerHTML={{ __html: field }}
+                                  />
+                                )}
+                              </td>
+                            );
+                          } else {
+                            // === CASE 3: default ===
+                            return (
+                              <td
+                                key={idx}
+                                style={{
+                                  border: "1px solid #2196f3",
+                                  padding: "8px",
+                                  background: "#fff",
+                                  maxWidth: "120px",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                                title={field === null || field === "null" || field === "" ? "Chưa cập nhật" : field}
+                              >
+                                {field === null || field === "null" || field === "" ? "Chưa cập nhật" : field}
+                              </td>
 
-
-                                </div>
-                              ) : (
-                                <span>Chưa cập nhật</span>
-                              )}
-                            </td>
-                          ) : (
-                            <td
-                              key={idx}
-                              style={{
-                                border: "1px solid #2196f3",
-                                padding: "8px",
-                                background: "#fff",
-                                maxWidth: "120px",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis"
-                              }}
-                              title={field === null || field === "null" || field === "" ? "Chưa cập nhật" : field}
-                            >
-                              {field === null || field === "null" || field === "" ? "Chưa cập nhật" : field}
-                            </td>
-                          )
-                        ))}
+                            );
+                          }
+                        })}
                         <td
                           style={{
                             border: "1px solid #2196f3",
@@ -361,13 +399,7 @@ function Admin() {
                                 Xóa
                               </Button>
                             </Popconfirm>
-                            {/* <button
-                              style={{ background: '#f44336', color: '#fff', border: 'none', borderRadius: '3px', padding: '4px 8px', cursor: 'pointer' }}
-                              onClick={() => {
-                                const obj = parsePipeString(value);
-                                handleDeleteProduct(key, code, pageName);
-                              }}
-                            >Xóa</button> */}
+
                           </div>
                         </td>
                       </tr>
@@ -388,7 +420,7 @@ function Admin() {
             <ProductForm
               initialValues={editModal.value}
               onFinish={values => handleUpdateProduct(values, editModal.key, editModal.code, editModal.page)}
-              type = "edit"
+              type="edit"
             />
           </Modal>
           {/* Modal thêm sản phẩm mới */}
@@ -401,7 +433,7 @@ function Admin() {
             destroyOnHidden
           >
             <ProductForm
-            onCloseForm={()=>setAddModal(false)}
+              onCloseForm={() => setAddModal(false)}
             />
           </Modal>
         </div>

@@ -5,6 +5,7 @@ import { Button, message, Modal, Input, Select } from 'antd'
 import { db } from '@/utils/firebase'
 
 import { addDoc, collection, doc, updateDoc } from 'firebase/firestore'
+import { getGoogleDriveThumbnail } from '../../../utils/convertFireBase'
 
 const formatDateTime = (date) => {
   const d = new Date(date);
@@ -77,7 +78,7 @@ function PostForm({ initialValues = {}, collectionOrigin = "postService", type =
       return;
     }
 
-    editor.insertEmbed(savedRange.index, 'image', imageUrl.trim(), 'user')
+    editor.insertEmbed(savedRange.index, 'image', getGoogleDriveThumbnail(imageUrl.trim()), 'user')
     setIsImageModalOpen(false)
     setImageUrl("")
     setSavedRange(null)

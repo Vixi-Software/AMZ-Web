@@ -6,6 +6,7 @@ import { db } from '@/utils/firebase'
 import { useFirestore } from '@/hooks/useFirestore'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import { getGoogleDriveThumbnail } from '../../../utils/convertFireBase'
 
 const columns = [
   {
@@ -103,7 +104,7 @@ function EventManagement() {
       return;
     }
 
-    editor.insertEmbed(savedRange.index, 'image', imageUrl.trim(), 'user')
+    editor.insertEmbed(savedRange.index, 'image', getGoogleDriveThumbnail(imageUrl.trim()), 'user')
     setIsImageModalOpen(false)
     setImageUrl("")
     setSavedRange(null)
