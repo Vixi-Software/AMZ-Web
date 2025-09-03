@@ -340,6 +340,7 @@ function Admin() {
                                   <div
                                     style={{
                                       maxWidth: "250px",
+                                      maxHeight:"100px",
                                       overflow: "hidden",         // hide overflow
                                       textOverflow: "ellipsis",
                                     }}
