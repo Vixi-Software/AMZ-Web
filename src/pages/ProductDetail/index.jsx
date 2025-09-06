@@ -42,7 +42,7 @@ function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0)
   const [isProduct, setIsProduct] = useState(true)
   const [currentPost, setCurrentPost] = useState("")
-  const [youtubeVideoId, setYoutubeVideoId] = useState("")
+  // const [youtubeVideoId, setYoutubeVideoId] = useState("")
   const { getRelatedProductsByCategory } = useProductService()
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -91,6 +91,17 @@ function ProductDetail() {
 
   const itemSize = 120;
 
+   // --- SỬA ĐỔI DỮ LIỆU ĐẦU VÀO CHO PHÙ HỢP ---
+  const [productName, setProductName] = useState("");
+  const [images, setImages] = useState([]);
+  const [productColor, setProductColor] = useState([]);
+  const [priceForSale, setPriceForSale] = useState("");
+  const [priceDefault, setPriceDefault] = useState("");
+  const [condition, setCondition] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [ytbVideoId, setYtbVideoId] = useState("");
+
+
   useEffect(() => {
     const product = allProductsArray.find(item => String(item.id) === String(id));
     if (product)
@@ -121,12 +132,12 @@ function ProductDetail() {
 
   useEffect(() => {
     async function fetchYoutubeTitle() {
-      if (!youtubeVideoId) {
+      if (!ytbVideoId) {
         setYoutubeTitle('')
         return
       }
       try {
-        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${youtubeVideoId}&format=json`)
+        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${ytbVideoId}&format=json`)
         if (!res.ok) throw new Error('Failed to fetch')
         const data = await res.json()
         setYoutubeTitle(data.title || '')
@@ -135,7 +146,7 @@ function ProductDetail() {
       }
     }
     fetchYoutubeTitle()
-  }, [youtubeVideoId])
+  }, [ytbVideoId])
 
   useEffect(() => {
     setLoading(true)
@@ -164,16 +175,7 @@ function ProductDetail() {
     return parts.length >= 3 ? parts[2] : name
   }
 
-  // --- SỬA ĐỔI DỮ LIỆU ĐẦU VÀO CHO PHÙ HỢP ---
-  const [productName, setProductName] = useState("");
-  const [images, setImages] = useState([]);
-  const [productColor, setProductColor] = useState([]);
-  const [priceForSale, setPriceForSale] = useState("");
-  const [priceDefault, setPriceDefault] = useState("");
-  const [condition, setCondition] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
-  const [ytbVideoId, setYtbVideoId] = useState("");
-
+ 
   useEffect(() => {
     if (!product) return;
 
@@ -355,79 +357,78 @@ function ProductDetail() {
                 </div>
               ))}
           </div> */}
-      <div className="relative">
-      {/* Scrollable thumbnails */}
-      <div
-        ref={scrollRef}
-        onScroll={checkArrows}
-        className="flex gap-2 mb-4 overflow-x-auto"
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
-      >
-        <style>{`
+          <div className="relative">
+            {/* Scrollable thumbnails */}
+            <div
+              ref={scrollRef}
+              onScroll={checkArrows}
+              className="flex gap-2 mb-4 overflow-x-auto"
+              style={{
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            >
+              <style>{`
           div::-webkit-scrollbar { display: none; height: 0; }
         `}</style>
 
-        {loading
-          ? Array(3)
-              .fill(0)
-              .map((_, idx) => (
-                <Skeleton.Image
-                  key={`s-${idx}`}
-                  style={{ width: itemSize, height: itemSize }}
-                  active
-                />
-              ))
-          : Array.isArray(images) &&
-            images.length > 1 &&
-            images.map((img, idx) => (
-              <div
-                key={idx}
-                onClick={() => setSelectedImage(idx)}
-                className={`border ${
-                  selectedImage === idx ? "border-orange-500" : "border-gray-300"
-                } rounded-md p-0.5 cursor-pointer bg-white flex items-center justify-center box-border transition-all duration-200 hover:shadow-lg hover:scale-105`}
-                style={{
-                  width: itemSize,
-                  height: itemSize,
-                  minWidth: itemSize,
-                  flex: "0 0 auto",
-                }}
+              {loading
+                ? Array(3)
+                  .fill(0)
+                  .map((_, idx) => (
+                    <Skeleton.Image
+                      key={`s-${idx}`}
+                      style={{ width: itemSize, height: itemSize }}
+                      active
+                    />
+                  ))
+                : Array.isArray(images) &&
+                images.length > 1 &&
+                images.map((img, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => setSelectedImage(idx)}
+                    className={`border ${selectedImage === idx ? "border-orange-500" : "border-gray-300"
+                      } rounded-md p-0.5 cursor-pointer bg-white flex items-center justify-center box-border transition-all duration-200 hover:shadow-lg hover:scale-105`}
+                    style={{
+                      width: itemSize,
+                      height: itemSize,
+                      minWidth: itemSize,
+                      flex: "0 0 auto",
+                    }}
+                  >
+                    <img
+                      src={img}
+                      alt={`thumb-${idx}`}
+                      className="w-full h-full object-cover rounded transition-all duration-200 hover:brightness-110"
+                      draggable={false}
+                    />
+                  </div>
+                ))}
+            </div>
+
+            {/* Left Button (overlay) */}
+            {canLeft && (
+              <button
+                type="button"
+                onClick={() => scrollByAmount(-1)}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 rounded-full bg-white/90 shadow px-2 py-2 transition hover:bg-white"
               >
-                <img
-                  src={img}
-                  alt={`thumb-${idx}`}
-                  className="w-full h-full object-cover rounded transition-all duration-200 hover:brightness-110"
-                  draggable={false}
-                />
-              </div>
-            ))}
-      </div>
+                <LeftOutlined />
+              </button>
+            )}
 
-      {/* Left Button (overlay) */}
-      {canLeft && (
-        <button
-          type="button"
-          onClick={() => scrollByAmount(-1)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 rounded-full bg-white/90 shadow px-2 py-2 transition hover:bg-white"
-        >
-          <LeftOutlined />
-        </button>
-      )}
-
-      {/* Right Button (overlay) */}
-      {canRight && (
-        <button
-          type="button"
-          onClick={() => scrollByAmount(1)}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 rounded-full bg-white/90 shadow px-2 py-2 transition hover:bg-white"
-        >
-          <RightOutlined />
-        </button>
-      )}
-    </div>
+            {/* Right Button (overlay) */}
+            {canRight && (
+              <button
+                type="button"
+                onClick={() => scrollByAmount(1)}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 rounded-full bg-white/90 shadow px-2 py-2 transition hover:bg-white"
+              >
+                <RightOutlined />
+              </button>
+            )}
+          </div>
         </Col>
 
         <Col xs={24} md={10}>
@@ -709,8 +710,8 @@ function ProductDetail() {
                     <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
                       <iframe
                         src={
-                          youtubeVideoId
-                            ? `https://www.youtube.com/embed/${youtubeVideoId}`
+                          ytbVideoId
+                            ? `https://www.youtube.com/embed/${ytbVideoId}`
                             : 'https://www.youtube.com/embed/hwsKMrkCalE'
                         }
                         title="YouTube video"
