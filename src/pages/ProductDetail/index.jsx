@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Row, Col, Grid, Skeleton, Empty } from 'antd'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -14,6 +14,7 @@ import { db } from "@/utils/firebase";
 import formatVNPhoneNumber from '../../utils/phoneNumberHandle'
 import { PHONE_NUMBER } from '../../constants/phoneNumber'
 import { handleProduct } from '../../utils/productHandle'
+import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 
 const getRelatedProducts = (targetProduct, allProducts, limit = 4) => {
   if (!targetProduct || !targetProduct.collection || !targetProduct.priceForSale) return [];
@@ -57,6 +58,38 @@ function ProductDetail() {
     branch: null
   })
   const [loading, setLoading] = useState(true)
+  const scrollRef = useRef(null);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+
+  const checkArrows = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanLeft(scrollLeft > 0);
+    setCanRight(scrollLeft + clientWidth < scrollWidth - 1); // -1 for float errs
+  };
+
+  const scrollByAmount = (dir) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const amount = el.clientWidth * 0.8; // scroll ~80% of visible area
+    el.scrollBy({ left: dir * amount, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    checkArrows();
+    const el = scrollRef.current;
+    if (!el) return;
+    const onResize = () => checkArrows();
+    const ro = new ResizeObserver(onResize);
+    ro.observe(el);
+    // also re-check when images change
+    return () => ro.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
+  const itemSize = 120;
 
   useEffect(() => {
     const product = allProductsArray.find(item => String(item.id) === String(id));
@@ -292,7 +325,7 @@ function ProductDetail() {
               </ul>
             </div>
           </div>
-          <div className="flex gap-2 mb-4">
+          {/* <div className="flex gap-2 mb-4">
             {loading
               ? Array(3)
                 .fill(0)
@@ -321,7 +354,80 @@ function ProductDetail() {
                   />
                 </div>
               ))}
-          </div>
+          </div> */}
+      <div className="relative">
+      {/* Scrollable thumbnails */}
+      <div
+        ref={scrollRef}
+        onScroll={checkArrows}
+        className="flex gap-2 mb-4 overflow-x-auto"
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+      >
+        <style>{`
+          div::-webkit-scrollbar { display: none; height: 0; }
+        `}</style>
+
+        {loading
+          ? Array(3)
+              .fill(0)
+              .map((_, idx) => (
+                <Skeleton.Image
+                  key={`s-${idx}`}
+                  style={{ width: itemSize, height: itemSize }}
+                  active
+                />
+              ))
+          : Array.isArray(images) &&
+            images.length > 1 &&
+            images.map((img, idx) => (
+              <div
+                key={idx}
+                onClick={() => setSelectedImage(idx)}
+                className={`border ${
+                  selectedImage === idx ? "border-orange-500" : "border-gray-300"
+                } rounded-md p-0.5 cursor-pointer bg-white flex items-center justify-center box-border transition-all duration-200 hover:shadow-lg hover:scale-105`}
+                style={{
+                  width: itemSize,
+                  height: itemSize,
+                  minWidth: itemSize,
+                  flex: "0 0 auto",
+                }}
+              >
+                <img
+                  src={img}
+                  alt={`thumb-${idx}`}
+                  className="w-full h-full object-cover rounded transition-all duration-200 hover:brightness-110"
+                  draggable={false}
+                />
+              </div>
+            ))}
+      </div>
+
+      {/* Left Button (overlay) */}
+      {canLeft && (
+        <button
+          type="button"
+          onClick={() => scrollByAmount(-1)}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 rounded-full bg-white/90 shadow px-2 py-2 transition hover:bg-white"
+        >
+          <LeftOutlined />
+        </button>
+      )}
+
+      {/* Right Button (overlay) */}
+      {canRight && (
+        <button
+          type="button"
+          onClick={() => scrollByAmount(1)}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 rounded-full bg-white/90 shadow px-2 py-2 transition hover:bg-white"
+        >
+          <RightOutlined />
+        </button>
+      )}
+    </div>
         </Col>
 
         <Col xs={24} md={10}>
