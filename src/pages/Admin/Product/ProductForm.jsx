@@ -6,6 +6,7 @@ import { productToPipeString } from '@/utils/convertFireBase.js'
 import { parseStringToTableInfo, parseTableInfoToString } from '@/utils/tableInfoParse.js'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import { data } from 'react-router-dom'
 
 const reactQuillModules = {
   toolbar: [
@@ -21,7 +22,6 @@ const reactQuillModules = {
   ],
 }
 
-
 const reactQuillFormats = [
   'header', 'bold', 'italic', 'underline', 'strike',
   'color', 'background',
@@ -29,6 +29,7 @@ const reactQuillFormats = [
   'align', 'blockquote', 'code-block',
   'link', 'image'
 ]
+
 
 const productTypeOptions = [
   { label: 'Loa di động cũ', value: 'Loa di động cũ' },
@@ -118,8 +119,11 @@ function getCollectionNameByCategory(category) {
 
 function ProductForm({ initialValues = {}, onFinish, onCloseForm, type = "add" }) {
   // Nếu có initialValues.tableInfo thì parse ra tableRows, nếu không thì 1 dòng rỗng
-  const [tableRows, setTableRows] = useState(
+  const [initialTableRows, setInitialTableRows] = useState(
     initialValues.tableInfo ? parseStringToTableInfo(initialValues.tableInfo) : [{ key: '', value: '' }]
+  );
+  const [tableRows, setTableRows] = useState(
+    [{ key: '', value: '' }]
   );
   const [category, setCategory] = useState(initialValues.category || '');
   const [colectionName, setColectionName] = useState(getCollectionNameByCategory(initialValues.category || ''));
@@ -157,6 +161,10 @@ function ProductForm({ initialValues = {}, onFinish, onCloseForm, type = "add" }
     setImageDescriptionUrl("")
     setDescriptionSavedRange(null)
   };
+
+  useEffect(() => {
+    setTableRows(stabilizeRows(initialTableRows))
+  }, [initialTableRows]);
 
   const handleDescriptionChange = (val) => {
     setDescription(val)
@@ -233,6 +241,8 @@ function ProductForm({ initialValues = {}, onFinish, onCloseForm, type = "add" }
     getAllPostTitles();
   }, []);
 
+
+
   const handleAddRow = () => {
     if (tableRows.length >= 10) {
       message.warning('Không thể thêm quá 10 dòng.');
@@ -242,10 +252,11 @@ function ProductForm({ initialValues = {}, onFinish, onCloseForm, type = "add" }
   }
 
   const handleRowChange = (index, field, val) => {
-    const newRows = [...tableRows]
-    newRows[index][field] = val
-    setTableRows(newRows)
-  }
+    const newRows = [...tableRows];
+    console.log("val", val)
+    newRows[index][field] = val;
+    setTableRows(newRows);
+  };
 
   const handleRemoveRow = (index) => {
     if (tableRows.length <= 1) {
@@ -256,21 +267,44 @@ function ProductForm({ initialValues = {}, onFinish, onCloseForm, type = "add" }
     setTableRows(newRows);
   };
 
+  const stabilizeHtmlForQuill = (html) => {
+    if (typeof html !== "string") return html;
+    return html.replace(/<\/p>\s*<p>(?!)/g, '</p><p></p><p>');
+  };
+
+  const stabilizeRows = (rows) =>
+    rows.map(r => ({ ...r, value: stabilizeHtmlForQuill(r.value) }));
+
   const renderTableRows = () => (
+
     tableRows.map((row, idx) => (
       <Row gutter={8} key={idx} style={{ marginBottom: 8 }}>
         <Col span={11}>
           <Input
             placeholder="Tên thuộc tính"
+            style={{ marginTop: 40 }}
             value={row.key}
             onChange={e => handleRowChange(idx, 'key', e.target.value)}
           />
         </Col>
         <Col span={11}>
-          <Input
+          <ReactQuill
+            theme="snow"
             placeholder="Giá trị"
             value={row.value}
-            onChange={e => handleRowChange(idx, 'value', e.target.value)}
+            formats={reactQuillFormats}
+            modules={{
+              toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],
+              ],
+            }}
+            onChange={(newContent) => {
+              console.log("Row", row.value)
+              console.log("val", newContent)
+              handleRowChange(idx, "value", newContent)
+            }
+            }
+          style={{ minHeight: 100 }}
           />
         </Col>
         <Col span={2}>

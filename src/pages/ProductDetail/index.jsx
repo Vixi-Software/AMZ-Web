@@ -687,7 +687,7 @@ function ProductDetail() {
                               fontSize: 16
                             }}
                           >
-                            {row.value}
+                             <div dangerouslySetInnerHTML={{ __html: row.value }} />
                           </td>
                         </tr>
                       ))}
