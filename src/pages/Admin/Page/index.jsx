@@ -109,6 +109,24 @@ const PageManagement = () => {
           </Col>
         </Row>
 
+        {/* Thêm trường nhập Youtube banner Home */}
+        <Row style={{ marginBottom: 24, border: '1px solid #eee', padding: 16, borderRadius: 8 }}>
+          <Col span={24}>
+            <Title level={5} style={{ fontWeight: 600 }}>Youtube Banner</Title>
+          </Col>
+          <Col span={24}>
+            <Form.Item
+              name="youtubeBanner"
+              label="Youtube Banner"
+              rules={[{ required: false }]}
+            >
+
+              <Input placeholder="Nhập link banner xem tất cả" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+
         {/* Banner chạy banner nhiều link */}
         <Row style={{ marginBottom: 24, border: '1px solid #eee', padding: 16, borderRadius: 8 }}>
           <Col span={24}>
